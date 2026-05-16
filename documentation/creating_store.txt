@@ -1,0 +1,27 @@
+step: create new entity
+
+1. make a type for the data in common/types [x]
+2. create the entityStore, if parent_id needs to be involved see for example CategoryStore [x]
+3. in src/store/index.ts add: [x]
+	- export const useEntityStore = createUserStore(Entity)
+	- export {EntityStore, ...}
+4. Get data in component via:
+    - const {entities, loading, error} = useEntityStore();
+
+    // define whether data should be loaded by a parent ID
+    - const entities = entitiesByParent[parentId] // optional. 
+    - const isLoading = loading[parentId] || false; // optional.
+    // otherwise just the descructured properties from useEntityStore() are OK
+
+5. render data:
+    <div>
+      {error && <p className='error'>{error}</p>}
+      {isLoading && entities.length === 0 ? (
+        <p>Loading...</p>
+      ) : (
+        entities.map((entity: Entity) => (
+          <Entity key={`entity-${entity.id}`} {...entity} />
+        ))
+      )}
+
+    </div>

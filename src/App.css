@@ -1,0 +1,175 @@
+* {
+  box-sizing: border-box;
+}
+
+p {
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  row-gap: 2rem;
+  padding: 1rem 0;
+  border: none;
+}
+
+.card {
+  border-radius: 1.5rem;
+  background-color: oklch(0.25 0.01 264.37);
+}
+
+.card-body {
+  margin: 0;
+  padding: 0;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem;
+}
+
+.card-header button {
+  margin-inline-start: auto;
+  border-radius: 4px;
+  font-size: 1.5rem;
+  height: 1.7rem;
+  width: 2.6rem;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  
+  /* 1. Hide the button by default */
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+/* 2. Show the button when the card-header is hovered */
+.card-header:hover button {
+  opacity: 1;
+  visibility: visible;
+}
+
+.card-header-info {
+  text-align: left;
+}
+
+.error {
+  display: block;
+  padding: 0.5rem;
+  margin: 1rem 2rem;
+  background-color: #ff8080;
+  color: #990000;
+  border: 1px solid #990000;
+  border-radius: 0.5rem;
+}
+
+.category {
+  display: flex;
+  border-top: 4px solid lightblue;
+  min-height: 180px
+}
+
+.category .info, .category .threads {
+  text-align: left;
+}
+
+.category .info {
+  width: 300px; 
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  border-right: 1px solid #2d3748;
+  background-color: inherit;
+}
+
+.category .info .info-text {
+  line-height: 1;
+  padding-left: 1rem;
+}
+
+.category .info .info-text p {
+  margin-bottom: 1rem;
+}
+
+.category .threads {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.image-container {
+  border: 2px solid #333;
+  margin: 1rem;
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+.image-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; 
+  display: block;    
+}
+
+/* Ensure the link covers the full area and acts as a block */
+.thread-item-link {
+  text-decoration: none; /* Remove underline */
+  color: inherit;       /* Keep your forum text colors */
+  display: block;       /* Important: makes the whole row clickable */
+  transition: background-color 0.2s ease;
+}
+
+/* Hover effect to make it feel interactive */
+.thread-item-link:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.thread-item {
+  display: flex;
+  align-items: stretch;
+  padding: 1rem;
+  border-bottom: 1px solid #2d3748;
+  justify-content: space-between;
+  /* background-color: #1a202c; */
+}
+
+.thread-item:last-child {
+  border-bottom: none; /* Prevents a double border at the bottom */
+}
+
+.thread-item .info-container {
+  display: flex;
+  gap: 1rem;
+}
+
+.thread-item .content p > span {
+  color: #737373; 
+}
+
+.thread-item .count {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  align-self: stretch; 
+}
+
+.avatar-container.small {
+  border: 1px solid black;
+  height: 60px;
+  width: 60px;
+  overflow: hidden;
+  flex-shrink: 0;
+  border-radius: 50%;
+}
+
+.avatar-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  overflow: hidden;
+}

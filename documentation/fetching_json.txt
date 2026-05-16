@@ -1,0 +1,1 @@
+Run it: npx json-server --watch db.json --port 5000
