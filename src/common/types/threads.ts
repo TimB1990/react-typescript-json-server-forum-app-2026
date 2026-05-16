@@ -1,6 +1,6 @@
 export type Thread = {
     id: number;
-    categoryId: number;
+    categoryId?: number;
     title: string;
     lastMessageBy: {
         author: string, 

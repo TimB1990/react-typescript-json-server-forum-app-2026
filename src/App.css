@@ -7,10 +7,28 @@ p {
   padding: 0;
 }
 
+.btn-default {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  border-radius: 0.75rem;
+  padding: 0.5rem 2rem;
+  cursor: pointer;
+  border: 1px solid rgba(0,0,0,0);
+  background-color: inherit;
+  font-weight: bold;
+}
+
+.btn-default.orange {
+  background-color: #E68A00;
+}
+
 .container {
   display: flex;
   flex-direction: column;
-  row-gap: 2rem;
+  row-gap: 1.5rem;
   padding: 1rem 0;
   border: none;
 }
@@ -30,6 +48,22 @@ p {
   align-items: center;
   justify-content: space-between;
   padding: 1.25rem;
+}
+
+.card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.5rem;
+  padding: 1.25rem;
+  border-top: 1px solid rgba(0,0,0,0);
+  background-color: rgba(255, 255, 255, 0.05);
+  border-end-start-radius: inherit; /* Inherits bottom-left */
+  border-end-end-radius: inherit;   /* Inherits bottom-right */
+}
+
+.card-header.border {
+  border-bottom: 1px solid #2d3748;
 }
 
 .card-header button {
@@ -122,6 +156,11 @@ p {
   color: inherit;       /* Keep your forum text colors */
   display: block;       /* Important: makes the whole row clickable */
   transition: background-color 0.2s ease;
+  border-bottom: 1px solid #2d3748;
+}
+
+.thread-item-link:last-child {
+  border-bottom: none; /* Prevents a double border at the bottom */
 }
 
 /* Hover effect to make it feel interactive */
@@ -133,18 +172,16 @@ p {
   display: flex;
   align-items: stretch;
   padding: 1rem;
-  border-bottom: 1px solid #2d3748;
   justify-content: space-between;
-  /* background-color: #1a202c; */
-}
-
-.thread-item:last-child {
-  border-bottom: none; /* Prevents a double border at the bottom */
 }
 
 .thread-item .info-container {
   display: flex;
   gap: 1rem;
+}
+
+.thread-item .content p {
+  text-align: left;
 }
 
 .thread-item .content p > span {
