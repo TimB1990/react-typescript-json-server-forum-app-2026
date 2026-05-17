@@ -7,12 +7,12 @@ export type Group = {
 export type GroupState = {
     groups: Group[];
     loading: boolean;
-    error?: string | null
+    error?: string | null;
 }
 
 export type GroupItemProps = {
-    id: number,
-    title: string,
-    description: string,
-    children: React.ReactNode
+    id: number;
+    title: string;
+    description: string;
+    children: React.ReactNode;
 }

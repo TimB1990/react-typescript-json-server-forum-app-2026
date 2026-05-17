@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react'
 import './App.css'
 import { CategoriesList } from './common/components/CategoriesList'
-import { useGroupStore, GroupStore, ThreadStore, useThreadStore } from './store'
+import { useGroupStore, GroupStore, ThreadStore, useThreadStore, useMessageStore, MessageStore } from './store'
 import { type Group } from './common/types/group'
 import { GroupItem } from './common/components/GroupItem'
 import { type Thread } from './common/types/threads'
 import { ThreadPreviewItem } from './common/components/ThreadPreviewItem'
+import type { Message } from './common/types/message'
+import { MessagePreviewItem } from './common/components/MessagePreviewItem'
 
 // font awesome
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -15,13 +17,15 @@ function App() {
 
   const { groups, loading, error } = useGroupStore();
   const { threadsByCategory: threads } = useThreadStore();
+  const { messagesByThread: messages } = useMessageStore();
 
   const latestThreads = threads?.["all"] || [];
-
+  const latestMessages = messages?.["all"] || [];
 
   useEffect(() => {
     GroupStore.fetch()
     ThreadStore.fetch(null, 3)
+    MessageStore.fetchLatestOverview(3)
   }, [])
 
   return (
@@ -60,7 +64,10 @@ function App() {
         </div>
         <div className="card">
           <div className="card-header border">
-            <h2>Latest topics</h2>
+            <div className="card-header-info">
+              <h2>Threads</h2>
+              <p>Our latest threads</p>
+            </div>
           </div>
           <div className="threads">
             {latestThreads.map((thread: Thread) => (
@@ -78,7 +85,16 @@ function App() {
           </div>
         </div>
         <div className="card">
-          Latest replies:
+          <div className="card-header border">
+            <div className="card-header-info">
+                <h2>Latest Replies</h2>
+            </div>
+            <div className="messages">
+              {latestMessages.map((message: Message) => (
+                <MessagePreviewItem key={`latest-message-${message.id}`} {...message} />
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </main>
