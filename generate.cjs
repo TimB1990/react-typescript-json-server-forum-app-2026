@@ -15,13 +15,14 @@ const generateData = async () => {
 
   // 1. Users
   for (let i = 1; i <= 10; i++) {
-    const seed = faker.string.alphanumeric(10);
+    // const seed = faker.string.alphanumeric(10);
+    // `https://api.dicebear.com/9.x/shapes/svg?seed=${seed}`
 
     users.push({
       id: i,
       username: faker.internet.username(),
       password: hashedPass,
-      avatar: `https://api.dicebear.com/9.x/shapes/svg?seed=${seed}`
+      avatar: faker.image.dataUri({ width: 150, height: 150 })
     });
   }
 
@@ -85,7 +86,7 @@ const generateData = async () => {
   // 4. Threads & Messages
   let messageIdCounter = 1;
 
-  for (let t = 1; t <= 15; t++) {
+  for (let t = 1; t <= 50; t++) {
     const threadId = t;
     const categoryId = faker.helpers.arrayElement(categories).id;
 
@@ -110,7 +111,7 @@ const generateData = async () => {
 
     // Create a few replies within this thread
     const threadMessages = [openingMessage]; // Keep track of messages in THIS thread
-    const replyCount = faker.number.int({ min: 3, max: 8 });
+    const replyCount = faker.number.int({ min: 5, max: 20 });
 
     for (let r = 0; r < replyCount; r++) {
       // Pick a random message from this thread to reply to

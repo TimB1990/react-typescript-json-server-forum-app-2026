@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import { ThreadStore, useThreadStore } from '../../store';
 import { ThreadPreviewItem } from './ThreadPreviewItem';
 import type { Category } from '../types/categories';

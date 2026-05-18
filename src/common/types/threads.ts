@@ -9,6 +9,7 @@ export type Thread = {
     }
     createdAt: string;
     messages?: number;
+    iconStats?: boolean;
 }
 
 export interface ThreadState {

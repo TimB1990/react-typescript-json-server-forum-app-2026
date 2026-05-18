@@ -24,7 +24,7 @@ export const GroupItem = ({ id, title, description, children }: GroupItemProps) 
 
       {/* Conditionally render or show the body based on state */}
       {isExpanded && (
-        <div className="card-body">
+        <div>
           {children}
         </div>
       )}
