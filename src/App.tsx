@@ -7,8 +7,6 @@ import { GroupItem } from './common/components/GroupItem'
 import { type Thread } from './common/types/threads'
 import { ThreadPreviewItem } from './common/components/ThreadPreviewItem'
 import type { Message } from './common/types/message'
-import { MessagePreviewItem } from './common/components/MessagePreviewItem'
-import { ErrorProvider } from './context/ErrorContext'
 
 // font awesome
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -17,6 +15,7 @@ import { faArrowRightToBracket, faUserPlus } from '@fortawesome/free-solid-svg-i
 // error context
 import { useError } from './context/ErrorContext'
 import { ErrorBanner } from './common/components/ErrorBanner'
+import { MessagePreviewItem } from './common/components/MessagePreviewItem'
 
 function App() {
 
@@ -40,7 +39,6 @@ function App() {
   }
 
   return (
-    <ErrorProvider>
       <main className='layout'>
       <ErrorBanner />
       <div className="container">
@@ -117,8 +115,6 @@ function App() {
         </div>
       </div>
     </main>
-    </ErrorProvider>
-
   )
 }
 

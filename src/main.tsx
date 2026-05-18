@@ -4,6 +4,7 @@ import App from './App.tsx'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import dayjs from 'dayjs';
 import calendar from 'dayjs/plugin/calendar';
+import { ErrorProvider } from './context/ErrorContext.tsx';
 
 // CRITICAL: This must run once in your application lifecycle 
 // before any .calendar() calls are made.
@@ -17,5 +18,7 @@ const router = createBrowserRouter([
 ])
 
 createRoot(document.getElementById('root')!).render(
-    <RouterProvider router={router} />
+    <ErrorProvider>
+        <RouterProvider router={router} />
+    </ErrorProvider>
 )
