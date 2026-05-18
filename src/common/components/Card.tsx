@@ -25,7 +25,7 @@ export const Card: React.FC<CardProps> = ({ header, content, footer, options = {
 
     const cardClasses = {
         header: ['card-header'],
-        body: ['card-body', divided ? 'devided' : '', noPadding ? 'no-padding' : ''],
+        body: ['card-body', divided ? 'divided' : '', noPadding ? 'no-padding' : ''],
         footer: ['card-footer']
     }
 

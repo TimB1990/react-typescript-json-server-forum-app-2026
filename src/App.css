@@ -91,13 +91,6 @@ p {
 }
 
 .card-footer {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 0.5rem;
-  padding: 1.25em;
-  border-top: 1px solid rgba(0,0,0,0);
-  background-color: rgba(255, 255, 255, 0.05);
   border-end-start-radius: inherit; 
   border-end-end-radius: inherit; 
 }
@@ -313,4 +306,14 @@ p {
   width: auto;
   max-height: 100%; 
   flex-shrink: 0; 
+}
+
+.register-login-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.5rem;
+  padding: 1.25em;
+  border-top: 1px solid rgba(0,0,0,0);
+  background-color: rgba(255, 255, 255, 0.05);
 }
