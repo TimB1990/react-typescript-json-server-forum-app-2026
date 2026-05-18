@@ -1,7 +1,10 @@
 import { useState } from 'react'
 
 interface CardOptions {
-    divided?: boolean,
+    divided?: {
+        top?: boolean;
+        bottom?: boolean;
+    }
     expander?: boolean,
     noPadding?: boolean,
 }
@@ -15,7 +18,14 @@ interface CardProps {
 
 export const Card: React.FC<CardProps> = ({ header, content, footer, options = {} }) => {
 
-    const { divided = false, noPadding = false, expander = false } = options;
+    const {
+        divided: {
+            top = true,
+            bottom = true
+        } = {},
+        noPadding = false,
+        expander = false
+    } = options || {};
 
     const [isExpanded, setIsExpanded] = useState<boolean>(true)
 
@@ -25,7 +35,7 @@ export const Card: React.FC<CardProps> = ({ header, content, footer, options = {
 
     const cardClasses = {
         header: ['card-header'],
-        body: ['card-body', divided ? 'divided' : '', noPadding ? 'no-padding' : ''],
+        body: ['card-body', top ? 'divided-top' : '', bottom ? 'divided-bottom' : '', noPadding ? 'no-padding' : ''],
         footer: ['card-footer']
     }
 
