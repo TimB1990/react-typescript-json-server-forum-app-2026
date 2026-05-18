@@ -7,7 +7,7 @@ export const GroupItem = ({ id, title, description, children }: GroupItemProps) 
     <Card
       header={<><h2>{title}</h2><p>{description}</p></>}
       content={<>{children}</>}
-      options={{expander: true, noPadding: true}}
+      options={{expander: true, noPadding: true, divided: {top: false, bottom: false}}}
     />
   )
 }

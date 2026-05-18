@@ -41,55 +41,60 @@ function App() {
   }
 
   return (
-    <main className='layout'>
-      <ErrorBanner />
-      <div className="container">
-        {loading && groups.length === 0 ? (
-          <p>Loading...</p>
-        ) : (
-          groups.map((group: Group) => (
-            <GroupItem key={`group-${group.id}`} {...group}>
-              <CategoriesList {...group} />
-            </GroupItem>
-          ))
-        )}
-      </div>
+    <>
+      <header>Test</header>
+      <main className='layout'>
+        <ErrorBanner />
+        <div className="container">
+          {loading && groups.length === 0 ? (
+            <p>Loading...</p>
+          ) : (
+            groups.map((group: Group) => (
+              <GroupItem key={`group-${group.id}`} {...group}>
+                <CategoriesList {...group} />
+              </GroupItem>
+            ))
+          )}
+        </div>
 
-      <div className="container">
-        <Card
-          header={<h2>Talk with us!</h2>}
-          content={<>Lorem ipsum dolor sit amet consectetur adipisicing elit. Sit, odio. Aspernatur, saepe eum animi in hic fugit ullam maxime quam earum.</>}
-          footer={<RegisterLoginButtons />}
-          options={{divided: {top: true, bottom: true}}}
-        />
+        <div className="container">
+          <Card
+            header={<h2>Talk with us!</h2>}
+            content={<>Lorem ipsum dolor sit amet consectetur adipisicing elit. Sit, odio. Aspernatur, saepe eum animi in hic fugit ullam maxime quam earum.</>}
+            footer={<RegisterLoginButtons />}
+            options={{ divided: { top: true, bottom: true } }}
+          />
 
-        <Card
-          header={<h2>Latest topics</h2>}
-          content={<div className="threads">
-            {latestThreads.map((thread: Thread) => (
-              <ThreadPreviewItem key={`latest-thread-${thread.id}`} {...thread} iconStats={true} />
-            ))}
-          </div>}
-          options={{noPadding: true, divided: {top: true, bottom: false}}}
-        />
+          <Card
+            header={<h2>Latest topics</h2>}
+            content={<div className="threads">
+              {latestThreads.map((thread: Thread) => (
+                <ThreadPreviewItem key={`latest-thread-${thread.id}`} {...thread} iconStats={true} />
+              ))}
+            </div>}
+            options={{ noPadding: true, divided: { top: true, bottom: false } }}
+          />
 
-        <Card
-          header={<h2>Welcome at our forum!</h2>}
-          content={<>Lorem ipsum dolor sit amet consectetur adipisicing elit. Corrupti, omnis sit rerum facere magnam illum, officiis odio beatae neque illo voluptatibus? Iste, minima assumenda porro explicabo neque atque! Sequi.</>}
-          options={{divided: {top: true, bottom: false}}}
-        />
+          <Card
+            header={<h2>Welcome at our forum!</h2>}
+            content={<>Lorem ipsum dolor sit amet consectetur adipisicing elit. Corrupti, omnis sit rerum facere magnam illum, officiis odio beatae neque illo voluptatibus? Iste, minima assumenda porro explicabo neque atque! Sequi.</>}
+            options={{ divided: { top: true, bottom: false } }}
+          />
 
-        <Card
-          header={<h2>Latest Replies</h2>}
-          content={<div className="messages">
-            {latestMessages.map((message: Message) => (
-              <MessagePreviewItem key={`latest-message-${message.id}`} {...message} />
-            ))}
-          </div>}
-          options={{noPadding: true, divided: {top: true, bottom: false}}}
-        />
-      </div>
-    </main>
+          <Card
+            header={<h2>Latest Replies</h2>}
+            content={<div className="messages">
+              {latestMessages.map((message: Message) => (
+                <MessagePreviewItem key={`latest-message-${message.id}`} {...message} />
+              ))}
+            </div>}
+            options={{ noPadding: true, divided: { top: true, bottom: false } }}
+          />
+        </div>
+      </main>
+      <footer>test</footer>
+    </>
+
   )
 }
 
