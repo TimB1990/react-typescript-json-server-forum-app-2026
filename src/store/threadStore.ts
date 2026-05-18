@@ -14,17 +14,23 @@ export const ThreadStore = {
     getState: store.getState,
     subscribe: store.subscribe,
 
-    fetch: async (categoryId: number, limit: number | null = null) => {
+    fetch: async (categoryId: number | null = null, limit: number | null = null) => {
+
+        const stateKey = categoryId !== null ? categoryId : "all";
 
         // Set loading state to true for the specific category
         store.setState((prev) => ({
             ...prev,
-            loading: { ...prev.loading, [categoryId]: true }
+            loading: { ...prev.loading, [stateKey]: true }
         }));
 
         // set params to work as query string, and append like [?&]categoryId=3
         const params = new URLSearchParams();
-        params.append("categoryId", "" + categoryId);
+
+        // only append category ID if it is explicitly provided
+        if(categoryId !== null){
+            params.append("categoryId", "" + categoryId);
+        }
 
         // in case the limit is given as an argument to this function apply the limit like [?&]limit=5
         if (limit !== null) params.append("limit", "" + limit);
@@ -95,16 +101,16 @@ export const ThreadStore = {
                 ...prev,
                 threadsByCategory: {
                     ...prev.threadsByCategory,
-                    [categoryId]: finalData
+                    [stateKey]: finalData
                 },
-                loading: { ...prev.loading, [categoryId]: false }
+                loading: { ...prev.loading, [stateKey]: false }
             }));
 
         } catch (err) {
             store.setState((prev) => ({
                 ...prev,
                 error: "Failed to fetch Threads: " + err,
-                loading: { ...prev.loading, [categoryId]: false }
+                loading: { ...prev.loading, [stateKey]: false }
             }));
         }
     }

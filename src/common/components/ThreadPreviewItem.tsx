@@ -1,10 +1,12 @@
 import React from 'react'
 import type { Thread } from '../types/threads'
 import { Link } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faComment } from '@fortawesome/free-solid-svg-icons';
 
 export const ThreadPreviewItem = (props: Thread) => {
 
-  const { id, title, lastMessageBy, messages } = props;
+  const { id, title, lastMessageBy, messages, iconStats } = props;
 
   const comments = messages !== undefined ? messages - 1 : 0;
 
@@ -26,7 +28,7 @@ export const ThreadPreviewItem = (props: Thread) => {
   }
 
   return (
-    <Link to="" className='thread-item-link' onClick={handleClick}>
+    <Link to="" className='item-link' onClick={handleClick}>
       <div className='thread-item'>
         <div className='info-container'>
           <div className='avatar-container small'>
@@ -34,11 +36,19 @@ export const ThreadPreviewItem = (props: Thread) => {
           </div>
           <div className='content'>
             <p><strong>{title}</strong></p>
-            <p>By {lastMessageBy.author} - <span>{lastMessageBy.postedAt}</span></p>
+            <p className='message-by'>
+              <span>By {lastMessageBy.author} - {lastMessageBy.postedAt}</span>
+            </p>
           </div>
         </div>
         <div className='count'>
-          <p>{comments} comments</p>
+          {iconStats ? (
+            <>
+              <FontAwesomeIcon icon={faComment} /> {comments}
+            </>
+          ) : (
+            <span>{comments} comments</span>
+          )}
         </div>
       </div>
     </Link>

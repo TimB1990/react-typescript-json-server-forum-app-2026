@@ -1,21 +1,28 @@
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import { ThreadStore, useThreadStore } from '../../store';
 import { ThreadPreviewItem } from './ThreadPreviewItem';
 import type { Category } from '../types/categories';
 import type { Thread } from '../types/threads';
+import { useError } from '../../context/ErrorContext';
 
 export const CategoryItem = (props: Category) => {
     const { id, name, description, messages, image } = props;
 
     // Pull the specific slices of state for this category ID
     const { threadsByCategory, loading, error } = useThreadStore();
-    
+
     const threads = threadsByCategory[id] || [];
     const isLoading = loading[id] || false;
 
+    const { setError } = useError();
+
     useEffect(() => {
         ThreadStore.fetch(id, 5);
-    }, [id]); // Add id to dependency array
+    }, [id]);
+
+    if (error !== null) {
+        setError(error)
+    }
 
     return (
         <div className='category'>

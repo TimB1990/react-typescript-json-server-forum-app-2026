@@ -3,6 +3,7 @@ import { UserStore } from './userStore';
 import { CategoryStore } from './categoryStore'
 import { ThreadStore } from './threadStore';
 import { GroupStore } from './groupStore';
+import { MessageStore } from './messageStore';
 
 // Generic hook creator
 function createUseStore<T>(store: { subscribe: any, getState: () => T }) {
@@ -14,6 +15,7 @@ export const useUserStore = createUseStore(UserStore);
 export const useCategoryStore = createUseStore(CategoryStore);
 export const useThreadStore = createUseStore(ThreadStore)
 export const useGroupStore = createUseStore(GroupStore)
+export const useMessageStore = createUseStore(MessageStore)
 
 // Export stores for actions
-export { UserStore, GroupStore, CategoryStore, ThreadStore };
+export { UserStore, GroupStore, CategoryStore, ThreadStore, MessageStore };

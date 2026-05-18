@@ -1,5 +1,49 @@
-* {
+/* Add this at the very top of your CSS file */
+*, *::before, *::after {
   box-sizing: border-box;
+}
+
+img, video, canvas {
+  max-width: 100%;
+  height: auto;
+}
+
+/* p, h1, h2, h3, h4, h5, h6, span, a {
+  overflow-wrap: break-word;
+  word-break: break-word;
+} */
+
+.layout {
+  display: grid;
+  grid-template-columns: 1fr; 
+  margin: 0 auto;
+  gap: 1em;
+  max-width: 1200px;
+  width: 100%;
+  padding: 1em;
+}
+
+.container {
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  row-gap: 1.5rem;
+  border: none;
+}
+
+@media (min-width: 1049px) {
+  .layout {
+    grid-template-columns: repeat(3, 1fr); 
+  }
+
+  .container:nth-child(1) {
+    grid-column: span 2;
+  }
+
+  .container:nth-child(2) {
+    grid-column: span 1;
+  }
 }
 
 p {
@@ -7,21 +51,35 @@ p {
   padding: 0;
 }
 
-.container {
+.btn-default {
   display: flex;
-  flex-direction: column;
-  row-gap: 2rem;
-  padding: 1rem 0;
-  border: none;
+  align-items: center;
+  justify-content: flex-start;
+  min-width: max-content;
+  gap: 0.5em;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 1px solid rgba(0,0,0,0);
+  background-color: inherit;
+  font-weight: bold;
+  font-size: clamp(0.875rem, 1.2vw, 1.25rem);
+  padding: 0.75em 1.5em;
+}
+
+.btn-default.orange {
+  background-color: #E68A00;
 }
 
 .card {
-  border-radius: 1.5rem;
+  border-radius: 8px;
   background-color: oklch(0.25 0.01 264.37);
 }
 
 .card-body {
-  margin: 0;
+  padding: 1em;
+}
+
+.card-body.no-padding {
   padding: 0;
 }
 
@@ -29,7 +87,20 @@ p {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1.25rem;
+  padding: 0.8em 1em;
+}
+
+.card-footer {
+  border-end-start-radius: inherit; 
+  border-end-end-radius: inherit; 
+}
+
+.card-body.divided-bottom {
+  border-bottom: 1px solid #2d3748;
+}
+
+.card-body.divided-top {
+  border-top: 1px solid #2d3748;
 }
 
 .card-header button {
@@ -41,8 +112,6 @@ p {
   border: none;
   cursor: pointer;
   padding: 0;
-  
-  /* 1. Hide the button by default */
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.2s ease, visibility 0.2s ease;
@@ -58,20 +127,13 @@ p {
   text-align: left;
 }
 
-.error {
-  display: block;
-  padding: 0.5rem;
-  margin: 1rem 2rem;
-  background-color: #ff8080;
-  color: #990000;
-  border: 1px solid #990000;
-  border-radius: 0.5rem;
-}
-
 .category {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 3fr; 
+  width: 100%;
+  min-height: 180px;
   border-top: 4px solid lightblue;
-  min-height: 180px
+  box-sizing: border-box; 
 }
 
 .category .info, .category .threads {
@@ -79,17 +141,16 @@ p {
 }
 
 .category .info {
-  width: 300px; 
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  padding: 0;
+  padding: 1em;
   border-right: 1px solid #2d3748;
   background-color: inherit;
 }
 
 .category .info .info-text {
   line-height: 1;
-  padding-left: 1rem;
 }
 
 .category .info .info-text p {
@@ -97,54 +158,64 @@ p {
 }
 
 .category .threads {
-  flex-grow: 1;
+  min-width: 0;
+  width: 100%;
   display: flex;
   flex-direction: column;
 }
 
 .image-container {
   border: 2px solid #333;
-  margin: 1rem;
-  border-radius: 1rem;
+  border-radius: 1em;
   overflow: hidden;
 }
 
 .image-container img {
   width: 100%;
-  height: 100%;
-  object-fit: cover; 
-  display: block;    
+  border-radius: 1rem;
+  display: block;
 }
 
 /* Ensure the link covers the full area and acts as a block */
-.thread-item-link {
+.item-link {
   text-decoration: none; /* Remove underline */
   color: inherit;       /* Keep your forum text colors */
   display: block;       /* Important: makes the whole row clickable */
   transition: background-color 0.2s ease;
+  border-bottom: 1px solid #2d3748;
+}
+
+.item-link:last-child {
+  border-bottom: none; /* Prevents a double border at the bottom */
 }
 
 /* Hover effect to make it feel interactive */
-.thread-item-link:hover {
+.item-link:hover {
   background-color: rgba(255, 255, 255, 0.05);
 }
 
 .thread-item {
   display: flex;
   align-items: stretch;
-  padding: 1rem;
-  border-bottom: 1px solid #2d3748;
+  padding: 1em;
   justify-content: space-between;
-  /* background-color: #1a202c; */
-}
-
-.thread-item:last-child {
-  border-bottom: none; /* Prevents a double border at the bottom */
+  align-items: flex-end;
 }
 
 .thread-item .info-container {
   display: flex;
-  gap: 1rem;
+  align-items: center;
+  gap: 0.74rem;
+}
+
+.thread-item .content {
+  display: flex;
+  flex-direction: column;
+}
+
+.thread-item .content p {
+  margin: 0;
+  text-align: left;
 }
 
 .thread-item .content p > span {
@@ -160,8 +231,8 @@ p {
 
 .avatar-container.small {
   border: 1px solid black;
-  height: 60px;
-  width: 60px;
+  height: 32px;
+  width: 32px;
   overflow: hidden;
   flex-shrink: 0;
   border-radius: 50%;
@@ -172,4 +243,80 @@ p {
   height: 100%;
   object-fit: cover;
   overflow: hidden;
+}
+
+.messages {
+  display: flex;
+  flex-direction: column;
+}
+
+.message.preview {
+  display: flex;
+  column-gap: 1em;
+  width: 100%;
+  padding: 1em;
+}
+
+.message.preview .message-side{
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.message.preview .message-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 1em;
+  text-align: left;          
+  min-width: 0;     
+}
+
+.message.preview .message-body .message-content {
+  width: 100%;
+  max-height: 10em; 
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 8; 
+  line-clamp: 8;
+  padding-right: 1em;
+  overflow: hidden;
+}
+
+.message-by {
+  font-size: 0.85em;
+  line-height: 1.2;
+}
+
+.message-by span {
+  display: block;
+  font-size: 0.85em;
+}
+
+.count {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  font-size: 0.85em;
+  min-width: max-content;
+  color: rgb(115, 115, 115);
+  line-height: 1.2;
+}
+
+.count svg {
+  height: 0.85em; 
+  width: auto;
+  max-height: 100%; 
+  flex-shrink: 0; 
+}
+
+.register-login-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.5rem;
+  padding: 1.25em;
+  border-top: 1px solid rgba(0,0,0,0);
+  background-color: rgba(255, 255, 255, 0.05);
 }
