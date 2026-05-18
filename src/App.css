@@ -8,11 +8,6 @@ img, video, canvas {
   height: auto;
 }
 
-/* p, h1, h2, h3, h4, h5, h6, span, a {
-  overflow-wrap: break-word;
-  word-break: break-word;
-} */
-
 .layout {
   display: grid;
   grid-template-columns: 1fr; 
@@ -319,4 +314,91 @@ p {
   padding: 1.25em;
   border-top: 1px solid rgba(0,0,0,0);
   background-color: rgba(255, 255, 255, 0.05);
+}
+
+.link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px; /* Spacing between icon and text */
+  padding: 0.6em 1.3em;
+  background-color: inherit;
+  color: rgb(156, 163, 175);
+  text-decoration: none;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+  min-width: max-content;
+  border: 1px solid darkgray;
+}
+
+.link-btn:visited {
+  color: rgb(156, 163, 175) 
+}
+
+.link-btn:hover {
+    background-color: grey;
+    cursor: pointer;
+}
+
+.site-header {
+  display: block;
+}
+
+.hero-image-container {
+  position: relative;
+  width: 100%;
+}
+
+.hero-image-container img {
+  width: 100%;
+  display: block;
+}
+
+.site-header nav {
+  display: flex;
+  width: 100%;
+  gap: 2em;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  padding: 1em;
+  box-sizing: border-box;
+  background-color: rgba(0,0,0,0.85);
+  border: 1px solid black;
+}
+
+.site-header nav .link-btn:hover{
+  background-color: rgba(0,0,0,1);
+}
+
+.site-header nav ul {
+  display: flex;
+  flex: 1;
+  list-style-type: none;
+  padding: 0;
+  margin:  0;
+  gap: 0.3em;
+}
+
+.site-header nav ul li {
+  padding: 0;
+  margin: 0;
+  flex: 1;
+  width: 100%;
+}
+
+.site-header .search-button {
+  border: 1px solid darkgray;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  background-color: inherit;
+  gap: 1rem;
+  padding: 0.85em;
+  border-radius: 6px;
+  height: 100%;
+}
+
+.site-header nav .search-button:hover {
+  background-color: rgba(0,0,0,1);
+  cursor: pointer;
 }
