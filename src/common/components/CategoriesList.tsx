@@ -3,10 +3,12 @@ import { useCategoryStore, CategoryStore } from '../../store'
 import { CategoryItem } from './CategoryItem';
 import type { Category } from '../types/categories';
 import type { Group } from '../types/group';
+import { useError } from '../../context/ErrorContext';
 
 export const CategoriesList = (props :Group) => {
 
   const groupId = props.id;
+  const { setError } = useError();
 
   // subscribe to the state
   const { categoriesByGroup, loading, error } = useCategoryStore();
@@ -19,11 +21,14 @@ export const CategoriesList = (props :Group) => {
     CategoryStore.fetch(groupId)
   }, [groupId])
 
+  if(error !== null){
+    setError(error)
+  }
+
   if (loading && categories.length === 0) return <p>Loading...</p>
 
   return (
     <>
-      {error && <p className='error'>{error}</p>}
       {isLoading && categories.length === 0 ? (
         <p>Loading...</p>
       ) : (

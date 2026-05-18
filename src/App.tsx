@@ -8,10 +8,15 @@ import { type Thread } from './common/types/threads'
 import { ThreadPreviewItem } from './common/components/ThreadPreviewItem'
 import type { Message } from './common/types/message'
 import { MessagePreviewItem } from './common/components/MessagePreviewItem'
+import { ErrorProvider } from './context/ErrorContext'
 
 // font awesome
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRightToBracket, faUserPlus } from '@fortawesome/free-solid-svg-icons';
+
+// error context
+import { useError } from './context/ErrorContext'
+import { ErrorBanner } from './common/components/ErrorBanner'
 
 function App() {
 
@@ -22,16 +27,23 @@ function App() {
   const latestThreads = threads?.["all"] || [];
   const latestMessages = messages?.["all"] || [];
 
+  const { setError } = useError()
+
   useEffect(() => {
     GroupStore.fetch()
     ThreadStore.fetch(null, 3)
     MessageStore.fetchLatestOverview(3)
   }, [])
 
+  if(error !== null){
+    setError(error)
+  }
+
   return (
-    <main className='layout'>
+    <ErrorProvider>
+      <main className='layout'>
+      <ErrorBanner />
       <div className="container">
-        {error && <p className='error'>{error}</p>}
         {loading && groups.length === 0 ? (
           <p>Loading...</p>
         ) : (
@@ -105,6 +117,8 @@ function App() {
         </div>
       </div>
     </main>
+    </ErrorProvider>
+
   )
 }
 
