@@ -373,18 +373,26 @@ p {
   height: 320px;
 }
 
-.site-header nav {
+.hero-nav-container {
+  position: absolute;
   display: flex;
   align-items: center;
+  justify-content: center;
   width: 100%;
   height: 85px;
-  gap: 2em;
-  position: absolute;
-  bottom: 0;
-  left: 0;
   box-sizing: border-box;
   background-color: rgba(0,0,0,0.85);
+  bottom: 0;
+  left: 0;
+}
+
+.site-header nav {
+  display: flex;
+  gap: 2em;
   border: 1px solid black;
+  width: 100%;
+  margin: 0 16px;
+  max-width: 1408px;
 }
 
 .site-header nav .link-btn:hover{
@@ -491,8 +499,6 @@ p {
 .socials .footer-btn, .theme-selector .footer-btn{
   padding: 0;
 }
-
-
 
 .footer-btn:hover.fb {
   background-color: #1778F2;
