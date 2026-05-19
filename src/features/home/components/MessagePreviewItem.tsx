@@ -1,4 +1,4 @@
-import type { Message } from '../types/message'
+import type { Message } from '../../../common/types/message'
 import { Link } from 'react-router-dom';
 
 export const MessagePreviewItem = (props: Message) => {
