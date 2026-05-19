@@ -473,6 +473,7 @@ p {
 .footer-btn {
   line-height: 1.5;
   width: max-content;
+  padding: 0 .9em;
   min-width: 2.2em;
   height: 2.2em;
   align-content: center;
@@ -486,6 +487,12 @@ p {
   border: none;
   background-color: transparent;
 }
+
+.socials .footer-btn, .theme-selector .footer-btn{
+  padding: 0;
+}
+
+
 
 .footer-btn:hover.fb {
   background-color: #1778F2;
