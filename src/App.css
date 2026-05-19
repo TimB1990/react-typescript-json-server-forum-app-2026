@@ -13,7 +13,7 @@ img, video, canvas {
   grid-template-columns: 1fr; 
   margin: 0 auto;
   gap: 1em;
-  max-width: 1200px;
+  max-width: 1440px;
   width: 100%;
   padding: 1em;
 }
@@ -402,3 +402,81 @@ p {
   background-color: rgba(0,0,0,1);
   cursor: pointer;
 }
+
+.carousel-container {
+  padding: 16px;
+  font-family: 'Inter', sans-serif;
+}
+
+.carousel-window {
+  width: 100%;
+  overflow-x: scroll;
+  scroll-behavior: smooth;
+}
+
+.carousel-track {
+  display: flex;
+  gap: 16px;
+  width: max-content;
+  /* animation: slide 30s ease-in-out infinite alternate; */
+}
+
+.carousel-card {
+  width: 250px;
+  height: 275px;
+  background-size: cover;
+  background-position: center;
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+  scroll-snap-align: start;
+}
+
+.carousel-card-overlay {
+  height: 100%;
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 16px;
+  background: linear-gradient(transparent, rgba(0,0,0,0.85));
+  color: white;
+}
+
+.carousel-card-tags {
+  display: flex;
+  gap: 0.2em;
+}
+
+.tag-badge {
+  display: block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.carousel-card-title {
+  margin: 0;
+  font-size: 1.1rem;
+  line-height: 1.2;
+}
+
+.carousel-card-meta {
+  font-size: 12px;
+  color: #bbb;
+}
+
+/* Animation Logic */
+@keyframes slide {
+  0%, 10% { transform: translateX(16px); }
+  90%, 100% { transform: translateX(calc(-100% + 100vw - 16px)); }
+}
+
+

@@ -1,5 +1,4 @@
 import { useEffect } from 'react'
-import '../../App.css'
 import { CategoriesList } from '../../common/components/CategoriesList'
 import { useGroupStore, GroupStore, ThreadStore, useThreadStore, useMessageStore, MessageStore } from '../../store'
 import { type Group } from '../../common/types/group'
@@ -14,6 +13,7 @@ import { ErrorBanner } from '../../common/components/ErrorBanner'
 import { MessagePreviewItem } from '../../common/components/MessagePreviewItem'
 import { Card } from '../../common/components/Card'
 import { RegisterLoginButtons } from '../../common/components/RegisterLoginButtons'
+import { Carousel } from '../../common/components/news-carousel/Carousel'
 
 export const Home = () => {
 
@@ -39,7 +39,15 @@ export const Home = () => {
     return (
         <main className='layout'>
             <ErrorBanner />
+
             <div className="container">
+
+                <Card
+                    header={<h2>Latest News</h2>}
+                    content={<Carousel />}
+                    options={{divided: {top: true, bottom: false}, noPadding: true}}
+                />
+
                 {loading && groups.length === 0 ? (
                     <p>Loading...</p>
                 ) : (
