@@ -39,8 +39,8 @@ export const Carousel = () => {
       <div className="carousel-container">
         <div className="carousel-window">
           <div className="carousel-track">
-            {articles.map((article) => (
-              <CarouselCard {...article} />
+            {articles.map((article, index) => (
+              <CarouselCard key={`carousel-item-${index + 1}`} {...article} />
             ))}
           </div>
         </div>

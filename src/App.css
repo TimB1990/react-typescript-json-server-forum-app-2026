@@ -18,6 +18,16 @@ img, video, canvas {
   padding: 1em;
 }
 
+.breadcrumbs-container {
+  display: flex;
+  margin: 0 auto;
+  font-size: .9em;
+  gap: 1em;
+  padding: 0 1em;
+  max-width: 1440px;
+  width: 100%;
+}
+
 .container {
   width: 100%;
   min-width: 0;
@@ -280,27 +290,27 @@ p {
 }
 
 .message-by {
-  font-size: 0.85em;
+  font-size: .9em;
   line-height: 1.2;
 }
 
 .message-by span {
   display: block;
-  font-size: 0.85em;
+  font-size: .9em;
 }
 
 .count {
   display: inline-flex;
   align-items: center;
   gap: 0.5em;
-  font-size: 0.85em;
+  font-size: .9em;
   min-width: max-content;
   color: rgb(115, 115, 115);
   line-height: 1.2;
 }
 
 .count svg {
-  height: 0.85em; 
+  height: .9em; 
   width: auto;
   max-height: 100%; 
   flex-shrink: 0; 
@@ -320,7 +330,10 @@ p {
   display: inline-flex;
   align-items: center;
   gap: 8px; /* Spacing between icon and text */
-  padding: 0.6em 1.3em;
+  padding: 0.4rem 1.3em;
+  height: 45px;
+  width: 100%;
+  font-size: .9em;
   background-color: inherit;
   color: rgb(156, 163, 175);
   text-decoration: none;
@@ -339,28 +352,36 @@ p {
     cursor: pointer;
 }
 
-.site-header {
+.site-header, .site-footer {
   display: block;
 }
 
-.hero-image-container {
+.hero-image-container, .footer-image-container {
   position: relative;
   width: 100%;
+  overflow: hidden;
+}
+
+.hero-image-container img, .footer-image-container img  {
+  width: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: center;
 }
 
 .hero-image-container img {
-  width: 100%;
-  display: block;
+  height: 320px;
 }
 
 .site-header nav {
   display: flex;
+  align-items: center;
   width: 100%;
+  height: 85px;
   gap: 2em;
   position: absolute;
   bottom: 0;
   left: 0;
-  padding: 1em;
   box-sizing: border-box;
   background-color: rgba(0,0,0,0.85);
   border: 1px solid black;
@@ -389,13 +410,14 @@ p {
 .site-header .search-button {
   border: 1px solid darkgray;
   display: flex;
+  color: rgb(156, 163, 175);
   align-items: center;
+  font-size: .9em;
   width: 100%;
+  height: 45px;
   background-color: inherit;
   gap: 1rem;
-  padding: 0.85em;
   border-radius: 6px;
-  height: 100%;
 }
 
 .site-header nav .search-button:hover {
@@ -403,6 +425,98 @@ p {
   cursor: pointer;
 }
 
+.footer-image-container img {
+  height: 130px;
+}
+
+.footer-navbars{
+  background-color: rgba(0,0,0,0.1);
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  font-size: .9em;
+  color: oklch(0.815 0.0112 260);
+  padding: 1em 0;
+  display: grid;
+  grid-template-rows: 1fr 1fr 1fr;
+  height: 100%;
+}
+
+.footer-navbars nav {
+  justify-self: center;
+  display: flex;
+  max-width: 1440px;
+  width: 100%;
+  padding: 0 1em;
+  justify-content: space-between;
+}
+
+.footer-navbars .divider {
+  background-color: rgba(255, 255, 255, 0.3);
+  margin: 0 1em;
+  height: 1px;
+  align-self: center;
+}
+
+.footer-navbars nav div {
+  display: flex;
+  height: min-content;
+  align-self: center;
+}
+
+.footer-navbars nav.footer-bottom-nav div {
+  gap: 1em;
+}
+
+.footer-btn {
+  line-height: 1.5;
+  width: max-content;
+  min-width: 2.2em;
+  height: 2.2em;
+  align-content: center;
+  font-weight: 500;
+  justify-content: center;
+  text-decoration: none;
+  text-align: center;
+  border-radius: 4.8px;
+  color: oklch(0.815 0.0112 260);
+  cursor: pointer;
+  border: none;
+  background-color: transparent;
+}
+
+.footer-btn:hover.fb {
+  background-color: #1778F2;
+}
+
+.footer-btn:hover.ig {
+  background-color: #E13D62;
+}
+
+.footer-btn:hover.x {
+  background-color: black;
+}
+
+.footer-btn:hover.yt {
+  background-color: red;
+}
+
+.footer-btn:hover.dc {
+  background-color: #5865f2;
+}
+
+.footer-btn:visited {
+  color: oklch(0.815 0.0112 260) 
+}
+
+.footer-btn:hover {
+    background-color: hsl(0 0% 100% / .1);
+    cursor: pointer;
+}
+
+/* carousel */
 .carousel-container {
   padding: 16px;
   font-family: 'Inter', sans-serif;

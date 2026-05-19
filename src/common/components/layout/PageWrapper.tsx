@@ -1,4 +1,3 @@
-import React from 'react'
 import { Header } from './Header'
 import { BreadCrumbs } from './BreadCrumbs'
 import { Outlet } from 'react-router-dom'
