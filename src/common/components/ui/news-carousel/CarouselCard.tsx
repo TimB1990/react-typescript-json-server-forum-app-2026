@@ -1,5 +1,5 @@
 import React from 'react'
-import type { Article } from '../../types/article';
+import type { Article } from '../../../types/article';
 
 
 export const CarouselCard = (article: Article) => {

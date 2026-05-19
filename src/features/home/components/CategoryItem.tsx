@@ -1,9 +1,9 @@
 import { useEffect } from 'react'
-import { ThreadStore, useThreadStore } from '../../store';
+import { ThreadStore, useThreadStore } from '../../../store';
 import { ThreadPreviewItem } from './ThreadPreviewItem';
-import type { Category } from '../types/categories';
-import type { Thread } from '../types/threads';
-import { useError } from '../../context/ErrorContext';
+import type { Category } from '../../../common/types/categories';
+import type { Thread } from '../../../common/types/threads';
+import { useError } from '../../../context/ErrorContext';
 
 export const CategoryItem = (props: Category) => {
     const { id, name, description, messages, image } = props;

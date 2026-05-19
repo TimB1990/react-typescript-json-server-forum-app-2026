@@ -1,19 +1,19 @@
 import { useEffect } from 'react'
-import { CategoriesList } from '../../common/components/CategoriesList'
+import { CategoriesList } from './components/CategoriesList'
 import { useGroupStore, GroupStore, ThreadStore, useThreadStore, useMessageStore, MessageStore } from '../../store'
 import { type Group } from '../../common/types/group'
-import { GroupItem } from '../../common/components/GroupItem'
+import { GroupItem } from './components/GroupItem'
 import { type Thread } from '../../common/types/threads'
-import { ThreadPreviewItem } from '../../common/components/ThreadPreviewItem'
+import { ThreadPreviewItem } from './components/ThreadPreviewItem'
 import type { Message } from '../../common/types/message'
 
 // error context
 import { useError } from '../../context/ErrorContext'
-import { ErrorBanner } from '../../common/components/ErrorBanner'
-import { MessagePreviewItem } from '../../common/components/MessagePreviewItem'
-import { Card } from '../../common/components/Card'
-import { RegisterLoginButtons } from '../../common/components/RegisterLoginButtons'
-import { Carousel } from '../../common/components/news-carousel/Carousel'
+import { ErrorBanner } from '../../common/components/layout/ErrorBanner'
+import { MessagePreviewItem } from './components/MessagePreviewItem'
+import { Card } from '../../common/components/ui/Card'
+import { RegisterLoginButtons } from './components/RegisterLoginButtons'
+import { Carousel } from '../../common/components/ui/news-carousel/Carousel'
 
 export const Home = () => {
 

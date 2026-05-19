@@ -1,5 +1,5 @@
 import { CarouselCard } from './CarouselCard'
-import { type Article } from '../../types/article'
+import { type Article } from '../../../types/article'
 
 const articles: Article[] = []
 const amount = 9;

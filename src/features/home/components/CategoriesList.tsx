@@ -1,9 +1,9 @@
 import { useEffect } from 'react'
-import { useCategoryStore, CategoryStore } from '../../store'
+import { useCategoryStore, CategoryStore } from '../../../store'
 import { CategoryItem } from './CategoryItem';
-import type { Category } from '../types/categories';
-import type { Group } from '../types/group';
-import { useError } from '../../context/ErrorContext';
+import type { Category } from '../../../common/types/categories';
+import type { Group } from '../../../common/types/group';
+import { useError } from '../../../context/ErrorContext';
 
 export const CategoriesList = (props :Group) => {
 

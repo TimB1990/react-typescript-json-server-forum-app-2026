@@ -1,5 +1,5 @@
 import React from 'react'
-import type { Thread } from '../types/threads'
+import type { Thread } from '../../../common/types/threads'
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faComment } from '@fortawesome/free-solid-svg-icons';
