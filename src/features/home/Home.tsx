@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { CategoriesList } from './components/CategoriesList'
-import { useGroupStore, GroupStore, ThreadStore, useThreadStore, useMessageStore, MessageStore } from '../../store'
+import { useGroupStore, GroupStore, ThreadStore, useThreadStore, useMessageStore, MessageStore, useUserStore, UserStore } from '../../store'
 import { type Group } from '../../common/types/group'
 import { GroupItem } from './components/GroupItem'
 import { type Thread } from '../../common/types/threads'
@@ -14,12 +14,14 @@ import { MessagePreviewItem } from './components/MessagePreviewItem'
 import { Card } from '../../common/components/ui/Card'
 import { RegisterLoginButtons } from './components/RegisterLoginButtons'
 import { Carousel } from '../../common/components/ui/news-carousel/Carousel'
+import { Statistic } from './components/Statistic'
 
 export const Home = () => {
 
     const { groups, loading, error } = useGroupStore();
-    const { threadsByCategory: threads } = useThreadStore();
-    const { messagesByThread: messages } = useMessageStore();
+    const { threadsByCategory: threads, totalCount: totalThreads } = useThreadStore();
+    const { messagesByThread: messages, totalCount: totalMessages } = useMessageStore();
+    const { totalCount: totalUsers } = useUserStore();
 
     const latestThreads = threads?.["all"] || [];
     const latestMessages = messages?.["all"] || [];
@@ -29,7 +31,10 @@ export const Home = () => {
     useEffect(() => {
         GroupStore.fetch()
         ThreadStore.fetch(null, 3)
+        ThreadStore.countTotal()
         MessageStore.fetchLatestOverview(3)
+        MessageStore.countTotal()
+        UserStore.countTotal()
     }, [])
 
     if (error !== null) {
@@ -91,6 +96,21 @@ export const Home = () => {
                         ))}
                     </div>}
                     options={{ noPadding: true, divided: { top: true, bottom: false } }}
+                />
+                <Card
+                    header={<h2>Forum stats</h2>}
+                    content={<div className='statistics-container'>
+                        <Statistic value={totalThreads} subject={"Total amount of subjects"} />
+                        <Statistic value={totalMessages} subject={"Total amount of messages"} />
+                    </div>}
+                    options={{noPadding: true, divided: {top: true, bottom: false}}}
+                />
+                <Card
+                    header={<h2>Member stats</h2>}
+                    content={<div className='statistics-container'>
+                        <Statistic value={totalUsers} subject={"Total amount of members"} />
+                    </div>}
+                    options={{noPadding: true, divided: {top: true, bottom: false}}}
                 />
             </div>
         </main>

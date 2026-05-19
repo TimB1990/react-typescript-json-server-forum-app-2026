@@ -1,11 +1,12 @@
 import { type ThreadState, type Thread } from "../common/types/threads"
 import { createStore } from "./createStore";
 import dayjs from "dayjs";
-import calendar from 'dayjs/plugin/calendar';
+// import calendar from 'dayjs/plugin/calendar';
 
 // Initial state must match your new ThreadState interface
 const store = createStore<ThreadState>({
     threadsByCategory: {},
+    totalCount: 0,
     loading: {},
     error: null,
 });
@@ -28,7 +29,7 @@ export const ThreadStore = {
         const params = new URLSearchParams();
 
         // only append category ID if it is explicitly provided
-        if(categoryId !== null){
+        if (categoryId !== null) {
             params.append("categoryId", "" + categoryId);
         }
 
@@ -60,7 +61,7 @@ export const ThreadStore = {
                 if (!result.data || result.data.length === 0) {
                     return { author: "System", postedAt: "No messages", avatar: "" };
                 }
-                
+
                 // get the userId and createdAt as postedAt from the result's (only) first data item.
                 const userId = result.data[0].userId
                 const postedAt = result.data[0].createdAt
@@ -112,6 +113,24 @@ export const ThreadStore = {
                 error: "Failed to fetch Threads: " + err,
                 loading: { ...prev.loading, [stateKey]: false }
             }));
+        }
+    },
+    countTotal: async () => {
+
+        try {
+            const response = await fetch('http://localhost:5001/count/threads')
+            const result = await response.json();
+            const count = result.count;
+
+            store.setState((prev) => ({
+                ...prev,
+                totalCount: count
+            }))
+        } catch (err) {
+            store.setState((prev) => ({
+                ...prev,
+                error: "Failed to count Threads: " + err
+            }))
         }
     }
 };

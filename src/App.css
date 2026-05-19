@@ -602,4 +602,27 @@ p {
   90%, 100% { transform: translateX(calc(-100% + 100vw - 16px)); }
 }
 
+/* Stats */
+.statistic {
+  border-bottom: 1px solid #2d3748;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.52;
+  padding: 0.8em 1em;
+}
+
+.statistic:last-child {
+  border-bottom: none; /* Prevents a double border at the bottom */
+}
+
+.statistic .value {
+  color: oklch(1 0 260);
+  font-size: 1.5em;
+}
+
+.statistic .subject {
+  color: oklch(0.645 0.0216 260);
+}
+
 

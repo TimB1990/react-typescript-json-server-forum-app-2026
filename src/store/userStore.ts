@@ -4,6 +4,7 @@ import { createStore } from "./createStore";
 const store = createStore<UserState>({
     users: [],
     currentUser: null,
+    totalCount: 0,
     loading: false,
     error: null
 })
@@ -60,6 +61,25 @@ export const UserStore = {
 
     logout: () => {
         store.setState({currentUser: null })
+    },
+
+    countTotal: async () => {
+
+        try {
+            const response = await fetch('http://localhost:5001/count/users')
+            const result = await response.json();
+            const count = result.count;
+
+            store.setState((prev) => ({
+                ...prev,
+                totalCount: count
+            }))
+        } catch (err) {
+            store.setState((prev) => ({
+                ...prev,
+                error: "Failed to count Users: " + err
+            }))
+        }
     }
 
 }

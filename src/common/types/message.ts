@@ -19,6 +19,7 @@ export type Message = {
 
 export interface MessageState {
     messagesByThread: Record<string, Message[]>,
+    totalCount?: number,
     loading: Record<string, boolean>,
     error?: string | null
 }

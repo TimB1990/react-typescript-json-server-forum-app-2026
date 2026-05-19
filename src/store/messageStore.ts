@@ -6,6 +6,7 @@ import type { Thread } from "../common/types/threads";
 
 const store = createStore<MessageState>({
     messagesByThread: {},
+    totalCount: 0,
     loading: {},
     error: null
 })
@@ -145,6 +146,24 @@ export const MessageStore = {
             }));
         }
 
+    },
+    countTotal: async () => {
+
+        try {
+            const response = await fetch('http://localhost:5001/count/messages')
+            const result = await response.json();
+            const count = result.count;
+
+            store.setState((prev) => ({
+                ...prev,
+                totalCount: count
+            }))
+        } catch (err) {
+            store.setState((prev) => ({
+                ...prev,
+                error: "Failed to count Messages: " + err
+            }))
+        }
     }
 
 
