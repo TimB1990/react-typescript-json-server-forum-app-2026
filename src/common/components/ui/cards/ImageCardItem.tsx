@@ -19,8 +19,8 @@ export const ImageCardItem = ({ aside, image, main, meta, options = {}}: ImageCa
     const {
         contentDirection = "vertical",
         centerContent = false,
-        thumbImage = true,
-        imageShape = "circle",
+        thumbImage = false,
+        imageShape = "square",
         applyBorder = true
 
     } = options || {}

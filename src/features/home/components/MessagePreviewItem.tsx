@@ -1,3 +1,4 @@
+import { ImageCardItem } from '../../../common/components/ui/cards/ImageCardItem';
 import type { Message } from '../../../common/types/message'
 import { Link } from 'react-router-dom';
 
@@ -7,21 +8,24 @@ export const MessagePreviewItem = (props: Message) => {
 
     return (
         <Link to='' className='item-link'>
-            <div className='message preview'>
-                <div className="message-side">
-                    <div className="avatar-container small">
-                        <img src={messageBy.avatar} alt="" />
-                    </div>
-                </div>
-                <div className='message-body'>
-                    <p><strong>{threadInfo?.title}</strong></p>
-                    <p className='message-content'>{content}</p>
-                    <p className='message-by'>
-                        <span>By {messageBy.author},</span>
-                        <span style={{color: "rgb(115, 115, 115)"}}>{postedAt}</span>
+            <ImageCardItem
+                image={messageBy.avatar}
+                main={
+                    <>
+                        <p><strong>{threadInfo?.title}</strong></p>
+                        <p className='message-content'>{content}</p>
+                    </>
+                }
+                meta={
+                    <p>
+                        By {messageBy.author} - {postedAt}
                     </p>
-                </div>
-            </div>
+                }
+                options={{
+                    thumbImage: true,
+                    imageShape: "circle"
+                }}
+            />
         </Link>
 
     )

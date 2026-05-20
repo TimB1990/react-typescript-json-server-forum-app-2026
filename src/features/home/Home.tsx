@@ -134,6 +134,7 @@ export const Home = () => {
                             </p>
                         </>
                         }
+                        options={{ contentDirection: "vertical"}}
                     />
                     <ImageCardItem 
                         image="https://picsum.photos/id/25/250/250"
@@ -148,6 +149,7 @@ export const Home = () => {
                             </p>
                         </>
                         }
+                        options={{ contentDirection: "vertical"}}
                     />
                     </>}
                     options={{ noPadding: true, divided: {top: true, bottom: false}}}
