@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { CategoriesList } from './components/CategoriesList'
-import { useGroupStore, GroupStore, ThreadStore, useThreadStore, useMessageStore, MessageStore } from '../../store'
+import { useGroupStore, GroupStore, ThreadStore, useThreadStore, useMessageStore, MessageStore, useUserStore, UserStore } from '../../store'
 import { type Group } from '../../common/types/group'
 import { GroupItem } from './components/GroupItem'
 import { type Thread } from '../../common/types/threads'
@@ -11,15 +11,22 @@ import type { Message } from '../../common/types/message'
 import { useError } from '../../context/ErrorContext'
 import { ErrorBanner } from '../../common/components/layout/ErrorBanner'
 import { MessagePreviewItem } from './components/MessagePreviewItem'
-import { Card } from '../../common/components/ui/Card'
+import { Card } from '../../common/components/ui/cards/Card'
 import { RegisterLoginButtons } from './components/RegisterLoginButtons'
 import { Carousel } from '../../common/components/ui/news-carousel/Carousel'
+import { Statistic } from './components/Statistic'
+import { ImageCardItem } from '../../common/components/ui/cards/ImageCardItem'
+
+// remove later
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faComment, faHeart } from '@fortawesome/free-solid-svg-icons';
 
 export const Home = () => {
 
     const { groups, loading, error } = useGroupStore();
-    const { threadsByCategory: threads } = useThreadStore();
-    const { messagesByThread: messages } = useMessageStore();
+    const { threadsByCategory: threads, totalCount: totalThreads } = useThreadStore();
+    const { messagesByThread: messages, totalCount: totalMessages } = useMessageStore();
+    const { totalCount: totalUsers } = useUserStore();
 
     const latestThreads = threads?.["all"] || [];
     const latestMessages = messages?.["all"] || [];
@@ -29,7 +36,10 @@ export const Home = () => {
     useEffect(() => {
         GroupStore.fetch()
         ThreadStore.fetch(null, 3)
+        ThreadStore.countTotal()
         MessageStore.fetchLatestOverview(3)
+        MessageStore.countTotal()
+        UserStore.countTotal()
     }, [])
 
     if (error !== null) {
@@ -91,6 +101,56 @@ export const Home = () => {
                         ))}
                     </div>}
                     options={{ noPadding: true, divided: { top: true, bottom: false } }}
+                />
+                <Card
+                    header={<h2>Forum stats</h2>}
+                    content={<div className='statistics-container'>
+                        <Statistic value={totalThreads} subject={"Total amount of subjects"} />
+                        <Statistic value={totalMessages} subject={"Total amount of messages"} />
+                    </div>}
+                    options={{noPadding: true, divided: {top: true, bottom: false}}}
+                />
+                <Card
+                    header={<h2>Member stats</h2>}
+                    content={<div className='statistics-container'>
+                        <Statistic value={totalUsers} subject={"Total amount of members"} />
+                    </div>}
+                    options={{noPadding: true, divided: {top: true, bottom: false}}}
+                />
+
+                <Card
+                    header={<h2>Test card</h2>}
+                    content={<>
+                    <ImageCardItem 
+                        image="https://picsum.photos/id/15/250/250"
+                        main={<p>Lorem ipsum dolor sit, amet consectetur adipisicing elit</p>}
+                        meta={
+                        <>
+                            <p>
+                                <FontAwesomeIcon icon={faHeart}/> 10
+                            </p>
+                            <p>
+                                <FontAwesomeIcon icon={faComment}/> 12
+                            </p>
+                        </>
+                        }
+                    />
+                    <ImageCardItem 
+                        image="https://picsum.photos/id/25/250/250"
+                        main={<p>Quod blanditiis quisquam est autem quibusdam impedit magnam odio culpa adipisci, veniam maxime soluta.</p>}
+                        meta={
+                        <>
+                            <p>
+                                <FontAwesomeIcon icon={faHeart}/> 10
+                            </p>
+                            <p>
+                                <FontAwesomeIcon icon={faComment}/> 12
+                            </p>
+                        </>
+                        }
+                    />
+                    </>}
+                    options={{ noPadding: true, divided: {top: true, bottom: false}}}
                 />
             </div>
         </main>

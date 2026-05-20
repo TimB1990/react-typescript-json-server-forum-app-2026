@@ -14,6 +14,7 @@ export type Thread = {
 
 export interface ThreadState {
   threadsByCategory: Record<string, Thread[]>, // e.g., { "react-id": [...], "ts-id": [...] }
+  totalCount?: number,
   loading: Record<string, boolean>,
   error?: string | null
 }
