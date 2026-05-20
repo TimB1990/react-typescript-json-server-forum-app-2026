@@ -1,5 +1,7 @@
 import React from 'react'
 import type { Article } from '../../../types/article';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEye, faMessage } from '@fortawesome/free-solid-svg-icons';
 
 
 export const CarouselCard = (article: Article) => {
@@ -20,7 +22,13 @@ export const CarouselCard = (article: Article) => {
         </div>
         <div className="carousel-card-content">
           <h3 className="carousel-card-title">{article.title}</h3>
-          <p className="carousel-card-meta">{article.author} - at: {article.meta.date}</p>
+          <div className="carousel-card-meta">
+            <p>{article.author} - {article.meta.date}</p>
+            <div className="carousel-article-stats">
+              <p><FontAwesomeIcon icon={faEye} /> {article.meta.views}</p>
+              <p><FontAwesomeIcon icon={faMessage} /> {article.meta.comments}</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>

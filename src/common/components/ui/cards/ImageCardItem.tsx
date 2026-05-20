@@ -27,7 +27,7 @@ export const ImageCardItem: React.FC<ImageCardItemProps> = ({ aside, image, main
                 </main>
                 <div className='meta'>
                     {meta}
-                </div>
+                </div>p
             </div>
         </div>
     )

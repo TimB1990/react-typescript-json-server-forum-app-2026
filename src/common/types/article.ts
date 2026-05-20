@@ -1,7 +1,7 @@
 export interface ArticleMeta {
   date: string,
   views?: number,
-  replies?: number
+  comments?: number
 }
 
 export interface ArticleTag {

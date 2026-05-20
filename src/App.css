@@ -239,6 +239,7 @@ canvas {
   min-width: max-content;
   border: 1px solid darkgray;
   cursor: pointer;
+  justify-content: center;
 }
 
 .link-btn:visited {
@@ -428,33 +429,41 @@ canvas {
 
 /* carousel */
 .carousel-container {
-  padding: 16px;
+  padding: 0 16px;
+  container-type: inline-size;
+  width: 100%;
+  box-sizing: border-box;
   font-family: "Inter", sans-serif;
+}
+
+.carousel-container:hover .carousel-track { 
+  animation-play-state: paused; 
 }
 
 .carousel-window {
   width: 100%;
-  overflow-x: scroll;
-  scroll-behavior: smooth;
+  overflow-x: hidden;
+  scroll-snap-type: x mandatory;
 }
 
 .carousel-track {
-  display: flex;
+  display: inline-flex;
   gap: 16px;
   width: max-content;
-  /* animation: slide 30s ease-in-out infinite alternate; */
+  padding: 16px 0;
+  animation: slide-groups 30s infinite ease-in-out;
 }
 
 .carousel-card {
-  width: 250px;
+  width: calc((100cqw - (16px * 2)) / 3);
   height: 275px;
+  flex-shrink: 0;
+  scroll-snap-align: start;
   background-size: cover;
   background-position: center;
   border-radius: 8px;
   position: relative;
   overflow: hidden;
-  flex-shrink: 0;
-  scroll-snap-align: start;
 }
 
 .carousel-card-overlay {
@@ -469,6 +478,11 @@ canvas {
   padding: 16px;
   background: linear-gradient(transparent, rgba(0, 0, 0, 0.85));
   color: white;
+}
+
+.carousel-card-overlay:hover{
+  background-color: rgba(255,255,255, 0.25);
+  cursor: pointer;
 }
 
 .carousel-card-tags {
@@ -494,18 +508,39 @@ canvas {
 
 .carousel-card-meta {
   font-size: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
   color: #bbb;
 }
 
-/* Animation Logic */
-@keyframes slide {
-  0%,
-  10% {
-    transform: translateX(16px);
+.carousel-article-stats {
+  display: flex;
+  gap: 1em;
+}
+
+/* New Animation Logic */
+@keyframes slide-groups {
+  /* PAGE 1 (Cards 1-3): Hold still for 25% of the time */
+  0%, 25% {
+    transform: translateX(0);
   }
-  90%,
+
+  /* QUICK SLIDE: Move to Page 2 between 25% and 30% */
+  /* PAGE 2 (Cards 4-6): Move left by 100% of the container width plus the gap */
+  30%, 60% {
+    transform: translateX(calc(-100cqw - 16px));
+  }
+
+  /* QUICK SLIDE: Move to Page 3 between 60% and 65% */
+  /* PAGE 3 (Cards 7-9): Move left by 200% of the container width plus two gaps */
+  65%, 95% {
+    transform: translateX(calc(-200cqw - 32px));
+  }
+
+  /* RESET: Slide back to the beginning to loop seamlessly */
   100% {
-    transform: translateX(calc(-100% + 100vw - 16px));
+    transform: translateX(0);
   }
 }
 
@@ -581,11 +616,11 @@ canvas {
   align-items: flex-start;
 }
 
-.image-card-item.divided{
+.image-card-item.divided {
   border-bottom: 1px solid #2d3748;
 }
 
-.image-card-item:last-child{
+.image-card-item:last-child {
   border: none;
 }
 
