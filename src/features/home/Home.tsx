@@ -15,6 +15,11 @@ import { Card } from '../../common/components/ui/cards/Card'
 import { RegisterLoginButtons } from './components/RegisterLoginButtons'
 import { Carousel } from '../../common/components/ui/news-carousel/Carousel'
 import { Statistic } from './components/Statistic'
+import { ImageCardItem } from '../../common/components/ui/cards/ImageCardItem'
+
+// remove later
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faComment, faHeart } from '@fortawesome/free-solid-svg-icons';
 
 export const Home = () => {
 
@@ -111,6 +116,41 @@ export const Home = () => {
                         <Statistic value={totalUsers} subject={"Total amount of members"} />
                     </div>}
                     options={{noPadding: true, divided: {top: true, bottom: false}}}
+                />
+
+                <Card
+                    header={<h2>Test card</h2>}
+                    content={<>
+                    <ImageCardItem 
+                        image="https://picsum.photos/id/15/250/250"
+                        main={<p>Lorem ipsum dolor sit, amet consectetur adipisicing elit</p>}
+                        meta={
+                        <>
+                            <p>
+                                <FontAwesomeIcon icon={faHeart}/> 10
+                            </p>
+                            <p>
+                                <FontAwesomeIcon icon={faComment}/> 12
+                            </p>
+                        </>
+                        }
+                    />
+                    <ImageCardItem 
+                        image="https://picsum.photos/id/25/250/250"
+                        main={<p>Quod blanditiis quisquam est autem quibusdam impedit magnam odio culpa adipisci, veniam maxime soluta.</p>}
+                        meta={
+                        <>
+                            <p>
+                                <FontAwesomeIcon icon={faHeart}/> 10
+                            </p>
+                            <p>
+                                <FontAwesomeIcon icon={faComment}/> 12
+                            </p>
+                        </>
+                        }
+                    />
+                    </>}
+                    options={{ noPadding: true, divided: {top: true, bottom: false}}}
                 />
             </div>
         </main>
