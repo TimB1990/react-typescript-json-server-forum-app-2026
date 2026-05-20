@@ -1,20 +1,7 @@
 import React from 'react'
+import { type ImageCardItemProps } from '../../../types/cards'
 
-type ImageCardItem = {
-    main: React.ReactNode | string,
-    aside?: React.ReactNode | string,
-    meta?: React.ReactNode | string,
-    image: string,
-    options?: {
-        contentDirection?: "vertical" | "horizontal",
-        centerContent?: boolean, 
-        thumbImage?: boolean,
-        imageShape?: "circle" | "square",
-        applyBorder?: boolean
-    }
-}
-
-export const ImageCardItem = ({ aside, image, main, meta, options = {}}: ImageCardItem) => {
+export const ImageCardItem: React.FC<ImageCardItemProps> = ({ aside, image, main, meta, options = {} }) => {
     
     const {
         contentDirection = "vertical",
