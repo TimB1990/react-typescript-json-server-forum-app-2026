@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import type { CardProps } from '../../../types/cards';
 
 export const Card: React.FC<CardProps> = ({ header, content, footer, options = {} }) => {
 

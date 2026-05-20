@@ -593,16 +593,19 @@ canvas {
   display: flex;
   flex-direction: column;
   align-items: center;
+  overflow: visible;
 }
 
 .image-container {
   overflow: hidden;
+  isolation: isolate;
+  -webkit-mask-image: -webkit-radial-gradient(white, black);
 }
 
 .image-container.thumb {
   width: 36px;
   height: 36px;
-  margin-top: 6px;
+  margin-top: 4px;
 }
 
 /* 4. Handle the optional option.centerContent */
@@ -619,6 +622,7 @@ canvas {
 }
 
 .image-container img {
+  display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
