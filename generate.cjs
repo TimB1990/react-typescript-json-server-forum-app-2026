@@ -14,7 +14,7 @@ const generateData = async () => {
   const hashedPass = await bcrypt.hash('secret', salt);
 
   // 1. Users
-  for (let i = 1; i <= 10; i++) {
+  for (let i = 1; i <= 25; i++) {
     // const seed = faker.string.alphanumeric(10);
     // `https://api.dicebear.com/9.x/shapes/svg?seed=${seed}`
 
@@ -22,7 +22,8 @@ const generateData = async () => {
       id: i,
       username: faker.internet.username(),
       password: hashedPass,
-      avatar: faker.image.dataUri({ width: 150, height: 150 })
+      avatar: faker.image.dataUri({ width: 150, height: 150 }),
+      createdAt: faker.date.past().toISOString()
     });
   }
 
@@ -94,7 +95,7 @@ const generateData = async () => {
       id: threadId,
       categoryId: categoryId,
       title: faker.lorem.sentence(4),
-      createdAt: faker.date.past().toISOString()
+      createdAt: faker.date.recent().toISOString()
     });
 
     // Create the "Opening Post" (The first message of the thread)
