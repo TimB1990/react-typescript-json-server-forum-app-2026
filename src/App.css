@@ -193,86 +193,12 @@ canvas {
   background-color: rgba(255, 255, 255, 0.05);
 }
 
-.thread-item {
-  display: flex;
-  align-items: stretch;
-  padding: 1em;
-  justify-content: space-between;
-  align-items: flex-end;
-}
-
-.thread-item .info-container {
-  display: flex;
-  align-items: center;
-  gap: 0.74rem;
-}
-
-.thread-item .content {
-  display: flex;
-  flex-direction: column;
-}
-
-.thread-item .content p {
-  margin: 0;
-  text-align: left;
-}
-
-.thread-item .content p > span {
-  color: #737373;
-}
-
-.thread-item .count {
-  display: flex;
-  flex-direction: row;
-  align-items: flex-end;
-  align-self: stretch;
-}
-
-.avatar-container.small {
-  border: 1px solid black;
-  height: 32px;
-  width: 32px;
-  overflow: hidden;
-  flex-shrink: 0;
-  border-radius: 50%;
-}
-
-.avatar-container img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  overflow: hidden;
-}
-
 .messages {
   display: flex;
   flex-direction: column;
 }
 
-.message.preview {
-  display: flex;
-  column-gap: 1em;
-  width: 100%;
-  padding: 1em;
-}
-
-.message.preview .message-side {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-}
-
-.message.preview .message-body {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  gap: 1em;
-  text-align: left;
-  min-width: 0;
-}
-
-.message.preview .message-body .message-content {
+.message-content {
   width: 100%;
   max-height: 10em;
   display: -webkit-box;
@@ -285,28 +211,6 @@ canvas {
 
 .message-by {
   font-size: 0.9em;
-  line-height: 1.2;
-}
-
-.message-by span {
-  display: block;
-}
-
-.count {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5em;
-  font-size: 0.9em;
-  min-width: max-content;
-  color: rgb(115, 115, 115);
-  line-height: 1.2;
-}
-
-.count svg {
-  height: 0.9em;
-  width: auto;
-  max-height: 100%;
-  flex-shrink: 0;
 }
 
 .register-login-buttons {
@@ -758,7 +662,7 @@ canvas {
 
 .image-card-item .content-wrapper.vertical .meta {
   flex-direction: row;
-  justify-content: flex-end;
+  justify-content: flex-start;
 }
 
 .image-card-item .content-wrapper .meta > * {

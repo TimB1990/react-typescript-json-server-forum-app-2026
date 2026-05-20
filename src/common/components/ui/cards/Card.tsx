@@ -1,21 +1,5 @@
 import { useState } from 'react'
 
-interface CardOptions {
-    divided?: {
-        top?: boolean;
-        bottom?: boolean;
-    }
-    expander?: boolean,
-    noPadding?: boolean,
-}
-
-interface CardProps {
-    header?: React.ReactNode
-    content?: React.ReactNode
-    footer?: React.ReactNode
-    options?: CardOptions
-}
-
 export const Card: React.FC<CardProps> = ({ header, content, footer, options = {} }) => {
 
     const {

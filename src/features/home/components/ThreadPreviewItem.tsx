@@ -3,6 +3,7 @@ import type { Thread } from '../../../common/types/threads'
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faComment } from '@fortawesome/free-solid-svg-icons';
+import { ImageCardItem } from '../../../common/components/ui/cards/ImageCardItem';
 
 export const ThreadPreviewItem = (props: Thread) => {
 
@@ -29,28 +30,28 @@ export const ThreadPreviewItem = (props: Thread) => {
 
   return (
     <Link to="" className='item-link' onClick={handleClick}>
-      <div className='thread-item'>
-        <div className='info-container'>
-          <div className='avatar-container small'>
-            <img src={lastMessageBy.avatar} alt="" />
-          </div>
-          <div className='content'>
+      <ImageCardItem
+        image={lastMessageBy.avatar}
+        main={
+          <>
             <p><strong>{title}</strong></p>
             <p className='message-by'>
-              <span>By {lastMessageBy.author} - {lastMessageBy.postedAt}</span>
+              By {lastMessageBy.author} - {lastMessageBy.postedAt}
             </p>
-          </div>
-        </div>
-        <div className='count'>
-          {iconStats ? (
-            <>
-              <FontAwesomeIcon icon={faComment} /> {comments}
-            </>
-          ) : (
-            <span>{comments} comments</span>
-          )}
-        </div>
-      </div>
+          </>
+        }
+        meta={iconStats ? (
+          <p><FontAwesomeIcon icon={faComment} /> {comments}</p>
+        ) : (
+          <p>{comments} comments</p>
+        )}
+        options={{
+          contentDirection: "horizontal",
+          thumbImage: true,
+          imageShape: "circle",
+          applyBorder: true
+        }}
+      />
     </Link>
   )
 }
