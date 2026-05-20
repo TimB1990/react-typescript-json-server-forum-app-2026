@@ -6,6 +6,7 @@ export interface User {
 
 export interface UserState {
     users: User[] | [],
+    latestUsers: User[] | [],
     currentUser?: User | null,
     totalCount?: number | string | undefined
     loading: boolean,
