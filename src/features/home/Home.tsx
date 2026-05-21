@@ -108,15 +108,15 @@ export const Home = () => {
               />
               <Card
                 header={<h2>Forum stats</h2>}
-                content={<div className='statistics-container'>
+                content={<>
                   <Statistic value={totalThreads} subject={"Total amount of subjects"} />
                   <Statistic value={totalMessages} subject={"Total amount of messages"} />
-                </div>}
-                options={{ noPadding: true, divided: { top: true, bottom: false } }}
+                </>}
+                options={{ noPadding: true, divided: { top: true, bottom: false }, allowHorizontal: true }}
               />
               <Card
                 header={<h2>Member stats</h2>}
-                content={<div className='statistics-container'>
+                content={<>
                   <Statistic value={totalUsers} subject={"Total amount of members"} />
                   {/* Guard check: Only render the member info if the data is actually there */}
                   {latestUsers && latestUsers.length > 0 ? (
@@ -134,8 +134,8 @@ export const Home = () => {
                     // fallback
                     <p>Loading newest member...</p>
                   )}
-                </div>}
-                options={{ noPadding: true, divided: { top: true, bottom: false } }}
+                </>}
+                options={{ noPadding: true, divided: { top: true, bottom: false }, allowHorizontal: true }}
               />
             </>)}
         </>

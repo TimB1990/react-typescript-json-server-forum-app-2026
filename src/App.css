@@ -85,6 +85,8 @@ canvas {
 
 .card-body {
   padding: 1em;
+  display: flex;
+  flex-direction: column;
 }
 
 .card-body.no-padding {
@@ -436,8 +438,8 @@ canvas {
   font-family: "Inter", sans-serif;
 }
 
-.carousel-container:hover .carousel-track { 
-  animation-play-state: paused; 
+.carousel-container:hover .carousel-track {
+  animation-play-state: paused;
 }
 
 .carousel-window {
@@ -480,8 +482,8 @@ canvas {
   color: white;
 }
 
-.carousel-card-overlay:hover{
-  background-color: rgba(255,255,255, 0.25);
+.carousel-card-overlay:hover {
+  background-color: rgba(255, 255, 255, 0.25);
   cursor: pointer;
 }
 
@@ -522,19 +524,22 @@ canvas {
 /* New Animation Logic */
 @keyframes slide-groups {
   /* PAGE 1 (Cards 1-3): Hold still for 25% of the time */
-  0%, 25% {
+  0%,
+  25% {
     transform: translateX(0);
   }
 
   /* QUICK SLIDE: Move to Page 2 between 25% and 30% */
   /* PAGE 2 (Cards 4-6): Move left by 100% of the container width plus the gap */
-  30%, 60% {
+  30%,
+  60% {
     transform: translateX(calc(-100cqw - 16px));
   }
 
   /* QUICK SLIDE: Move to Page 3 between 60% and 65% */
   /* PAGE 3 (Cards 7-9): Move left by 200% of the container width plus two gaps */
-  65%, 95% {
+  65%,
+  95% {
     transform: translateX(calc(-200cqw - 32px));
   }
 
@@ -566,48 +571,6 @@ canvas {
 .statistic .subject {
   color: oklch(0.645 0.0216 260);
 }
-
-/* image card item */
-/* .thread-item {
-  display: flex;
-  align-items: stretch;
-  padding: 1em;
-  justify-content: space-between;
-  align-items: flex-end;
-}
-.thread-item .info-container {
-  display: flex;
-  align-items: center;
-  gap: 0.74rem;
-}
-.thread-item .content {
-  display: flex;
-  flex-direction: column;
-}
-.thread-item .content p {
-  margin: 0;
-  text-align: left;
-}
-.thread-item .content p > span {
-  color: #737373; 
-}
-.thread-item .count {
-  display: flex;
-  flex-direction: row;
-  align-items: flex-end;
-  align-self: stretch; 
-}
-/* .image-container {
-  border: 2px solid #333;
-  border-radius: 1em;
-  overflow: hidden;
-}
-
-.image-container img {
-  width: 100%;
-  border-radius: 1rem;
-  display: block;
-} */
 
 .image-card-item {
   display: flex;
@@ -700,8 +663,47 @@ canvas {
   font-size: 0.9em;
 }
 
+.card-item {
+  flex: 1;
+}
+
 .card-item.centered {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+@media (max-width: 1049px) {
+  .card-body.allow-horizontal {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  /* Target both children to give them a flexible starting layout */
+  .card-body.allow-horizontal > * {
+    flex: 1 1 250px; /* grow: 1, shrink: 1, basis: 250px */
+  }
+
+  /* Make sure the last child stretches to fill the row when it wraps */
+  .card-body.allow-horizontal > *:last-child {
+    flex-grow: 1;
+  }
+
+  .statistic {
+    border-left: 1px solid #2d3748;
+    border-right: 1px solid #2d3748;
+    border-top: 1px solid #2d3748;
+    border-bottom: none;
+  }
+
+  .statistic:first-child {
+    border-left: none;
+    border-top: none;
+  }
+
+  .statistic:last-child{
+    border-right: none;
+    border-left: none;
+    border-top: none;
+  }
 }

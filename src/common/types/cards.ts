@@ -5,6 +5,7 @@ export interface CardOptions {
     }
     expander?: boolean,
     noPadding?: boolean,
+    allowHorizontal?: boolean
 }
 
 export interface CardProps {
