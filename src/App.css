@@ -643,11 +643,6 @@ canvas {
   margin-top: 4px;
 }
 
-/* 4. Handle the optional option.centerContent */
-.image-card-item .content-wrapper.center {
-  justify-content: center;
-}
-
 .image-container img {
   display: block;
   width: 100%;
@@ -673,6 +668,7 @@ canvas {
 .image-card-item .content-wrapper {
   display: flex;
   gap: 0.45em;
+  width: 100%;
 }
 
 .image-card-item .content-wrapper.vertical {
@@ -702,4 +698,10 @@ canvas {
 .image-card-item .content-wrapper .meta > * {
   min-width: max-content;
   font-size: 0.9em;
+}
+
+.card-item.centered {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

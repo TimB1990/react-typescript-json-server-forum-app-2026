@@ -13,7 +13,8 @@ export const ImageCardItem: React.FC<ImageCardItemProps> = ({ aside, image, main
     } = options || {}
 
     return (
-        <div className={`image-card-item ${applyBorder ? 'divided': ''} ${centered ? 'centered' : ''}`}>
+        <div className={`card-item ${centered ? 'centered': ''}`}>
+                    <div className={`image-card-item ${applyBorder ? 'divided': ''} ${centered ? 'centered' : ''}`}>
             <aside>
                 <div className={`image-container ${thumbImage ? 'thumb' : ''} ${imageShape}`}>
                     <img src={image} alt="" />
@@ -30,5 +31,7 @@ export const ImageCardItem: React.FC<ImageCardItemProps> = ({ aside, image, main
                 </div>
             </div>
         </div>
+        </div>
+
     )
 }
