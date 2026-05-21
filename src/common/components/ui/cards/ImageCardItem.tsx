@@ -5,7 +5,7 @@ export const ImageCardItem: React.FC<ImageCardItemProps> = ({ aside, image, main
     
     const {
         contentDirection = "vertical",
-        centerContent = false,
+        centered = false,
         thumbImage = false,
         imageShape = "square",
         applyBorder = true
@@ -13,7 +13,7 @@ export const ImageCardItem: React.FC<ImageCardItemProps> = ({ aside, image, main
     } = options || {}
 
     return (
-        <div className={`image-card-item ${applyBorder ? 'divided': ''}`}>
+        <div className={`image-card-item ${applyBorder ? 'divided': ''} ${centered ? 'centered' : ''}`}>
             <aside>
                 <div className={`image-container ${thumbImage ? 'thumb' : ''} ${imageShape}`}>
                     <img src={image} alt="" />
@@ -21,7 +21,7 @@ export const ImageCardItem: React.FC<ImageCardItemProps> = ({ aside, image, main
                 {aside}
             </aside>
 
-            <div className={`content-wrapper ${contentDirection} ${centerContent ? 'center' : ''}`}>
+            <div className={`content-wrapper ${contentDirection}`}>
                 <main className="content">
                     {main}
                 </main>

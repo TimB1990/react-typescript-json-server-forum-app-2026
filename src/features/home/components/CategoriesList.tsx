@@ -5,7 +5,7 @@ import type { Category } from '../../../common/types/categories';
 import type { Group } from '../../../common/types/group';
 import { useError } from '../../../context/ErrorContext';
 
-export const CategoriesList = (props :Group) => {
+export const CategoriesList = (props: Group) => {
 
   const groupId = props.id;
   const { setError } = useError();
@@ -19,11 +19,13 @@ export const CategoriesList = (props :Group) => {
   // rerender only if groupId changes
   useEffect(() => {
     CategoryStore.fetch(groupId)
-  }, [groupId])
 
-  if(error !== null){
-    setError(error)
-  }
+    if (error !== null) {
+      setError(error)
+    }
+
+  }, [groupId, error, setError])
+
 
   if (loading && categories.length === 0) return <p>Loading...</p>
 

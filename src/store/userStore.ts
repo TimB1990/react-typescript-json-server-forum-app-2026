@@ -1,4 +1,4 @@
-import {type UserState, type UserCredentials} from "../common/types/users"
+import { type UserState, type UserCredentials } from "../common/types/users"
 import { createStore } from "./createStore";
 
 const store = createStore<UserState>({
@@ -15,25 +15,40 @@ export const UserStore = {
     getState: store.getState,
     subscribe: store.subscribe,
 
-    fetch: async () => {
+    fetch: async (limit: number | null = null) => {
 
-        const state = store.getState();
-        if (state.loading || state.users.length > 0) return;
-  
-        store.setState({loading: true})
+        store.setState((prev) => ({
+            ...prev,
+            loading: true
+        }))
+
+        const params = new URLSearchParams();
+        if (limit !== null) {
+            params.append("limit", `${limit}`);
+        }
 
         try {
-            const response = await fetch('http://localhost:5001/users');
-            const data = await response.json();
-            store.setState({users: data, loading: false })
+            const response = await fetch(`http://localhost:5001/users?${params.toString()}`)
+            const { data } = await response.json();
+
+            store.setState((prev) => ({
+                ...prev,
+                users: data,
+                loading: false
+            }))
+
         } catch (err) {
-            store.setState({ loading: false, error: "Failed to fetch" })
+            store.setState((prev) => ({
+                ...prev,
+                error: "Failed to fetch Users: " + err,
+                loading: false
+            }))
         }
     },
 
     login: async (credentials: UserCredentials) => {
 
-        store.setState({loading: true, error: null }) 
+        store.setState({ loading: true, error: null })
 
         try {
             const response = await fetch('http://localhost:5001/login', {
@@ -50,17 +65,17 @@ export const UserStore = {
             const data = await response.json();
 
             // data.user should be the user object without the password
-            store.setState({currentUser: data.user, loading: false })
+            store.setState({ currentUser: data.user, loading: false })
             return true; // Success
 
         } catch (error: any) {
-            store.setState({loading: false, error: error.message })
+            store.setState({ loading: false, error: error.message })
             return false; // Failure
         }
     },
 
     logout: () => {
-        store.setState({currentUser: null })
+        store.setState({ currentUser: null })
     },
 
     countTotal: async () => {

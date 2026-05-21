@@ -648,14 +648,6 @@ canvas {
   justify-content: center;
 }
 
-/* If you want the IMAGE centered vertically with the text when centerContent is true: */
-.image-card-item:has(.content-wrapper.center) {
-  align-items: center;
-}
-.image-card-item:has(.content-wrapper.center) .image-container.thumb {
-  margin-top: 0; /* Reset the top nudge when completely centered */
-}
-
 .image-container img {
   display: block;
   width: 100%;
@@ -674,9 +666,12 @@ canvas {
   border-radius: 25%;
 }
 
+.image-card-item.centered {
+  justify-content: center;
+}
+
 .image-card-item .content-wrapper {
   display: flex;
-  width: 100%;
   gap: 0.45em;
 }
 

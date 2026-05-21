@@ -21,7 +21,7 @@ export type ImageCardItemProps = {
     image: string,
     options?: {
         contentDirection?: "vertical" | "horizontal",
-        centerContent?: boolean, 
+        centered?: boolean, 
         thumbImage?: boolean,
         imageShape?: "circle" | "square",
         applyBorder?: boolean

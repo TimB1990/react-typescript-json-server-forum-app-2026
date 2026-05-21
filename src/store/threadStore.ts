@@ -30,11 +30,11 @@ export const ThreadStore = {
 
         // only append category ID if it is explicitly provided
         if (categoryId !== null) {
-            params.append("categoryId", "" + categoryId);
+            params.append("categoryId", `${categoryId}`);
         }
 
         // in case the limit is given as an argument to this function apply the limit like [?&]limit=5
-        if (limit !== null) params.append("limit", "" + limit);
+        if (limit !== null) params.append("limit", `${limit}`);
 
         try {
 
