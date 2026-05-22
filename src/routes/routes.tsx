@@ -1,10 +1,11 @@
 import { PageWrapper } from "../common/components/layout/PageWrapper";
-import type { Thread } from "../common/types/threads";
+import { CategoryPage } from "../features/category/CategoryPage";
 import { Home } from "../features/home/Home";
 import { Login } from "../features/login/Login";
 import { Register } from "../features/register/Register";
-import { ThreadDetail } from "../features/thread/ThreadDetail";
-import { threadLoader } from "../loaders/threadLoader";
+import { ThreadPage } from "../features/thread/ThreadPage";
+import { categoryLoader, type CategoryLoaderResult } from "../loaders/categoryLoader";
+import { threadLoader, type ThreadLoaderResult } from "../loaders/threadLoader";
 
 export const routes = [
     {
@@ -17,13 +18,27 @@ export const routes = [
                 handle: { breadcrumb: "Forum" }
             },
             {
-                path: "/thread/:threadSlug",
-                element: <ThreadDetail />,
+                path: "/categories/:slug",
+                element: <CategoryPage />,
+                loader: categoryLoader,
+                handle: {
+                    breadcrumb: (data: CategoryLoaderResult) => [
+                        { label: data.group.title, path: `/groups/${data.group.slug}` },
+                        { label: data.category.name, path: `/categories/${data.category.slug}`}
+                    ]
+                }
+            },
+            {
+                path: "/threads/:slug",
+                element: <ThreadPage />,
                 loader: threadLoader,
                 handle: {
-                    breadcrumb: (data: Thread) => data?.title || "Loading Thread..."
+                    breadcrumb: (data: ThreadLoaderResult) => [
+                        { label: data.group.title, path: `/groups/${data.group.id}` },
+                        { label: data.category.name, path: `/categories/${data.category.slug}` },
+                        { label: data.thread.title, path: `/threads/${data.thread.slug}` }
+                    ]
                 }
-
             },
             {
                 path: "/login",

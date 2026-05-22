@@ -2,6 +2,7 @@ export type Thread = {
     id: number;
     categoryId?: number;
     title: string;
+    slug?: string;
     lastMessageBy: {
         author: string; 
         postedAt: string;

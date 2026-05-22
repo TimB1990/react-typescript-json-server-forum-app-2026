@@ -9,6 +9,14 @@ p {
   line-height: 1.52;
 }
 
+a {
+  text-decoration: none;
+}
+
+a:visited {
+  color: rgb(156, 163, 175);
+}
+
 img,
 video,
 canvas {
@@ -701,7 +709,7 @@ canvas {
     border-top: none;
   }
 
-  .statistic:last-child{
+  .statistic:last-child {
     border-right: none;
     border-left: none;
     border-top: none;

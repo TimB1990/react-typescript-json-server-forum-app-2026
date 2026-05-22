@@ -3,6 +3,19 @@ const fs = require('fs');
 const path = require('path');
 const bcrypt = require('bcryptjs');
 
+// slugify function
+const slugify = (text) => {
+  return text
+    .toString()                           // Ensure it's a string
+    .normalize('NFD')                     // Separate accents from letters
+    .replace(/[\u0300-\u036f]/g, '')      // Remove the accent marks
+    .toLowerCase()                        // Convert to lowercase
+    .trim()                               // Remove whitespace from both ends
+    .replace(/\s+/g, '-')                 // Replace spaces with -
+    .replace(/[^\w-]+/g, '')              // Remove all non-word chars
+    .replace(/--+/g, '-');                // Replace multiple - with single -
+};
+
 const generateData = async () => {
   const users = [];
   const groups = [];
@@ -31,14 +44,14 @@ const generateData = async () => {
   const groupItems = [{
     title: 'Programming',
     description: 'All about programming'
-  }, 
+  },
   {
     title: 'Community',
     description: 'Meet our community!'
   }]
 
-  groupItems.forEach(({title, description}, index) => {
-    groups.push({ id: index + 1, title, description});
+  groupItems.forEach(({ title, description }, index) => {
+    groups.push({ id: index + 1, title, description });
   });
 
 
@@ -46,42 +59,49 @@ const generateData = async () => {
   const categoryItems = [{
     groupdId: 1,
     name: 'React',
+    slug: 'react',
     description: faker.lorem.sentence(4),
     image: "src/assets/react.svg"
   }, {
     groupId: 1,
     name: 'TypeScript',
+    slug: 'typescript',
     description: faker.lorem.sentence(3),
     image: "src/assets/ts.svg"
-  },{
+  }, {
     groupId: 1,
     name: 'Backend',
+    slug: 'backend',
     description: faker.lorem.sentence(5),
     image: "src/assets/backend.svg"
   }, {
     groupId: 1,
     name: 'Random',
+    slug: 'random',
     description: faker.lorem.sentence(1),
     image: "src/assets/random.svg"
   }, {
     groupId: 2,
     name: 'Members',
+    slug: 'members',
     description: faker.lorem.sentence(4),
     image: "src/assets/person-team.svg"
-  },{
+  }, {
     groupId: 2,
     name: 'Computer talk',
+    slug: 'computer-talk',
     description: faker.lorem.sentence(3),
     image: "src/assets/computer.svg"
   }, {
     groupId: 2,
     name: 'Miscellaneous',
+    slug: 'miscellaneous',
     description: faker.lorem.sentence(3),
     image: "src/assets/misc.svg"
   }];
 
-  categoryItems.forEach(({groupId, name, description, image}, index) => {
-    categories.push({ id: index + 1, groupId, name, description, image });
+  categoryItems.forEach(({ groupId, name, slug, description, image }, index) => {
+    categories.push({ id: index + 1, groupId, name, slug, description, image });
   });
 
   // 4. Threads & Messages
@@ -91,10 +111,13 @@ const generateData = async () => {
     const threadId = t;
     const categoryId = faker.helpers.arrayElement(categories).id;
 
+    const title = faker.lorem.sentence(4)
+
     threads.push({
       id: threadId,
       categoryId: categoryId,
-      title: faker.lorem.sentence(4),
+      slug: slugify(title),
+      title,
       createdAt: faker.date.recent().toISOString()
     });
 
