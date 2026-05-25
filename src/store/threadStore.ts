@@ -11,11 +11,48 @@ const store = createStore<ThreadState>({
     error: null,
 });
 
+// declare function to get the user data (the author) of the most recent message inside a given thread
+const messageAndAuthor = async (threadId: number, authorOf: 'lastMessage' | 'firstMessage'): Promise<{ author: string, postedAt: string, avatar: string }> => {
+
+    // get the latest message in the tread via ?threadId=4&limit=1, limit is applied and fetches most recent message in thread.
+    const msgResponse = await fetch(`http://localhost:5001/messages?threadId=${threadId}`)
+    const result = await msgResponse.json();
+
+    // Safety check: What if a thread has 0 messages?
+    if (!result.data || result.data.length === 0) {
+        return { author: "System", postedAt: "No messages", avatar: "" };
+    }
+
+    // get the userId and createdAt as postedAt from the result's (only) first data item.
+    // since there is an automated sorting for new to old. Get the last in the set.
+    const applyingIndex = authorOf === 'firstMessage' ? 0 : result.data.length - 1
+    const userId = result.data[applyingIndex].userId
+    const postedAt = result.data[applyingIndex].createdAt
+
+    // apply the userId being fetched to look up specific user (author)
+    const authorResponse = await fetch(`http://localhost:5001/users/${userId}`)
+    const { username, avatar } = await authorResponse.json();
+
+    // return the concatted data 
+    return {
+        author: username,
+        postedAt: dayjs(postedAt).calendar(null, {
+            sameDay: '[Today at] HH:mm',
+            nextDay: '[Tomorrow at] HH:mm',
+            nextWeek: 'dddd [at] HH:mm',
+            lastDay: '[Yesterday at] HH:mm',
+            lastWeek: 'dddd [at] HH:mm',
+            sameElse: 'D MMMM YYYY'
+        }),
+        avatar
+    }
+}
+
 export const ThreadStore = {
     getState: store.getState,
     subscribe: store.subscribe,
 
-    fetch: async (categoryId: number | null = null, limit: number | null = null) => {
+    fetch: async (categoryId: number | null = null, limit: number | null = null, page: number | null = null) => {
 
         const stateKey = categoryId !== null ? categoryId : "all";
 
@@ -35,6 +72,7 @@ export const ThreadStore = {
 
         // in case the limit is given as an argument to this function apply the limit like [?&]limit=5
         if (limit !== null) params.append("limit", `${limit}`);
+        if (page !== null) params.append("page", `${page}`);
 
         try {
 
@@ -50,46 +88,12 @@ export const ThreadStore = {
                 return count;
             }
 
-            // declare function to get the user data (the author) of the most recent message inside a given thread
-            const lastMessageAndAuthor = async (threadId: number): Promise<{ author: string, postedAt: string, avatar: string }> => {
-
-                // get the latest message in the tread via ?threadId=4&limit=1, limit is applied and fetches most recent message in thread.
-                const msgResponse = await fetch(`http://localhost:5001/messages?threadId=${threadId}&limit=1`)
-                const result = await msgResponse.json();
-
-                // Safety check: What if a thread has 0 messages?
-                if (!result.data || result.data.length === 0) {
-                    return { author: "System", postedAt: "No messages", avatar: "" };
-                }
-
-                // get the userId and createdAt as postedAt from the result's (only) first data item.
-                const userId = result.data[0].userId
-                const postedAt = result.data[0].createdAt
-
-                // apply the userId being fetched to look up specific user (author)
-                const authorResponse = await fetch(`http://localhost:5001/users/${userId}`)
-                const { username, avatar } = await authorResponse.json();
-
-                // return the concatted data 
-                return {
-                    author: username,
-                    postedAt: dayjs(postedAt).calendar(null, {
-                        sameDay: '[Today at] HH:mm',
-                        nextDay: '[Tomorrow at] HH:mm',
-                        nextWeek: 'dddd [at] HH:mm',
-                        lastDay: '[Yesterday at] HH:mm',
-                        lastWeek: 'dddd [at] HH:mm',
-                        sameElse: 'D MMMM YYYY'
-                    }),
-                    avatar
-                }
-            }
-
             // apply an async function to for Array.map() on data awaiting messageCount and lastMessageAndAuthor results to new data 
             const threadPromises = data.map(async (item: Thread) => {
                 const count = await messageCount(item.id);
-                const authorInfo = await lastMessageAndAuthor(item.id);
-                return { ...item, lastMessageBy: authorInfo, messages: count };
+                const lastMessageBy = await messageAndAuthor(item.id, 'lastMessage');
+                const firstMessageBy = await messageAndAuthor(item.id, 'firstMessage')
+                return { ...item, lastMessageBy, firstMessageBy, messages: count };
             });
 
             // resolve the Promises (get the resulting values)

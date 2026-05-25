@@ -52,7 +52,7 @@ export const MessageStore = {
     getState: store.getState,
     subscribe: store.subscribe,
 
-    fetch: async (threadId: number | null = null, limit: number | null = null) => {
+    fetch: async (threadId: number | null = null, limit: number | null = null, page: number | null = null) => {
 
         const stateKey = threadId !== null ? threadId : "all";
 
@@ -67,6 +67,7 @@ export const MessageStore = {
         }
 
         if (limit !== null) params.append("limit", "" + limit);
+        if (page !== null) params.append("page", "" + page);
 
         try {
 

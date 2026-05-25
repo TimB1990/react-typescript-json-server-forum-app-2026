@@ -5,9 +5,16 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faComment } from '@fortawesome/free-solid-svg-icons';
 import { ImageCardItem } from '../../../common/components/ui/cards/ImageCardItem';
 
-export const ThreadPreviewItem = (props: Thread) => {
+type ThreadPreviewItemProps = Thread & {
+  showAuthorInfo: 'first' | 'last'
+  tags?: React.ReactNode
+  messages?: number;
+  iconStats?: boolean;
+}
 
-  const { id, title, lastMessageBy, messages, iconStats } = props;
+export const ThreadPreviewItem = (props: ThreadPreviewItemProps) => {
+
+  const { id, title, lastMessageBy, firstMessageBy, messages, iconStats, showAuthorInfo, tags } = props;
 
   const comments = messages !== undefined ? messages - 1 : 0;
 
@@ -28,23 +35,37 @@ export const ThreadPreviewItem = (props: Thread) => {
     console.log(`Thread ${id}-${slugify(title)} clicked!`);
   }
 
+  const displayMessage = showAuthorInfo === 'first' ? firstMessageBy : lastMessageBy;
+
+  const metaContent = (
+  <div className="meta-container">
+    {iconStats ? (
+      <p><FontAwesomeIcon icon={faComment} /> {comments}</p>
+    ) : (
+      <p>{comments} comments</p>
+    )}
+  </div>
+);
+
   return (
     <Link to="" className='item-link' onClick={handleClick}>
       <ImageCardItem
         image={lastMessageBy.avatar}
         main={
           <>
-            <p><strong>{title}</strong></p>
+            <div style={{ display: 'flex' }}>
+              <p><strong>{title}</strong></p>
+              <div style={{display: 'flex' }}>
+                {tags}
+              </div>
+            </div>
             <p className='message-by'>
-              By {lastMessageBy.author} - {lastMessageBy.postedAt}
+              {showAuthorInfo === 'first' ? 'By ' : 'Last message by'} 
+              {displayMessage.author} - {displayMessage.postedAt}
             </p>
           </>
         }
-        meta={iconStats ? (
-          <p><FontAwesomeIcon icon={faComment} /> {comments}</p>
-        ) : (
-          <p>{comments} comments</p>
-        )}
+        meta={metaContent}
         options={{
           contentDirection: "horizontal",
           thumbImage: true,

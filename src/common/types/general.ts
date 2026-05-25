@@ -10,3 +10,10 @@ export interface DynamicCrumb {
 export interface RouteHandle {
   breadcrumb: string | ((data: any) => DynamicCrumb[]);
 }
+
+export interface ResponseResult<T> {
+  data: T[],
+  totalCount: number,
+  currentPage: number,
+  totalPages: number
+}

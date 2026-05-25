@@ -1,27 +1,31 @@
-import React from 'react'
-import { useLoaderData, useParams } from 'react-router-dom'
+import { useLoaderData } from 'react-router-dom'
 import type { CategoryLoaderResult } from '../../loaders/categoryLoader';
 import { Card } from '../../common/components/ui/cards/Card';
-
-type CategoryRouteParams = {
-  slug: string;
-}
+import { Paginator } from '../../common/components/ui/paginator/paginator';
 
 export const CategoryPage = () => {
 
-  const { slug } = useParams<CategoryRouteParams>();
-  const { category } = useLoaderData() as CategoryLoaderResult
+  const data = useLoaderData() as CategoryLoaderResult
+
+  const { pagination, category, threads } = data;
 
   return (
     <div className="layout">
-      <div className='container'>
+      <div className='container full-width'>
         <Card
-          content={<>
-            <h1>{category.name}</h1>
+          header={<h1>{category.name}</h1>}
+          content={
             <p>{category.description}</p>
-          </>}
+          }
+        />
+
+        <Card
+          header={<Paginator entity={'categories'} totalPages={pagination.total} currentPage={pagination.current} />}
+          content={'test'}
         />
       </div>
+
+      {threads.data.map((thread) => (<div>{JSON.stringify(thread)}</div>))}
     </div>
   )
 }

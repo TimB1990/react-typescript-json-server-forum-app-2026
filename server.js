@@ -2,7 +2,11 @@ import jsonServer from 'json-server'
 import bcrypt from 'bcryptjs'
 import cors from 'cors'
 
-const RESERVED_FILTERS = ["limit"];
+const RESERVED_FILTERS = [
+  "limit",
+  "page",
+  "order"
+];
 
 // functions
 function filterDataByQueryParams(data, filters) {
@@ -85,6 +89,7 @@ server.get('/count/:resource', (req, res) => {
     return res.status(404).json({ error: "Resource not found" });
   }
 
+  // TODO make more efficient by improving filter needed to either fetch first or latest related child.
   const filteredData = filterDataByQueryParams(data, filters)
 
   res.json({
@@ -117,14 +122,21 @@ server.get('/:resource', (req, res) => {
   });
 
   // Apply limit given as query string cast to int
-  const limit = parseInt(filters.limit, 10) || 100;
+  const limit = parseInt(filters.limit, 10) || 25;
+  const page = parseInt(filters.page, 10) || 1;
+
+  const startIndex = (page - 1) * limit;
+  const endIndex = startIndex + limit;
 
   // Set the final result to be a sliced portion of sorted by limit  
   const finalResult = sorted.slice(0, limit);
 
   // return the result of the filter
   res.json({
-    data: finalResult 
+    data: finalResult,
+    totalCount: filtered.length,
+    currentPage: page,
+    totalPages: Math.ceil(filtered.length / limit)
   });
 });
 

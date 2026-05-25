@@ -49,7 +49,7 @@ export const Home = () => {
     <main className='layout'>
       <ErrorBanner />
 
-      <div className="container">
+      <div className="container first">
 
         <Card
           header={<h2>Latest News</h2>}
@@ -68,7 +68,7 @@ export const Home = () => {
         )}
       </div>
 
-      <div className="container">
+      <div className="container second">
         <>
           {
             loading ? (
@@ -85,7 +85,7 @@ export const Home = () => {
                 header={<h2>Latest topics</h2>}
                 content={<div className="threads">
                   {latestThreads.map((thread: Thread) => (
-                    <ThreadPreviewItem key={`latest-thread-${thread.id}`} {...thread} iconStats={true} />
+                    <ThreadPreviewItem key={`latest-thread-${thread.id}`} {...thread} iconStats={true} showAuthorInfo='first' />
                   ))}
                 </div>}
                 options={{ noPadding: true, divided: { top: true, bottom: false } }}

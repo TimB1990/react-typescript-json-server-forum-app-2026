@@ -58,12 +58,16 @@ canvas {
     grid-template-columns: repeat(3, 1fr);
   }
 
-  .container:nth-child(1) {
+  .container.first {
     grid-column: span 2;
   }
 
-  .container:nth-child(2) {
+  .container.second {
     grid-column: span 1;
+  }
+
+  .container.full-width {
+    grid-column: 1 / -1;
   }
 }
 
