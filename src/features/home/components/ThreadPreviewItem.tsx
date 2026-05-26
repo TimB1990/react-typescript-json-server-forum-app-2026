@@ -10,11 +10,12 @@ type ThreadPreviewItemProps = Thread & {
   tags?: React.ReactNode
   messages?: number;
   iconStats?: boolean;
+  showLatest?: boolean;
 }
 
 export const ThreadPreviewItem = (props: ThreadPreviewItemProps) => {
 
-  const { id, title, lastMessageBy, firstMessageBy, messages, iconStats, showAuthorInfo, tags } = props;
+  const { id, title, lastMessageBy, firstMessageBy, messages, iconStats, showAuthorInfo, tags, showLatest } = props;
 
   const comments = messages !== undefined ? messages - 1 : 0;
 
@@ -38,14 +39,14 @@ export const ThreadPreviewItem = (props: ThreadPreviewItemProps) => {
   const displayMessage = showAuthorInfo === 'first' ? firstMessageBy : lastMessageBy;
 
   const metaContent = (
-  <div className="meta-container">
-    {iconStats ? (
-      <p><FontAwesomeIcon icon={faComment} /> {comments}</p>
-    ) : (
-      <p>{comments} comments</p>
-    )}
-  </div>
-);
+    <div style={{ display: 'flex' }}>
+      {iconStats ? (
+        <p><FontAwesomeIcon icon={faComment} /> {comments}</p>
+      ) : (
+        <p>{comments} comments</p>
+      )}
+    </div>
+  );
 
   return (
     <Link to="" className='item-link' onClick={handleClick}>
@@ -55,17 +56,23 @@ export const ThreadPreviewItem = (props: ThreadPreviewItemProps) => {
           <>
             <div style={{ display: 'flex' }}>
               <p><strong>{title}</strong></p>
-              <div style={{display: 'flex' }}>
+              <div style={{ display: 'flex' }}>
                 {tags}
               </div>
             </div>
             <p className='message-by'>
-              {showAuthorInfo === 'first' ? 'By ' : 'Last message by'} 
+              {showAuthorInfo === 'first' ? 'By ' : 'Last message by'}
               {displayMessage.author} - {displayMessage.postedAt}
             </p>
           </>
         }
-        meta={metaContent}
+        meta={<div style={{ display: 'flex', gap: '2.5em' }}>
+          {metaContent}
+          {showAuthorInfo === 'first' && showLatest && <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <p><strong>{lastMessageBy.author}</strong></p>
+            <p>{lastMessageBy.postedAt}</p>
+          </div>}
+        </div>}
         options={{
           contentDirection: "horizontal",
           thumbImage: true,

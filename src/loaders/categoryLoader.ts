@@ -3,6 +3,7 @@ import { type Category } from "../common/types/categories";
 import type { Group } from "../common/types/group";
 import type { Thread } from "../common/types/threads";
 import type { ResponseResult } from "../common/types/general";
+import { ThreadStore } from "../store";
 
 export type CategoryLoaderResult = {
     category: Category
@@ -11,6 +12,7 @@ export type CategoryLoaderResult = {
     pagination: {
         current: number
         total: number
+        limit: number
     }
 }
 
@@ -18,14 +20,11 @@ export async function categoryLoader({ params }: LoaderFunctionArgs): Promise<Ca
 
     const { slug } = params
 
-    // Default to page 1 if not provided
-    const pageNumber = params.pageNumber ?? "1";
+    const limit = 4
+
     const currentPage = params.pageNumber ? parseInt(params.pageNumber, 10) : 1;
     const validatedPage = isNaN(currentPage) ? 1 : currentPage;
 
-    const limit = 25;
-
-    // 1. fetch category
     const catResponse = await fetch(`http://localhost:5001/categories?slug=${slug}`)
     if (!catResponse.ok) { throw new Response("Category Not Found", { status: 404 }); }
 
@@ -43,13 +42,13 @@ export async function categoryLoader({ params }: LoaderFunctionArgs): Promise<Ca
     }
     const group: Group = await groupResponse.json();
 
-    // 3
+    // 3 Use the dynamic limit in the fetch call
     const threadResponse = await fetch(`http://localhost:5001/threads?categoryId=${category.id}&page=${validatedPage}&limit=${limit}`)
     const threadData: ResponseResult<Thread> = await threadResponse.json();
 
-    if (parseInt(pageNumber || "") > threadData.totalPages) {
-        throw new Response("Not Found", { status: 404 });
-    }
+    // TRIGGER THE STORE FETCH HERE TOO (Don't await it, let it run in background)
+    // This starts the "fat" object processing the moment the link is clicked
+    ThreadStore.fetch(category.id, limit, validatedPage);
 
     return {
         category,
@@ -57,7 +56,8 @@ export async function categoryLoader({ params }: LoaderFunctionArgs): Promise<Ca
         threads: threadData,
         pagination: {
             current: validatedPage,
-            total: threadData.totalPages
+            total: threadData.totalPages,
+            limit: limit // Pass this back so the UI knows the current limit
         }
     };
 }

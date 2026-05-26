@@ -1,13 +1,31 @@
 import { useLoaderData } from 'react-router-dom'
 import type { CategoryLoaderResult } from '../../loaders/categoryLoader';
 import { Card } from '../../common/components/ui/cards/Card';
-import { Paginator } from '../../common/components/ui/paginator/paginator';
+import { ThreadStore, useThreadStore } from '../../store';
+import { useError } from '../../context/ErrorContext';
+import { useEffect } from 'react';
+import { ThreadPreviewItem } from '../home/components/ThreadPreviewItem';
+import { Paginator } from '../../common/components/ui/paginator/Paginator';
 
 export const CategoryPage = () => {
 
-  const data = useLoaderData() as CategoryLoaderResult
+  const { pagination, category } = useLoaderData() as CategoryLoaderResult;
+  const { threadsByCategory, loading, error } = useThreadStore();
+  const { setError } = useError();
 
-  const { pagination, category, threads } = data;
+  useEffect(() => {
+    console.log("Effect firing for page:", pagination.current);
+    ThreadStore.fetch(category.id, pagination.limit, pagination.current);
+  }, [category.id, pagination.current]); // pagination.current is the key trigger
+
+  useEffect(() => {
+    if (error !== null) {
+      setError(error);
+    }
+  }, [error, setError]);
+
+  const threads = threadsByCategory[category.id] || [];
+  const isActuallyLoading = loading[category.id] || threads.length === 0;
 
   return (
     <div className="layout">
@@ -20,12 +38,28 @@ export const CategoryPage = () => {
         />
 
         <Card
-          header={<Paginator entity={'categories'} totalPages={pagination.total} currentPage={pagination.current} />}
-          content={'test'}
+          header={<Paginator 
+            entity={'categories'} 
+            totalPages={pagination.total} 
+            currentPage={pagination.current} 
+          />}
+
+          content={isActuallyLoading ? (
+            <p>Loading...</p>
+          ) : (
+            threads.map((thread) => (
+              <ThreadPreviewItem 
+                key={`${thread.id}-p${pagination.current}`}
+                {...thread} 
+                iconStats={false} 
+                showLatest={true} 
+                showAuthorInfo='first' 
+              />
+            ))
+          )}
+          options={{noPadding: true}}
         />
       </div>
-
-      {threads.data.map((thread) => (<div>{JSON.stringify(thread)}</div>))}
     </div>
   )
 }

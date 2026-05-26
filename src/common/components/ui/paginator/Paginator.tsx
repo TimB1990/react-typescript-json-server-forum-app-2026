@@ -7,22 +7,25 @@ type PaginatorProps = {
 }
 
 export const Paginator = (props: PaginatorProps) => {
+
   const { entity, totalPages, currentPage } = props;
   const { slug } = useParams();
-
   const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
 
+  const nextPage = currentPage < totalPages ? currentPage + 1 : currentPage;
+
   return (
-    <nav aria-label="Pagination">
+    <nav aria-label="pagination">
       {pageNumbers.map(num => (
-        <Link 
-          key={num} 
-          to={`/${entity}/${slug}/page/${num}`} 
-          style={{ 
+        <Link
+          key={num}
+          to={`/${entity}/${slug}/page/${num}`}
+          className={currentPage === num ? "active" : ""}
+          style={{
             padding: '4px 8px',
             margin: '0 2px',
             backgroundColor: (currentPage === num ? "grey" : "transparent"),
-            color: (currentPage === num ? "white" : "black"),
+            color: (currentPage === num ? "white" : "grey"),
             textDecoration: 'none',
             borderRadius: '4px'
           }}
@@ -30,16 +33,10 @@ export const Paginator = (props: PaginatorProps) => {
           {num}
         </Link>
       ))}
-
-      {/* Only show NEXT if there's actually a next page */}
-      {currentPage < totalPages && (
-        <Link 
-          to={`/${entity}/${slug}/page/${currentPage + 1}`}
-          style={{ marginLeft: '10px' }}
-        >
-          NEXT »
-        </Link>
-      )}
+      &nbsp;
+      <Link to={`/${entity}/${slug}/page/${nextPage}`}>
+        NEXT
+      </Link>
     </nav>
-  );
+  )
 };

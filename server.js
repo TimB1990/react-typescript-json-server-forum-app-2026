@@ -129,7 +129,7 @@ server.get('/:resource', (req, res) => {
   const endIndex = startIndex + limit;
 
   // Set the final result to be a sliced portion of sorted by limit  
-  const finalResult = sorted.slice(0, limit);
+  const finalResult = sorted.slice(startIndex, endIndex);
 
   // return the result of the filter
   res.json({

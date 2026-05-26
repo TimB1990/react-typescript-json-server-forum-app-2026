@@ -34,25 +34,20 @@ export const routes = [
             },
             {
                 path: "/categories/:slug",
-                element: <CategoryPage />,
                 loader: categoryLoader,
                 handle: categoryBreadcrumbs,
                 children: [
                     {
                         index: true,
-                        loader: () => redirect("page/1")
-                    }, 
+                        loader: async ({ params }) => redirect(`/categories/${params.slug}/page/1`)
+                    },
                     {
                         path: "page/:pageNumber",
-                        loader: categoryLoader
+                        element: <CategoryPage key={window.location.pathname} />, // Keep element here
+                        loader: categoryLoader,
                     }
+
                 ]
-            },
-            {
-                path: "/categories/:slug/page/:pageNumber",
-                element: <CategoryPage />,
-                loader: categoryLoader,
-                handle: categoryBreadcrumbs
             },
             {
                 path: "/threads/:slug",

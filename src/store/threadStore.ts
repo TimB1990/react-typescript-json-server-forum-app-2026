@@ -14,39 +14,32 @@ const store = createStore<ThreadState>({
 // declare function to get the user data (the author) of the most recent message inside a given thread
 const messageAndAuthor = async (threadId: number, authorOf: 'lastMessage' | 'firstMessage'): Promise<{ author: string, postedAt: string, avatar: string }> => {
 
-    // get the latest message in the tread via ?threadId=4&limit=1, limit is applied and fetches most recent message in thread.
-    const msgResponse = await fetch(`http://localhost:5001/messages?threadId=${threadId}`)
+    // Fetch messages for the specific thread
+    const msgResponse = await fetch(`http://localhost:5001/messages?threadId=${threadId}`);
     const result = await msgResponse.json();
 
-    // Safety check: What if a thread has 0 messages?
     if (!result.data || result.data.length === 0) {
         return { author: "System", postedAt: "No messages", avatar: "" };
     }
 
-    // get the userId and createdAt as postedAt from the result's (only) first data item.
-    // since there is an automated sorting for new to old. Get the last in the set.
-    const applyingIndex = authorOf === 'firstMessage' ? 0 : result.data.length - 1
-    const userId = result.data[applyingIndex].userId
-    const postedAt = result.data[applyingIndex].createdAt
+    const applyingIndex = authorOf === 'firstMessage'
+        ? result.data.length - 1
+        : 0;
 
-    // apply the userId being fetched to look up specific user (author)
-    const authorResponse = await fetch(`http://localhost:5001/users/${userId}`)
+    const targetMessage = result.data[applyingIndex];
+    const userId = targetMessage.userId;
+    const postedAt = targetMessage.createdAt;
+
+    // Fetch the author details
+    const authorResponse = await fetch(`http://localhost:5001/users/${userId}`);
     const { username, avatar } = await authorResponse.json();
 
-    // return the concatted data 
     return {
         author: username,
-        postedAt: dayjs(postedAt).calendar(null, {
-            sameDay: '[Today at] HH:mm',
-            nextDay: '[Tomorrow at] HH:mm',
-            nextWeek: 'dddd [at] HH:mm',
-            lastDay: '[Yesterday at] HH:mm',
-            lastWeek: 'dddd [at] HH:mm',
-            sameElse: 'D MMMM YYYY'
-        }),
+        postedAt: dayjs(postedAt).fromNow(),
         avatar
-    }
-}
+    };
+};
 
 export const ThreadStore = {
     getState: store.getState,
@@ -56,31 +49,30 @@ export const ThreadStore = {
 
         const stateKey = categoryId !== null ? categoryId : "all";
 
-        // Set loading state to true for the specific category
         store.setState((prev) => ({
             ...prev,
+            // 1. Clear the old data immediately so the UI shows 'Loading'
+            threadsByCategory: {
+                ...prev.threadsByCategory,
+                [stateKey]: []
+            },
             loading: { ...prev.loading, [stateKey]: true }
         }));
 
-        // set params to work as query string, and append like [?&]categoryId=3
         const params = new URLSearchParams();
 
-        // only append category ID if it is explicitly provided
         if (categoryId !== null) {
             params.append("categoryId", `${categoryId}`);
         }
 
-        // in case the limit is given as an argument to this function apply the limit like [?&]limit=5
         if (limit !== null) params.append("limit", `${limit}`);
         if (page !== null) params.append("page", `${page}`);
 
         try {
 
-            // fetch data via the URL + query params 
             const response = await fetch(`http://localhost:5001/threads?${params.toString()}`);
             const { data } = await response.json();
 
-            // declare function to get message count of a given thread like /count/messages?threadId=4
             const messageCount = async (threadId: number): Promise<number> => {
                 const response = await fetch('http://localhost:5001/count/messages?threadId=' + threadId)
                 const result = await response.json();
@@ -88,20 +80,14 @@ export const ThreadStore = {
                 return count;
             }
 
-            // apply an async function to for Array.map() on data awaiting messageCount and lastMessageAndAuthor results to new data 
             const threadPromises = data.map(async (item: Thread) => {
                 const count = await messageCount(item.id);
                 const lastMessageBy = await messageAndAuthor(item.id, 'lastMessage');
                 const firstMessageBy = await messageAndAuthor(item.id, 'firstMessage')
                 return { ...item, lastMessageBy, firstMessageBy, messages: count };
             });
-
-            // resolve the Promises (get the resulting values)
             const finalData = await Promise.all(threadPromises);
 
-            // set the state where prev state is spreaded as well as threadsByCategory in case it was present.
-            // set dynamic key 'categoryId' (e.g. 4) and assign finalData to it.
-            // set dynamic key 'categoryId' (.e.g. 4) and set its property to false (loading is an object)
             store.setState((prev) => ({
                 ...prev,
                 threadsByCategory: {
