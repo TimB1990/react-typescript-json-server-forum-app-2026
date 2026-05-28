@@ -15,7 +15,7 @@ type ThreadPreviewItemProps = Thread & {
 
 export const ThreadPreviewItem = (props: ThreadPreviewItemProps) => {
 
-  const { id, title, lastMessageBy, firstMessageBy, messages, iconStats, showAuthorInfo, tags, showLatest } = props;
+  const { id, slug, title, lastMessageBy, firstMessageBy, messages, iconStats, showAuthorInfo, tags, showLatest } = props;
 
   const comments = messages !== undefined ? messages - 1 : 0;
 
@@ -49,7 +49,8 @@ export const ThreadPreviewItem = (props: ThreadPreviewItemProps) => {
   );
 
   return (
-    <Link to="" className='item-link' onClick={handleClick}>
+    // onClick={handleClick}
+    <Link to={`/threads/${slug}`} className='item-link'>
       <ImageCardItem
         image={lastMessageBy.avatar}
         main={

@@ -128,7 +128,7 @@ export const Home = () => {
                           <p>Newest member - {dayjs(latestUsers[0].createdAt).fromNow()}</p>
                         </>
                       }
-                      options={{ contentDirection: "vertical", centered: true, thumbImage: true, imageShape: "circle" }}
+                      options={{ contentDirection: "horizontal", centered: true, thumbImage: true, imageShape: "circle" }}
                     />
                   ) : (
                     // fallback

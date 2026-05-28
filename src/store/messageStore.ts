@@ -13,14 +13,7 @@ const store = createStore<MessageState>({
 
 // functions
 const formatDate = (dateString: string): string => {
-    return dayjs(dateString).calendar(null, {
-        sameDay: '[Today at] HH:mm',
-        nextDay: '[Tomorrow at] HH:mm',
-        nextWeek: 'dddd [at] HH:mm',
-        lastDay: '[Yesterday at] HH:mm',
-        lastWeek: 'dddd [at] HH:mm',
-        sameElse: 'D MMMM YYYY'
-    })
+    return dayjs(dateString).fromNow()
 }
 
 const totalUserMessageCount = async (userId: number): Promise<number> => {
@@ -56,18 +49,23 @@ export const MessageStore = {
 
         const stateKey = threadId !== null ? threadId : "all";
 
-        store.setState((prev) => ({
+       store.setState((prev) => ({
             ...prev,
+            // 1. Clear the old data immediately so the UI shows 'Loading'
+            messagesByThread: {
+                ...prev.messagesByThread,
+                [stateKey]: []
+            },
             loading: { ...prev.loading, [stateKey]: true }
-        }))
+        }));
 
         const params = new URLSearchParams();
         if (threadId !== null) {
-            params.append("threadId", "" + threadId);
+            params.append("threadId", `${threadId}`);
         }
 
-        if (limit !== null) params.append("limit", "" + limit);
-        if (page !== null) params.append("page", "" + page);
+        if (limit !== null) params.append("limit", `${limit}`);
+        if (page !== null) params.append("page", `${page}`);
 
         try {
 
@@ -77,8 +75,8 @@ export const MessageStore = {
             const messagePromises = data.map(async (item: Message) => {
 
                 // set format for posted at
-                const postedAt = formatDate(data.createdAt)
-                const author = await getAuthor(data.userId)
+                const postedAt = formatDate(item.createdAt)
+                const author = await getAuthor(item.userId)
                 return { ...item, messageBy: author, postedAt }
             })
 

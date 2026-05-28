@@ -1,7 +1,72 @@
-import React from 'react'
+import { useEffect } from 'react'
+import { useLoaderData } from 'react-router-dom'
+import type { ThreadLoaderResult } from '../../loaders/threadLoader'
+import { MessageStore, useMessageStore } from '../../store'
+import { useError } from '../../context/ErrorContext'
+import { Card } from '../../common/components/ui/cards/Card'
+import { ImageCardItem } from '../../common/components/ui/cards/ImageCardItem'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faQuoteLeft } from '@fortawesome/free-solid-svg-icons'
+import { faPlus } from '@fortawesome/free-solid-svg-icons'
 
 export const ThreadPage = () => {
+
+  const { pagination, thread } = useLoaderData() as ThreadLoaderResult
+  const { messagesByThread, loading, error } = useMessageStore();
+  const { setError } = useError();
+
+  useEffect(() => {
+    MessageStore.fetch(thread.id, pagination.limit, pagination.current)
+  }, [thread.id, pagination.current])
+
+  useEffect(() => {
+    if (error !== null) {
+      setError(error);
+    }
+  }, [error, setError]);
+
+  const messages = messagesByThread[thread.id] || [];
+  const isActuallyLoading = loading[thread.id] || messages.length === 0;
+
+  if (!isActuallyLoading) console.log('messages: ', messages)
+
   return (
-    <div>threadPage</div>
+    <div className="layout">
+      <div className="container full-width">
+        {isActuallyLoading && messages.length === 0 ? (
+          <p>Loading...</p>
+        ) : (
+          <Card
+            header={<h2>{thread.title}</h2>}
+            content={
+              <ImageCardItem
+                image={messages[0].messageBy.avatar}
+                aside={<div>
+                  <strong>{messages[0].messageBy.author}</strong>
+                  <p style={{ textAlign: 'center' }}>member</p>
+                </div>}
+                main={<>
+                  <div className="message-entry-post">
+                    <p>{messages[0].postedAt}</p>
+                    <p>{messages[0].content}</p>
+                  </div></>
+                }
+                meta={
+                                    <div className='message-entry-footer'>
+                    <menu>
+                      <li>
+                        <button><FontAwesomeIcon icon={faPlus}/></button>
+                      </li>
+                      <li>
+                        <button><FontAwesomeIcon icon={faQuoteLeft} /><span>Reply</span></button>
+                      </li>
+                    </menu>
+                  </div>
+                }
+              />
+            }
+          />)}
+      </div>
+    </div>
   )
 }

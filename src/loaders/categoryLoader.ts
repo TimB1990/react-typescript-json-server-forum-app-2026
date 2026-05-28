@@ -42,7 +42,7 @@ export async function categoryLoader({ params }: LoaderFunctionArgs): Promise<Ca
     }
     const group: Group = await groupResponse.json();
 
-    // 3 Use the dynamic limit in the fetch call
+    // 3 Use the limit in the fetch call
     const threadResponse = await fetch(`http://localhost:5001/threads?categoryId=${category.id}&page=${validatedPage}&limit=${limit}`)
     const threadData: ResponseResult<Thread> = await threadResponse.json();
 

@@ -16,7 +16,6 @@ const categoryBreadcrumbs = {
 
 const threadBreadcrumbs = {
     breadcrumb: (data: ThreadLoaderResult) => [
-        { label: data.group.title, path: `/groups/${data.group.id}` },
         { label: data.category.name, path: `/categories/${data.category.slug}` },
         { label: data.thread.title, path: `/threads/${data.thread.slug}` }
     ]
@@ -39,7 +38,7 @@ export const routes = [
                 children: [
                     {
                         index: true,
-                        loader: async ({ params }) => redirect(`/categories/${params.slug}/page/1`)
+                        loader: async ({ params } : {params: {slug: string}}) => redirect(`/categories/${params.slug}/page/1`)
                     },
                     {
                         path: "page/:pageNumber",
@@ -51,9 +50,19 @@ export const routes = [
             },
             {
                 path: "/threads/:slug",
-                element: <ThreadPage />,
                 loader: threadLoader,
-                handle: threadBreadcrumbs
+                handle: threadBreadcrumbs,
+                children: [
+                    {
+                        index: true,
+                        loader: async ({params} : {params: {slug: string}}) => redirect(`/threads/${params.slug}/page/1`)
+                    },
+                    {
+                        path: "page/:pageNumber",
+                        element: <ThreadPage key={window.location.pathname} />, // Keep element here
+                        loader: threadLoader,
+                    }
+                ]
             },
             {
                 path: "/login",

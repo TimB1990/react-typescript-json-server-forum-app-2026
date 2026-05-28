@@ -96,7 +96,6 @@ canvas {
 }
 
 .card-body {
-  padding: 1em;
   display: flex;
   flex-direction: column;
 }
@@ -169,6 +168,7 @@ canvas {
   min-width: 0;
   display: flex;
   flex-direction: column;
+  height: 100%;
   padding: 1em;
   border-right: 1px solid #2d3748;
   background-color: inherit;
@@ -586,9 +586,7 @@ canvas {
 
 .image-card-item {
   display: flex;
-  gap: 1em;
-  padding: 1em;
-  align-items: flex-start;
+  align-items: stretch;
 }
 
 .image-card-item.divided {
@@ -636,28 +634,75 @@ canvas {
   border-radius: 25%;
 }
 
-.image-card-item.centered {
-  justify-content: center;
-}
-
 .image-card-item .content-wrapper {
   display: flex;
   gap: 0.45em;
   width: 100%;
 }
 
+.image-card-item:has(> .content-wrapper) aside {
+  padding: clamp(1em, 2vw, 1.25em);
+}
+
+.image-card-item:has(.image-container.thumb) aside {
+  padding: clamp(0.4em, 2vw, 0.6em);
+}
+
+.image-card-item:has(.image-container.thumb):has(.content-wrapper.horizontal) aside {
+  padding-top: clamp(1em, 2vw, 1.25em);
+  padding-bottom: clamp(1em, 2vw, 1.25em);
+}
+
+.image-card-item:has(.image-container.thumb) .content-wrapper.horizontal {
+  padding-left: clamp(0.4em, 2vw, 0.6em);
+}
+
+.image-card-item:has(.image-container.thumb) .content-wrapper.vertical {
+  padding-top: clamp(0.4em, 2vw, 0.6em);
+  padding-bottom: clamp(0.4em, 2vw, 0.6em);
+  padding-left: clamp(0.4em, 2vw, 0.6em);
+}
+
+.image-card-item.centered {
+  align-self: center;
+}
+
 .image-card-item .content-wrapper.vertical {
+  display: flex;
   flex-direction: column;
+  padding: clamp(1em, 2vw, 1.25em);
+
+  /* The Logic Update: */
+  flex: 1; /* Take up remaining width */
+  
+  /* We use 250px as the floor. 
+     The 'preferred' value is 100% of the aside's height. */
+  min-height: clamp(100px, 100%, 100%);
 }
 
 .image-card-item .content-wrapper.horizontal {
+  display: flex;
   flex-direction: row;
+  padding: clamp(1em, 2vw, 1.25em);
+
+  /* The Logic Update: */
+  flex: 1; /* Take up remaining width */
+  
+  /* We use 250px as the floor. 
+     The 'preferred' value is 100% of the aside's height. */
+  min-height: clamp(100px, 100%, 100%);
   justify-content: space-between;
 }
 
+.image-card-item .content-wrapper.vertical .content {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+
 .image-card-item .content-wrapper .meta {
   display: flex;
-  gap: 0.3em;
 }
 
 .image-card-item .content-wrapper.horizontal .meta {
@@ -673,16 +718,6 @@ canvas {
 .image-card-item .content-wrapper .meta > * {
   min-width: max-content;
   font-size: 0.9em;
-}
-
-.card-item {
-  flex: 1;
-}
-
-.card-item.centered {
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
 @media (max-width: 1049px) {
@@ -718,4 +753,35 @@ canvas {
     border-left: none;
     border-top: none;
   }
+}
+
+.message-entry-footer menu {
+  text-decoration: none;
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+}
+
+.message-entry-footer menu li {
+  height: 2.5em;
+  display: flex;
+}
+
+.message-entry-footer menu li button {
+    color: oklch(0.71376 0.160355 64.8368);
+    padding: 0 1em;
+    font-weight: 600;
+    margin: 0;
+    display: flex;
+    gap: 0.5em;
+    align-items: center;
+    border: none;
+    background-color: transparent;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.message-entry-footer menu li button:hover {
+  background-color: color-mix(in srgb, oklch(0.71376 0.160355 64.8368) 10%, transparent);
 }

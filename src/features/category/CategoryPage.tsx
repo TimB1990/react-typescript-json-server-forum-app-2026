@@ -14,7 +14,6 @@ export const CategoryPage = () => {
   const { setError } = useError();
 
   useEffect(() => {
-    console.log("Effect firing for page:", pagination.current);
     ThreadStore.fetch(category.id, pagination.limit, pagination.current);
   }, [category.id, pagination.current]); // pagination.current is the key trigger
 

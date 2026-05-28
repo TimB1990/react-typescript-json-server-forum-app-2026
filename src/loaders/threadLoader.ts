@@ -1,44 +1,63 @@
-import { type LoaderFunctionArgs } from "react-router-dom";
-import { type Thread } from "../common/types/threads";
-import type { Category } from "../common/types/categories";
-import type { Group } from "../common/types/group";
+import type { LoaderFunctionArgs } from "react-router-dom"
+import type { Category } from "../common/types/categories"
+import type { ResponseResult } from "../common/types/general"
+import type { Message } from "../common/types/message"
+import type { Thread } from "../common/types/threads"
+import { MessageStore } from "../store"
 
 export type ThreadLoaderResult = {
-    thread: Thread;
-    category: Category;
-    group: Group
+    category: Category
+    thread: Thread
+    messages: ResponseResult<Message>
+    pagination: {
+        current: number
+        total: number
+        limit: number
+    }
 }
 
-export async function threadLoader({ params }: LoaderFunctionArgs): Promise<ThreadLoaderResult> {
-    
+export async function threadLoader({params}: LoaderFunctionArgs): Promise<ThreadLoaderResult> {
+
     const { slug } = params;
 
-    // 1. Fetch the thread
-    const threadResponse = await fetch(`http://localhost:5001/threads?slug=${slug}`);
-    if (!threadResponse.ok) {
-        throw new Response("Thread Not Found", { status: 404 });
-    }
-    const threadData = await threadResponse.json();
-    const thread: Thread = threadData.data[0];
+    const limit = 15;
 
+    const currentPage = params.pageNumber ? parseInt(params.pageNumber, 10) : 1;
+    const validatedPage = isNaN(currentPage) ? 1 : currentPage;
+
+    const threadResponse = await fetch(`http://localhost:5001/threads?slug=${slug}`)
+    if (!threadResponse.ok) { throw new Response("Thread Not Found", { status: 404 });}
+
+    const threads = await threadResponse.json();
+    const thread = threads.data[0]
+ 
     if (!thread) {
         throw new Response("Thread Not Found", { status: 404 });
     }
 
-    // 2. Fetch the parent category
-    const catResponse = await fetch(`http://localhost:5001/categories/${thread.categoryId}`);
-    if (!catResponse.ok) {
-        throw new Response("Parent Category Not Found", { status: 404 });
-    }
-    
-    const category: Category = await catResponse.json();
+    const categoryResponse = await fetch(`http://localhost:5001/categories/${thread.categoryId}`)
 
-    // 3. Fetch the grandparent group
-    const groupResponse = await fetch(`http://localhost:5001/groups/${category.groupId}`);
-    if (!groupResponse.ok) {
-        throw new Response("Parent Group Not Found", { status: 404 });
+    if(!categoryResponse.ok){
+         throw new Response("Category Not Found", { status: 404 });
     }
-    const group: Group = await groupResponse.json();
 
-    return { thread, category, group };
+    const category: Category = await categoryResponse.json();
+
+    const messageResponse = await fetch(`http://localhost:5001/messages?threadId=${thread.id}&page=${validatedPage}&limit=${limit}`)
+    const messageData: ResponseResult<Message> = await messageResponse.json();
+
+    // TRIGGER THE STORE FETCH HERE TOO (Don't await it, let it run in background)
+    // This starts the "fat" object processing the moment the link is clicked
+    MessageStore.fetch(thread.id, limit, validatedPage);
+
+    return {
+        category,
+        thread,
+        messages: messageData,
+        pagination: {
+            current: validatedPage,
+            total: messageData.totalPages,
+            limit // Pass this back so the UI knows the current limit
+        }
+    }
 }
