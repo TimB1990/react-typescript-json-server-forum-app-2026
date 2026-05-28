@@ -602,6 +602,8 @@ canvas {
   flex-direction: column;
   align-items: center;
   overflow: visible;
+  flex: 0 0 25%;
+  max-width: 25%;
 }
 
 .image-container {
@@ -638,6 +640,20 @@ canvas {
   display: flex;
   gap: 0.45em;
   width: 100%;
+}
+
+.image-card-item.divided:not(:has(.image-container.thumb)) aside {
+  border-right: 1px solid #2d3748;
+}
+
+.image-card-item:has(.image-container.thumb):has(.content-wrapper.vertical) aside {
+  flex: 0 0 max-content;
+  max-width: max-content;
+}
+
+.image-card-item:has(.image-container.thumb):has(.content-wrapper.horizontal) aside {
+  flex: 0 0 max-content;
+  max-width: max-content;
 }
 
 .image-card-item:has(> .content-wrapper) aside {

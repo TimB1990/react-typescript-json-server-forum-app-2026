@@ -8,6 +8,7 @@ import { ImageCardItem } from '../../common/components/ui/cards/ImageCardItem'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faQuoteLeft } from '@fortawesome/free-solid-svg-icons'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
+import type { Message } from '../../common/types/message'
 
 export const ThreadPage = () => {
 
@@ -30,43 +31,57 @@ export const ThreadPage = () => {
 
   if (!isActuallyLoading) console.log('messages: ', messages)
 
+  // A small helper component
+  const MessageItem = (msg: Message) => (
+    <ImageCardItem
+      image={msg.messageBy.avatar}
+      aside={
+        <div>
+          <p style={{ textAlign: 'center' }}>{msg.messageBy.author}</p>
+          <p style={{ textAlign: 'center' }}>member</p>
+        </div>
+      }
+      main={
+        <div className="message-entry-post">
+          <p>{msg.postedAt}</p>
+          <p>{msg.content}</p>
+        </div>
+      }
+      meta={
+        <div className='message-entry-footer'>
+          <menu>
+            <li>
+              <button><FontAwesomeIcon icon={faPlus} /></button>
+            </li>
+            <li>
+              <button><FontAwesomeIcon icon={faQuoteLeft} /><span>Reply</span></button>
+            </li>
+          </menu>
+        </div>
+      }
+    />
+  );
+
   return (
     <div className="layout">
       <div className="container full-width">
         {isActuallyLoading && messages.length === 0 ? (
           <p>Loading...</p>
-        ) : (
+        ) : (<>
           <Card
             header={<h2>{thread.title}</h2>}
-            content={
-              <ImageCardItem
-                image={messages[0].messageBy.avatar}
-                aside={<div>
-                  <strong>{messages[0].messageBy.author}</strong>
-                  <p style={{ textAlign: 'center' }}>member</p>
-                </div>}
-                main={<>
-                  <div className="message-entry-post">
-                    <p>{messages[0].postedAt}</p>
-                    <p>{messages[0].content}</p>
-                  </div></>
-                }
-                meta={
-                  <div className='message-entry-footer'>
-                    <menu>
-                      <li>
-                        <button><FontAwesomeIcon icon={faPlus} /></button>
-                      </li>
-                      <li>
-                        <button><FontAwesomeIcon icon={faQuoteLeft} /><span>Reply</span></button>
-                      </li>
-                    </menu>
-                  </div>
-                }
-              />
-            }
-            options={{divided: {top: true, bottom: false}}}
-          />)}
+            content={<MessageItem {...messages[0]} />}
+            options={{ divided: { top: false, bottom: false } }}
+          />
+          {messages.slice(1).map((msg, index) => (
+            <Card
+              key={msg.id || index} // Always provide a unique key
+              content={<MessageItem {...msg} />}
+              options={{ divided: { top: false, bottom: false } }}
+            />
+          ))}
+        </>)
+        }
       </div>
     </div>
   )
