@@ -52,10 +52,10 @@ export const ThreadPage = () => {
                   </div></>
                 }
                 meta={
-                                    <div className='message-entry-footer'>
+                  <div className='message-entry-footer'>
                     <menu>
                       <li>
-                        <button><FontAwesomeIcon icon={faPlus}/></button>
+                        <button><FontAwesomeIcon icon={faPlus} /></button>
                       </li>
                       <li>
                         <button><FontAwesomeIcon icon={faQuoteLeft} /><span>Reply</span></button>
@@ -65,6 +65,7 @@ export const ThreadPage = () => {
                 }
               />
             }
+            options={{divided: {top: true, bottom: false}}}
           />)}
       </div>
     </div>

@@ -76,7 +76,7 @@ export const Home = () => {
             ) : (<>
               <Card
                 header={<h2>Talk with us!</h2>}
-                content={<>Lorem ipsum dolor sit amet consectetur adipisicing elit. Sit, odio. Aspernatur, saepe eum animi in hic fugit ullam maxime quam earum.</>}
+                content={<div style={{padding: 'clamp(1em, 2vw, 1.25em)'}}>Lorem ipsum dolor sit amet consectetur adipisicing elit. Sit, odio. Aspernatur, saepe eum animi in hic fugit ullam maxime quam earum.</div>}
                 footer={<RegisterLoginButtons />}
                 options={{ divided: { top: true, bottom: true } }}
               />
@@ -93,7 +93,7 @@ export const Home = () => {
 
               <Card
                 header={<h2>Welcome at our forum!</h2>}
-                content={<>Lorem ipsum dolor sit amet consectetur adipisicing elit. Corrupti, omnis sit rerum facere magnam illum, officiis odio beatae neque illo voluptatibus? Iste, minima assumenda porro explicabo neque atque! Sequi.</>}
+                content={<div style={{padding: 'clamp(1em, 2vw, 1.25em)'}}>Lorem ipsum dolor sit amet consectetur adipisicing elit. Corrupti, omnis sit rerum facere magnam illum, officiis odio beatae neque illo voluptatibus? Iste, minima assumenda porro explicabo neque atque! Sequi.</div>}
                 options={{ divided: { top: true, bottom: false } }}
               />
 

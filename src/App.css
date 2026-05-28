@@ -93,6 +93,7 @@ canvas {
 .card {
   border-radius: 8px;
   background-color: oklch(0.25 0.01 264.37);
+  border: 1px solid #2d3748;
 }
 
 .card-body {
@@ -195,7 +196,6 @@ canvas {
   color: inherit; /* Keep your forum text colors */
   display: block; /* Important: makes the whole row clickable */
   transition: background-color 0.2s ease;
-  border-bottom: 1px solid #2d3748;
 }
 
 .item-link:last-child {
@@ -590,11 +590,11 @@ canvas {
 }
 
 .image-card-item.divided {
-  border-bottom: 1px solid #2d3748;
+  border-top: 1px solid #2d3748;
 }
 
-.image-card-item:last-child {
-  border: none;
+.image-card-item.divided:last-child:not(:first-child) {
+  border-bottom: none;
 }
 
 .image-card-item aside {

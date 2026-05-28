@@ -13,23 +13,23 @@ export const ImageCardItem: React.FC<ImageCardItemProps> = ({ aside, image, main
     } = options || {}
 
     return (
-        <div className={`image-card-item ${applyBorder ? 'divided' : ''} ${centered ? 'centered': ''}`}>
+        <div className={`image-card-item ${applyBorder ? 'divided' : ''} ${centered ? 'centered' : ''}`}>
 
-                <aside>
-                    <div className={`image-container ${thumbImage ? 'thumb' : ''} ${imageShape}`}>
-                        <img src={image} alt="" />
-                    </div>
-                    {aside}
-                </aside>
-
-                <div className={`content-wrapper ${contentDirection}`}>
-                    <main className="content">
-                        {main}
-                    </main>
-                    <div className='meta'>
-                        {meta}
-                    </div>
+            <aside>
+                <div className={`image-container ${thumbImage ? 'thumb' : ''} ${imageShape}`}>
+                    <img src={image} alt="" />
                 </div>
+                {aside}
+            </aside>
+
+            <div className={`content-wrapper ${contentDirection}`}>
+                <main className="content">
+                    {main}
+                </main>
+                <div className='meta'>
+                    {meta}
+                </div>
+            </div>
 
         </div>
     )
