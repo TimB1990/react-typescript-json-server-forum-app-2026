@@ -45,7 +45,7 @@ export const CategoryItem = (props: Category) => {
                     <p>Loading...</p>
                 ) : (
                     threads.map((thread: Thread) => (
-                        <ThreadPreviewItem key={`thread-${thread.id}`} {...thread} />
+                        <ThreadPreviewItem key={`thread-${thread.id}`} {...thread} showAuthorInfo='last' />
                     ))
                 )}
             </div>
