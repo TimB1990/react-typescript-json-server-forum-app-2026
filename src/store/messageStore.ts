@@ -72,7 +72,9 @@ export const MessageStore = {
             const response = await fetch(`http://localhost:5001/messages?${params.toString()}`)
             const { data } = await response.json();
 
-            const messagePromises = data.map(async (item: Message) => {
+            // flip the data since because of the createdAt it is automatically sorted from new to old.
+            // in a thread we want to see the messages from old to new
+            const messagePromises = data.reverse().map(async (item: Message) => {
 
                 // set format for posted at
                 const postedAt = formatDate(item.createdAt)
