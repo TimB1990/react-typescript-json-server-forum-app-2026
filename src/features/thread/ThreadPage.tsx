@@ -36,7 +36,7 @@ export const ThreadPage = () => {
     <ImageCardItem
       image={msg.messageBy.avatar}
       aside={
-        <div>
+        <div style={{marginTop: '1.2em'}}>
           <p style={{ textAlign: 'center' }}>{msg.messageBy.author}</p>
           <p style={{ textAlign: 'center' }}>member</p>
         </div>
