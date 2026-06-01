@@ -13,7 +13,7 @@ const store = createStore<MessageState>({
 
 // functions
 const formatDate = (dateString: string): string => {
-    return dayjs(dateString).fromNow()
+    return dayjs(dateString).format("MMMM D, YYYY [at] HH:mm")
 }
 
 const totalUserMessageCount = async (userId: number): Promise<number> => {

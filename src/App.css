@@ -801,3 +801,58 @@ canvas {
 .message-entry-footer menu li button:hover {
   background-color: color-mix(in srgb, oklch(0.71376 0.160355 64.8368) 10%, transparent);
 }
+
+.message-quote {
+background-color: #23272d;
+/* Replace the full border with a thick left border */
+border-left: 4px solid #3b444f; 
+border-top: 1px solid rgba(255, 255, 255, 0.05);
+border-right: 1px solid rgba(255, 255, 255, 0.05);
+border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+
+border-top-right-radius: 4px;
+border-bottom-right-radius: 4px;
+margin: 16px 0;
+padding: 16px;
+color: #9ba3af;
+font-size: 15px;
+line-height: 1.6;
+}
+
+.message-quote p:first-of-type {
+  display: flex;
+  /* Corrected property and value */
+  justify-content: space-between; 
+  align-items: center; 
+  
+  margin: 0 0 16px 0;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+/* This keeps the quote icon and text stuck together on the left */
+.quote-meta-left {
+  display: flex;
+  align-items: center;
+  gap: 12px; /* Replaces the need for margin-right on the svg */
+}
+
+.message-quote p svg {
+  /* Remove margin-right if using gap above */
+  font-size: 14px;
+  color: #9ba3af;
+  opacity: 0.9;
+  transition: color 0.2s;
+  cursor: pointer;
+}
+
+.message-quote p svg:hover{
+  color: white;
+}
+
+.quote-body {
+  /* This matches the slightly indented, lighter grey look of the content */
+  color: #9ba3af;
+  padding-left: 2px; 
+}

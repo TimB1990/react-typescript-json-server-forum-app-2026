@@ -9,6 +9,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faQuoteLeft } from '@fortawesome/free-solid-svg-icons'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import type { Message } from '../../common/types/message'
+import { Paginator } from '../../common/components/ui/paginator/Paginator'
+import { MessageParent } from '../../common/components/ui/blockquotes/MessageParent'
 
 export const ThreadPage = () => {
 
@@ -29,21 +31,31 @@ export const ThreadPage = () => {
   const messages = messagesByThread[thread.id] || [];
   const isActuallyLoading = loading[thread.id] || messages.length === 0;
 
-  if (!isActuallyLoading) console.log('messages: ', messages)
+  // if (!isActuallyLoading) console.log('messages: ', messages)
+
+  console.log('messages: ', messages)
 
   // A small helper component
-  const MessageItem = (msg: Message) => (
-    <ImageCardItem
+  const MessageItem = (msg: Message) => {
+
+    const parentMessageObject = messages.find(m => m.id === msg.parentId);
+
+    return (<ImageCardItem
       image={msg.messageBy.avatar}
       aside={
-        <div style={{marginTop: '1.2em'}}>
+        <div style={{ marginTop: '1.2em' }}>
           <p style={{ textAlign: 'center' }}>{msg.messageBy.author}</p>
           <p style={{ textAlign: 'center' }}>member</p>
         </div>
       }
       main={
         <div className="message-entry-post">
-          <p>{msg.postedAt}</p>
+          {msg.parentId !== null && parentMessageObject !== undefined ? (
+            <MessageParent
+              parentUrl={`https://localhost:5001/messages/${msg.parentId}`}
+              messageObject={parentMessageObject}
+            />
+          ) : ''}
           <p>{msg.content}</p>
         </div>
       }
@@ -59,12 +71,19 @@ export const ThreadPage = () => {
           </menu>
         </div>
       }
-    />
-  );
+    />)
+  };
 
   return (
     <div className="layout">
       <div className="container full-width">
+
+        {pagination.total > 1 && <Paginator
+          entity={'threads'}
+          totalPages={pagination.total}
+          currentPage={pagination.current}
+        />}
+
         {isActuallyLoading && messages.length === 0 ? (
           <p>Loading...</p>
         ) : (<>
@@ -82,6 +101,11 @@ export const ThreadPage = () => {
           ))}
         </>)
         }
+        {pagination.total > 1 && <Paginator
+          entity={'threads'}
+          totalPages={pagination.total}
+          currentPage={pagination.current}
+        />}
       </div>
     </div>
   )

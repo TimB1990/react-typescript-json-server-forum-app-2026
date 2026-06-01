@@ -32,7 +32,7 @@ export const CategoryPage = () => {
         <Card
           header={<h1>{category.name}</h1>}
           content={
-            <p>{category.description}</p>
+            <div style={{padding: 'clamp(1em, 2vw, 1.25em'}}>{category.description}</div>
           }
         />
 
