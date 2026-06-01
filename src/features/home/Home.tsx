@@ -88,7 +88,6 @@ export const Home = () => {
                 header={<h2>Latest topics</h2>}
                 content={
                   <div className="threads">
-                    <p style={{color:'red'}}>WRONG DATA PAGINATION NOT INCLUDED FOR FETCHING LATEST</p>
                     {latestThreads.map((thread: Thread) => (
                       <ThreadPreviewItem
                         key={`latest-thread-${thread.id}`}
