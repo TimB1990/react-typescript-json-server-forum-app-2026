@@ -20,10 +20,12 @@ import dayjs from 'dayjs'
 
 export const Home = () => {
 
-  const { groups, loading, error } = useGroupStore();
-  const { threadsByCategory: threads, totalCount: totalThreads } = useThreadStore();
+  const { groups, loading: groupsLoading, error } = useGroupStore();
+  const { threadsByCategory: threads, loading: threadsLoading, totalCount: totalThreads } = useThreadStore();
   const { messagesByThread: messages, totalCount: totalMessages } = useMessageStore();
   const { totalCount: totalUsers, users: latestUsers } = useUserStore();
+
+  const isPageLoading = groupsLoading || threadsLoading["all"];
 
   const latestThreads = threads?.["all"] || [];
   const latestMessages = messages?.["all"] || [];
@@ -57,7 +59,7 @@ export const Home = () => {
           options={{ divided: { top: true, bottom: false }, noPadding: true }}
         />
 
-        {loading && groups.length === 0 ? (
+        {isPageLoading && groups.length === 0 ? (
           <p>Loading...</p>
         ) : (
           groups.map((group: Group) => (
@@ -71,29 +73,40 @@ export const Home = () => {
       <div className="container second">
         <>
           {
-            loading ? (
+            isPageLoading ? (
               <p>Loading...</p>
             ) : (<>
               <Card
                 header={<h2>Talk with us!</h2>}
-                content={<div style={{padding: 'clamp(1em, 2vw, 1.25em)'}}>Lorem ipsum dolor sit amet consectetur adipisicing elit. Sit, odio. Aspernatur, saepe eum animi in hic fugit ullam maxime quam earum.</div>}
+                content={<div style={{ padding: 'clamp(1em, 2vw, 1.25em)' }}>Lorem ipsum dolor sit amet consectetur adipisicing elit. Sit, odio. Aspernatur, saepe eum animi in hic fugit ullam maxime quam earum.</div>}
                 footer={<RegisterLoginButtons />}
                 options={{ divided: { top: true, bottom: true } }}
               />
 
               <Card
+              // not working because the pagination is not OK
                 header={<h2>Latest topics</h2>}
-                content={<div className="threads">
-                  {latestThreads.map((thread: Thread) => (
-                    <ThreadPreviewItem key={`latest-thread-${thread.id}`} {...thread} iconStats={true} showAuthorInfo='first' />
-                  ))}
-                </div>}
+                content={
+                  <div className="threads">
+                    <p style={{color:'red'}}>WRONG DATA PAGINATION NOT INCLUDED FOR FETCHING LATEST</p>
+                    {latestThreads.map((thread: Thread) => (
+                      <ThreadPreviewItem
+                        key={`latest-thread-${thread.id}`}
+                        {...thread}
+                        iconStats={true}
+                        // 'first' ensures we show the thread creator, 
+                        // which is now correctly fetched via order=asc
+                        showAuthorInfo='first'
+                      />
+                    ))}
+                  </div>
+                }
                 options={{ noPadding: true, divided: { top: true, bottom: false } }}
               />
 
               <Card
                 header={<h2>Welcome at our forum!</h2>}
-                content={<div style={{padding: 'clamp(1em, 2vw, 1.25em)'}}>Lorem ipsum dolor sit amet consectetur adipisicing elit. Corrupti, omnis sit rerum facere magnam illum, officiis odio beatae neque illo voluptatibus? Iste, minima assumenda porro explicabo neque atque! Sequi.</div>}
+                content={<div style={{ padding: 'clamp(1em, 2vw, 1.25em)' }}>Lorem ipsum dolor sit amet consectetur adipisicing elit. Corrupti, omnis sit rerum facere magnam illum, officiis odio beatae neque illo voluptatibus? Iste, minima assumenda porro explicabo neque atque! Sequi.</div>}
                 options={{ divided: { top: true, bottom: false } }}
               />
 

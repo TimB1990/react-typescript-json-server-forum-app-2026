@@ -14,19 +14,19 @@ const store = createStore<ThreadState>({
 // declare function to get the user data (the author) of the most recent message inside a given thread
 const messageAndAuthor = async (threadId: number, authorOf: 'lastMessage' | 'firstMessage'): Promise<{ author: string, postedAt: string, avatar: string }> => {
 
+    // We only need 1 message, but we need to tell the server which end of the timeline to look at
+    const order = authorOf === 'firstMessage' ? 'asc' : 'desc';
+
     // Fetch messages for the specific thread
-    const msgResponse = await fetch(`http://localhost:5001/messages?threadId=${threadId}`);
+    const msgResponse = await fetch(`http://localhost:5001/messages?threadId=${threadId}&limit=1&order=${order}`);
     const result = await msgResponse.json();
 
     if (!result.data || result.data.length === 0) {
         return { author: "System", postedAt: "No messages", avatar: "" };
     }
 
-    const applyingIndex = authorOf === 'firstMessage'
-        ? result.data.length - 1
-        : 0;
-
-    const targetMessage = result.data[applyingIndex];
+    // Because we used limit=1, the message we want is always at index 0
+    const targetMessage = result.data[0];
     const userId = targetMessage.userId;
     const postedAt = targetMessage.createdAt;
 

@@ -49,7 +49,7 @@ export const MessageStore = {
 
         const stateKey = threadId !== null ? threadId : "all";
 
-       store.setState((prev) => ({
+        store.setState((prev) => ({
             ...prev,
             // 1. Clear the old data immediately so the UI shows 'Loading'
             messagesByThread: {
@@ -62,6 +62,7 @@ export const MessageStore = {
         const params = new URLSearchParams();
         if (threadId !== null) {
             params.append("threadId", `${threadId}`);
+            params.append("order", "asc")
         }
 
         if (limit !== null) params.append("limit", `${limit}`);
@@ -71,10 +72,9 @@ export const MessageStore = {
 
             const response = await fetch(`http://localhost:5001/messages?${params.toString()}`)
             const { data } = await response.json();
-
-            // flip the data since because of the createdAt it is automatically sorted from new to old.
-            // in a thread we want to see the messages from old to new
-            const messagePromises = data.reverse().map(async (item: Message) => {
+            
+            // makes if thread ID not empty then also apply order so data is fetched well.
+            const messagePromises = data.map(async (item: Message) => {
 
                 // set format for posted at
                 const postedAt = formatDate(item.createdAt)
@@ -102,7 +102,7 @@ export const MessageStore = {
         }
     },
 
-    fetchLatestOverview: async (limit: number) => {
+    fetchLatestOverview: async (limit: number, page: number = 1) => {
         const stateKey = 'all';
 
         store.setState((prev) => ({
@@ -112,7 +112,10 @@ export const MessageStore = {
 
         const params = new URLSearchParams();
 
-        if (limit !== null) params.append("limit", "" + limit);
+        if (limit !== null) params.append("limit", `${limit}`);
+
+        // add the page paramter. In this case always the first page.
+        params.append("page", `${page}`)
 
         try {
 
@@ -120,15 +123,33 @@ export const MessageStore = {
             const { data } = await response.json();
 
             const messagePromises = data.map(async (item: Message) => {
-                const threadResponse = await fetch(`http://localhost:5001/threads/${item.threadId}`)
-                const author = await getAuthor(item.userId)
+                const threadResponse = await fetch(`http://localhost:5001/threads/${item.threadId}`);
                 const thread: Thread = await threadResponse.json();
-                const { title } = thread
+
+                // Fetch the creator - explicitly set page 1 and limit 1
+                const creatorMsgResponse = await fetch(
+                    `http://localhost:5001/messages?threadId=${item.threadId}&order=asc&limit=1&page=1`
+                );
+
+                const { data: creatorData } = await creatorMsgResponse.json(); // Note: destructured as creatorData to avoid name collision
+                const firstMessage = creatorData[0];
+
+                // get the author of that specific first message
+                const author = firstMessage ? await getAuthor(firstMessage.userId) : null
+
                 const postedAt = formatDate(item.createdAt)
-                return { ...item, threadInfo: { title }, messageBy: author, postedAt }
+
+                return {
+                    ...item,
+                    threadInfo: { title: thread.title },
+                    messageBy: author,
+                    postedAt
+                }
             })
 
             const finalData = await Promise.all(messagePromises)
+
+            console.log(finalData)
 
             store.setState((prev) => ({
                 ...prev,

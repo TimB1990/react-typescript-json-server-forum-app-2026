@@ -114,11 +114,14 @@ server.get('/:resource', (req, res) => {
   // filter the full data by the filters given as query param
   const filtered = filterDataByQueryParams(data, filters);
 
+  // updated sorting logic
+  const sortOrder = filters.order === 'asc' ? 'asc' : 'desc'; // Default to desc
+
   // spread the filtered result then apply sort on createdAt
   const sorted = [...filtered].sort((a, b) => {
     const dateA = new Date(a.createdAt || 0).getTime();
     const dateB = new Date(b.createdAt || 0).getTime();
-    return dateB - dateA;
+    return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
   });
 
   // Apply limit given as query string cast to int

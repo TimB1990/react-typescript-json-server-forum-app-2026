@@ -19,23 +19,6 @@ export const ThreadPreviewItem = (props: ThreadPreviewItemProps) => {
 
   const comments = messages !== undefined ? messages - 1 : 0;
 
-  const slugify = (text: string) => {
-    return text
-      .toString()                           // Ensure it's a string
-      .normalize('NFD')                     // Separate accents from letters
-      .replace(/[\u0300-\u036f]/g, '')      // Remove the accent marks
-      .toLowerCase()                        // Convert to lowercase
-      .trim()                               // Remove whitespace from both ends
-      .replace(/\s+/g, '-')                 // Replace spaces with -
-      .replace(/[^\w-]+/g, '')              // Remove all non-word chars
-      .replace(/--+/g, '-');                // Replace multiple - with single -
-  };
-
-  const handleClick = (e: React.MouseEvent) => {
-    e.preventDefault()
-    console.log(`Thread ${id}-${slugify(title)} clicked!`);
-  }
-
   const displayMessage = showAuthorInfo === 'first' ? firstMessageBy : lastMessageBy;
 
   const metaContent = (
@@ -52,7 +35,7 @@ export const ThreadPreviewItem = (props: ThreadPreviewItemProps) => {
     // onClick={handleClick}
     <Link to={`/threads/${slug}`} className='item-link'>
       <ImageCardItem
-        image={lastMessageBy.avatar}
+        image={displayMessage.avatar}
         main={
           <>
             <div style={{ display: 'flex' }}>
