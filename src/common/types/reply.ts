@@ -3,7 +3,7 @@ export type Reply = {
     parentMessageId: number,
     threadId: number,
     atPage: number | null,
-    createdAt: number
+    createdAt?: number
 }
 
 export interface ReplyState {

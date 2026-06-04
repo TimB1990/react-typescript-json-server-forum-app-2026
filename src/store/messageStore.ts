@@ -3,6 +3,8 @@ import type { MessageState, Message } from "../common/types/message";
 import { createStore } from "./createStore";
 import type { User } from "../common/types/users";
 import type { Thread } from "../common/types/threads";
+import { RepliesStore } from "./repliesStore";
+
 
 const store = createStore<MessageState>({
     messagesByThread: {},
@@ -23,22 +25,30 @@ const totalUserMessageCount = async (userId: number): Promise<number> => {
     return userMessageCount;
 }
 
+// Local cache to prevent redundant fetches for the same user on one page
+const authorCache: Record<number, any> = {}
+
 const getAuthor = async (userId: number): Promise<{
     author: string,
     avatar: string,
     totalUserMessageCount: number,
 }> => {
 
+    if(authorCache[userId]) return authorCache[userId]
+
     const authorResponse = await fetch(`http://localhost:5001/users/${userId}`)
     const author: User = await authorResponse.json();
-
     const count = await totalUserMessageCount(userId)
 
-    return {
+    const authorData = {
         author: author.username,
         avatar: author.avatar,
         totalUserMessageCount: count
     }
+
+    // Save to cache
+    authorCache[userId] = authorData;
+    return authorData;
 }
 
 export const MessageStore = {
@@ -71,7 +81,20 @@ export const MessageStore = {
         try {
 
             const response = await fetch(`http://localhost:5001/messages?${params.toString()}`)
-            const { data } = await response.json();
+            const { data } : {data: Message[]} = await response.json();
+
+            // resolve parent pages logic
+            // collect all unique parentIds from this slice of messages
+            const parentIds = data
+                .map(m => m.parentId)
+                .filter((id): id is number => id !== null)
+
+            const uniqueParentIds = [...new Set(parentIds)]
+
+            // trigger resolve page call in background
+            if(uniqueParentIds.length > 0){
+                RepliesStore.resolveMissingPages(uniqueParentIds)
+            }
             
             // makes if thread ID not empty then also apply order so data is fetched well.
             const messagePromises = data.map(async (item: Message) => {
@@ -184,6 +207,34 @@ export const MessageStore = {
                 error: "Failed to count Messages: " + err
             }))
         }
+    },
+    getMessageById: async(messageId: number, threadId: number) => {
+
+        const state = store.getState();
+        const currentStateMessages = state.messagesByThread[threadId] ?? []
+        const existingRecord = currentStateMessages.find(m => m.id === messageId)
+
+        if(existingRecord) return existingRecord;
+
+        if(!state.loading[threadId]){
+            try {
+                const response = await fetch(`http://localhost:5001/messages/${messageId}`)
+                const result: Message = await response.json();
+
+                const messagePromises = async (item: Message) => {
+                    const postedAt = formatDate(item.createdAt)
+                    const author = await getAuthor(item.userId)
+                    return {...item, messageBy: author, postedAt }
+                }
+
+                const finalData = await messagePromises(result)
+                return finalData
+
+            } catch (err) {
+                console.error("Cannot fetch message: " + err)
+            }
+        } 
+
     }
 
 

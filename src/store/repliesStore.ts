@@ -31,7 +31,7 @@ const fetchReplies = async (threadId: number | null = null, limit: number | null
 
     try {
 
-        const response = await fetch(`https://localhost:5001/replies?${params.toString()}`)
+        const response = await fetch(`http://localhost:5001/replies?${params.toString()}`)
         const { data }: { data: Reply[] } = await response.json();
         const finalData = data;
 
@@ -60,25 +60,26 @@ export const RepliesStore = {
     fetch: async (threadId: number | null = null, limit: number | null = null) => {
         await fetchReplies(threadId, limit)
     },
-    // getReplyByThreadId: async (threadId: number, messageId: number) => {
 
-    //     const state = store.getState();
-    //     const currentThreadReplies = state.repliesByThread[threadId] ?? [];
+    getReplyFromThreadId: async (threadId: number, messageId: number) => {
 
-    //     const existingRecord = currentThreadReplies.find(reply => reply.messageId === messageId)
+        const state = store.getState();
+        const currentThreadReplies = state.repliesByThread[threadId] ?? [];
 
-    //     if (existingRecord) {
-    //         return existingRecord;
-    //     }
+        const existingRecord = currentThreadReplies.find(reply => reply.messageId === messageId)
 
-    //     if (!state.loading[threadId]) {
-    //         await fetchReplies(threadId)
-    //     }
+        if (existingRecord) {
+            return existingRecord;
+        }
 
-    //     const updatedState = store.getState();
-    //     const freshThreadReplies = updatedState.repliesByThread[threadId] ?? []
-    //     return freshThreadReplies.find(reply => reply.messageId === messageId)
-    // },
+        if (!state.loading[threadId]) {
+            await fetchReplies(threadId)
+        }
+
+        const updatedState = store.getState();
+        const freshThreadReplies = updatedState.repliesByThread[threadId] ?? []
+        return freshThreadReplies.find(reply => reply.messageId === messageId)
+    },
 
     // setPageNumber: async (threadId: number, messageId: number, pageNumber: number) => {
 
@@ -95,13 +96,13 @@ export const RepliesStore = {
     //             const currentList = prev.repliesByThread[stateKey] ?? []
 
     //             // If the ID matches, use the updatedRecord. Otherwise, keep the old one.
-    //             const updatedList = currentList.map((reply) => 
+    //             const updatedList = currentList.map((reply) =>
     //                 reply.messageId === messageId ? updatedRecord : reply)
 
     //             // If the record wasn't in the list at all (e.g., first fetch), add it
     //             const recordExists = currentList.some(r => r.messageId === messageId)
     //             const finalResults = recordExists ? updatedList : [...currentList, updatedRecord]
-                
+
     //             return ({
     //                 ...prev,
     //                 repliesByThread: {
@@ -121,6 +122,50 @@ export const RepliesStore = {
     //     }
     // },
 
-    
+    resolveMissingPages: async (ids: number[]) => {
+
+        try {
+            const response = await fetch(`http://localhost:5001/replies/resolve-pages`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ids })
+            })
+
+            const results: { messageId: number; atPage: number; threadId: number }[] = await response.json();
+
+            // update the replies store with the new page info
+            store.setState((prev) => {
+                const updatedByThread = { ...prev.repliesByThread }
+
+                results.forEach(res => {
+                    const tId = res.threadId;
+
+                    if (!updatedByThread[tId]) {
+                        updatedByThread[tId] = [];
+                    }
+
+                    // 1. Create the new array reference
+                    const newArray = [...updatedByThread[tId]];
+                    const existingIndex = newArray.findIndex(r => r.messageId === res.messageId);
+
+                    if (existingIndex > -1) {
+                        newArray[existingIndex] = { ...newArray[existingIndex], atPage: res.atPage };
+                    } else {
+                        newArray.push({ messageId: res.messageId, atPage: res.atPage, threadId: tId, parentMessageId: 0 });
+                    }
+
+                    // 2. CRITICAL: Assign the NEW array back to the object
+                    updatedByThread[tId] = newArray;
+                });
+
+                return { ...prev, repliesByThread: updatedByThread }
+            })
+        }
+        catch (err) {
+            console.error("Failed to resolve pivot pages:", err)
+        }
+    }
+
+
 
 }

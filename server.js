@@ -143,7 +143,7 @@ server.get('/:resource', (req, res) => {
 
   // -- START EXCEPTION LOGIC
   const skipPagination = NON_PAGINATED_RESROUCES.includes(resource)
-  
+
   let finalResult = sorted;
   // let limit = sorted.length;
   let page = 1
@@ -170,60 +170,62 @@ server.get('/:resource', (req, res) => {
   });
 });
 
-server.post('/replies/resolve-pages', async(req, res) => {
-  const { ids } = req.body
+server.post('/replies/resolve-pages', async (req, res) => {
+  const { ids } = req.body;
   const itemsPerPage = DEFAULT.messages;
 
-  if(!ids || !Array.isArray(ids)){
+  if (!ids || !Array.isArray(ids)) {
     return res.status(400).send("Invalid IDs provided");
   }
 
   try {
-    const db = router.db; // Access lowdb
-    const allMessages = db.get('messages').value();
-    const allReplies = db.get('replies').value();
+    const db = router.db;
+    const allMessages = db.get('messages').value() || [];
 
-    const results = ids.map(id => {
-      const message = allMessages.find(m => m.id === id)
+    const results = ids.map(targetId => {
+      const message = allMessages.find(m => m.id === targetId);
+      
+      if (!message) return { messageId: targetId, atPage: null, error: "Not found" };
 
-      // 1. Find the target message
-      if(!message) return {messageId: id, atPage: null, error: "Not found"}
-
-      // 2. Get all messages in the SAME thread, sorted by creation date
+      // Calculate the page number
       const threadMessages = allMessages
-        .filter(m => m.threadId === targetMsg.threadId)
-        .sort((a, b) => a.createdAt - b.createdAt)
+        .filter(m => m.threadId === message.threadId)
+        .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
 
-      // 3. Find the rank (position) of this message
-      const index = threadMessages.findIndex(m => m.id === id)
-      const atPage = Math.floor(index / itemsPerPage) + 1
+      const index = threadMessages.findIndex(m => m.id === targetId);
+      const atPage = Math.floor(index / itemsPerPage) + 1;
 
-      // check if the pivot record exists
-      const existingPivot = allReplies.find({messageId: id}).value();
+      // CORRECT LOWDB UPDATE PATTERN
+      const existing = db.get('replies').find({ messageId: targetId }).value();
 
-      if(existingPivot){
-        allReplies.find({messageId: id}).assign({atPage}).write();
+      if (existing) {
+        // Update: You must call .find() on the collection and .assign() before .write()
+        db.get('replies')
+          .find({ messageId: targetId })
+          .assign({ atPage })
+          .write();
+      } else {
+        // Create
+        db.get('replies')
+          .push({
+            messageId: targetId,
+            parentMessageId: message.parentId || null,
+            threadId: message.threadId,
+            atPage: atPage
+          })
+          .write();
       }
-      else {
-        allReplies.push({
-          messageId: id,
-          parentMessageId: message.parentId || null,
-          threadId: message.threadId,
-          atPage: atPage
-        }).write();
-      }
 
-      return {messageId: id, atPage}
-    })
+      return { messageId: targetId, atPage, threadId: message.threadId };
+    });
 
-    res.json(results)
-
-  }
-  catch (err) {
+    res.json(results);
+  } catch (err) {
+    // This will now log the specific lowdb error to your terminal
     console.error("Resolve Pages Error:", err);
-    res.status(500).send("Error resolving pages");
+    res.status(500).json({ error: err.message });
   }
-})
+});
 
 server.use(router)
 
