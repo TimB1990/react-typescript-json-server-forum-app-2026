@@ -8,6 +8,19 @@ const RESERVED_FILTERS = [
   "order"
 ];
 
+const NON_PAGINATED_RESROUCES = [
+  "replies",
+  "tags",
+  "config"
+]
+
+const DEFAULT = {
+  'messages': 10,
+  'threads': 5,
+  'categories': 4,
+  'global': 20
+}
+
 // functions
 function filterDataByQueryParams(data, filters) {
   // 1. Get keys that aren't 'limit', 'order', etc.
@@ -24,7 +37,7 @@ function filterDataByQueryParams(data, filters) {
       // Use optional chaining in case the item doesn't have the key
       const itemValue = item?.[key];
       const filterValue = filters[key];
-      
+
       // Strict string comparison to bridge Number/String gap
       return String(itemValue) === String(filterValue);
     });
@@ -45,6 +58,10 @@ server.use(middlewares)
 server.use(async (req, res, next) => {
   console.log("called: ", req.route)
   next();
+})
+
+server.get('/config', (req, res) => {
+  res.json(DEFAULT)
 })
 
 server.post('/register', async (req, res) => {
@@ -124,24 +141,89 @@ server.get('/:resource', (req, res) => {
     return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
   });
 
-  // Apply limit given as query string cast to int
-  const limit = parseInt(filters.limit, 10) || 25;
-  const page = parseInt(filters.page, 10) || 1;
+  // -- START EXCEPTION LOGIC
+  const skipPagination = NON_PAGINATED_RESROUCES.includes(resource)
+  
+  let finalResult = sorted;
+  // let limit = sorted.length;
+  let page = 1
 
-  const startIndex = (page - 1) * limit;
-  const endIndex = startIndex + limit;
+  const resourceDefault = DEFAULT[resource] || DEFAULT.global
+  let limit = skipPagination ? sorted.length : (parseInt(filters.limit, 10) || resourceDefault);
 
-  // Set the final result to be a sliced portion of sorted by limit  
-  const finalResult = sorted.slice(startIndex, endIndex);
+  if (!skipPagination) {
+
+    page = parseInt(filters.page, 10) || 1;
+    const startIndex = (page - 1) * limit;
+    finalResult = sorted.slice(startIndex, startIndex + limit);
+  }
+
+  // -- END EXCEPTION LOGIC
 
   // return the result of the filter
   res.json({
     data: finalResult,
     totalCount: filtered.length,
     currentPage: page,
-    totalPages: Math.ceil(filtered.length / limit)
+    limit: limit,
+    totalPages: skipPagination ? 1 : Math.ceil(filtered.length / limit)
   });
 });
+
+server.post('/replies/resolve-pages', async(req, res) => {
+  const { ids } = req.body
+  const itemsPerPage = DEFAULT.messages;
+
+  if(!ids || !Array.isArray(ids)){
+    return res.status(400).send("Invalid IDs provided");
+  }
+
+  try {
+    const db = router.db; // Access lowdb
+    const allMessages = db.get('messages').value();
+    const allReplies = db.get('replies').value();
+
+    const results = ids.map(id => {
+      const message = allMessages.find(m => m.id === id)
+
+      // 1. Find the target message
+      if(!message) return {messageId: id, atPage: null, error: "Not found"}
+
+      // 2. Get all messages in the SAME thread, sorted by creation date
+      const threadMessages = allMessages
+        .filter(m => m.threadId === targetMsg.threadId)
+        .sort((a, b) => a.createdAt - b.createdAt)
+
+      // 3. Find the rank (position) of this message
+      const index = threadMessages.findIndex(m => m.id === id)
+      const atPage = Math.floor(index / itemsPerPage) + 1
+
+      // check if the pivot record exists
+      const existingPivot = allReplies.find({messageId: id}).value();
+
+      if(existingPivot){
+        allReplies.find({messageId: id}).assign({atPage}).write();
+      }
+      else {
+        allReplies.push({
+          messageId: id,
+          parentMessageId: message.parentId || null,
+          threadId: message.threadId,
+          atPage: atPage
+        }).write();
+      }
+
+      return {messageId: id, atPage}
+    })
+
+    res.json(results)
+
+  }
+  catch (err) {
+    console.error("Resolve Pages Error:", err);
+    res.status(500).send("Error resolving pages");
+  }
+})
 
 server.use(router)
 

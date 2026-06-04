@@ -4,6 +4,7 @@ import type { ResponseResult } from "../common/types/general"
 import type { Message } from "../common/types/message"
 import type { Thread } from "../common/types/threads"
 import { MessageStore } from "../store"
+import type { AppConfig } from "../common/types/appConfig"
 
 export type ThreadLoaderResult = {
     category: Category
@@ -20,7 +21,9 @@ export async function threadLoader({params}: LoaderFunctionArgs): Promise<Thread
 
     const { slug } = params;
 
-    const limit = 15;
+    const configResponse = await fetch(`http://localhost:5001/config`);
+    const config: AppConfig = await configResponse.json();
+    const limit = config.messages || config.global
 
     const currentPage = params.pageNumber ? parseInt(params.pageNumber, 10) : 1;
     const validatedPage = isNaN(currentPage) ? 1 : currentPage;

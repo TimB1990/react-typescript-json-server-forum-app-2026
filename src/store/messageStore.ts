@@ -149,8 +149,6 @@ export const MessageStore = {
 
             const finalData = await Promise.all(messagePromises)
 
-            console.log(finalData)
-
             store.setState((prev) => ({
                 ...prev,
                 messagesByThread: {

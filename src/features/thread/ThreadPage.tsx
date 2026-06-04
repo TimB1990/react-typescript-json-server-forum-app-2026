@@ -31,10 +31,6 @@ export const ThreadPage = () => {
   const messages = messagesByThread[thread.id] || [];
   const isActuallyLoading = loading[thread.id] || messages.length === 0;
 
-  // if (!isActuallyLoading) console.log('messages: ', messages)
-
-  console.log('messages: ', messages)
-
   // A small helper component
   const MessageItem = (msg: Message) => {
 
@@ -50,6 +46,7 @@ export const ThreadPage = () => {
       }
       main={
         <div className="message-entry-post">
+          <p>{msg.postedAt}</p>
           {msg.parentId !== null && parentMessageObject !== undefined ? (
             <MessageParent
               parentUrl={`https://localhost:5001/messages/${msg.parentId}`}

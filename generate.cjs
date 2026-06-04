@@ -22,6 +22,7 @@ const generateData = async () => {
   const categories = [];
   const threads = [];
   const messages = [];
+  const replies = [];
 
   const salt = await bcrypt.genSalt(10);
   const hashedPass = await bcrypt.hash('secret', salt);
@@ -57,7 +58,7 @@ const generateData = async () => {
 
   // 3. Categories
   const categoryItems = [{
-    groupdId: 1,
+    groupId: 1,
     name: 'React',
     slug: 'react',
     description: faker.lorem.sentence(4),
@@ -135,28 +136,46 @@ const generateData = async () => {
 
     // Create a few replies within this thread
     const threadMessages = [openingMessage]; // Keep track of messages in THIS thread
-    const replyCount = faker.number.int({ min: 5, max: 20 });
+    const replyCount = faker.number.int({ min: 10, max: 25 });
 
     for (let r = 0; r < replyCount; r++) {
+
       // Pick a random message from this thread to reply to
       const parent = faker.helpers.arrayElement(threadMessages);
+
+      // 3. Ensure the reply date is AFTER the parent date
+      const replyDate = faker.date.between({
+        from: parent.createdAt,
+        to: new Date()
+      }).toISOString();
 
       const reply = {
         id: messageIdCounter++,
         threadId: threadId,
         categoryId,
         userId: faker.helpers.arrayElement(users).id,
-        parentId: parent.id, // Replies to the parent
+        parentId: parent.id, // Assign the parent ID here
         content: faker.lorem.sentence(),
-        createdAt: faker.date.recent().toISOString()
+        createdAt: replyDate
       };
 
+      // 4. CRITICAL: Push the reply to BOTH arrays
       messages.push(reply);
       threadMessages.push(reply);
+
+      // 5. Put record in table replies
+      const replyRecord = {
+        messageId: reply.id,
+        parentMessageId: parent.id,
+        threadId,
+        atPage: null
+      }
+
+      replies.push(replyRecord)
     }
   }
 
-  return { users, groups, categories, threads, messages };
+  return { users, groups, categories, threads, messages, replies };
 };
 
 let db = false;

@@ -1,0 +1,25 @@
+Er moet een extra tabel worden aangemaakt die per aangemaakt reply een record vastlegd:
+
+Tabel Replies:
+
+messageId
+parentId
+threadId
+
+Door op de 'reply' knop te drukken word dit record aangemaakt.
+Door op de 'reference (pijltje rechts bovenin message)' te klikken moet route /threads/{threadslug}/page/{parentPage}/#comment-{parentId}
+
+## wat moet er gebeuren
+- Raadpleeg replies tabel met filter op huidige threadID
+- Elke keer met het navigeren naar een andere pagina word voor elk bericht die op dat moment vookomt de pagina in de state (store) vastgelegd (state word geupdate)
+- Met het klikken op de 'reference' knop (rechts bovenin message) word eerst gekeken of desbetreffende referentie in relatie tot huidige pagina is vastgelegd:
+    - Indien JA: dan word url: {threadslug}/page/{huidigePagina}/#comment-{parentId} aangeroepen wat er voor zorgt dat het desbetreffende referentiebericht word gecentreerd in de browser
+    - Indien NEE: Aangezien een gegeven is dat een parentMessage een bericht moet zijn dat eerder is gepost dan het huidige bericht waarvanuit naar de referentie word verwezen worden de paginanumbers tot aan het huidige pagina nummer doorlopen
+    - Per pagina iteratie word elk bericht doorlopen:
+        - Haal replyrecord uit replies state (store) op o.b.v. de bericht ID
+        - Heeft het replyrecord al een waarde voor atPage?
+            - indien JA: ga naar volgende bericht iteratie (continue)
+            - indien NEE: leg paginaIteratie vast voor atPage in het replyRecord
+    - Met het klikken op de 'reference' knop (rechts bovenin de message):
+        - Haal in de replies State (store) het record op o.b.v. de parentId van desbetreffende bericht ID
+        - De atPage waarde van dit record moet al gezet zijn, url: {threadslug}/page/{record.atPage}/#comment-{record.parentId}

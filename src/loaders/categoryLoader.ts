@@ -4,6 +4,7 @@ import type { Group } from "../common/types/group";
 import type { Thread } from "../common/types/threads";
 import type { ResponseResult } from "../common/types/general";
 import { ThreadStore } from "../store";
+import type { AppConfig } from "../common/types/appConfig";
 
 export type CategoryLoaderResult = {
     category: Category
@@ -20,7 +21,9 @@ export async function categoryLoader({ params }: LoaderFunctionArgs): Promise<Ca
 
     const { slug } = params
 
-    const limit = 4
+    const configResponse = await fetch(`http://localhost:5001/config`);
+    const config: AppConfig = await configResponse.json();
+    const limit = config.threads || config.global
 
     const currentPage = params.pageNumber ? parseInt(params.pageNumber, 10) : 1;
     const validatedPage = isNaN(currentPage) ? 1 : currentPage;

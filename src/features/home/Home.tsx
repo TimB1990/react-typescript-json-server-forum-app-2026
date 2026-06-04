@@ -20,6 +20,8 @@ import dayjs from 'dayjs'
 
 export const Home = () => {
 
+  console.log('Home rendered')
+
   const { groups, loading: groupsLoading, error } = useGroupStore();
   const { threadsByCategory: threads, loading: threadsLoading, totalCount: totalThreads } = useThreadStore();
   const { messagesByThread: messages, totalCount: totalMessages } = useMessageStore();
