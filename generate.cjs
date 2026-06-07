@@ -44,11 +44,13 @@ const generateData = async () => {
   // 2. Groups
   const groupItems = [{
     title: 'Programming',
-    description: 'All about programming'
+    description: 'All about programming',
+    slug: 'programming'
   },
   {
     title: 'Community',
-    description: 'Meet our community!'
+    description: 'Meet our community!',
+    slug: 'community'
   }]
 
   groupItems.forEach(({ title, description }, index) => {

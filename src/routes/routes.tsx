@@ -7,6 +7,14 @@ import { Register } from "../features/register/Register";
 import { ThreadPage } from "../features/thread/ThreadPage";
 import { categoryLoader, type CategoryLoaderResult } from "../loaders/categoryLoader";
 import { threadLoader, type ThreadLoaderResult } from "../loaders/threadLoader";
+import { GroupPage } from "../features/group/GroupPage";
+import { groupLoader, type GroupLoaderResult } from "../loaders/groupLoader";
+
+const groupBreadcrumbs = {
+    breadcrumb: (data: GroupLoaderResult) => [
+        {label: data.group.title, path: `/groups/${data.group.slug}`}
+    ]
+}
 
 const categoryBreadcrumbs = {
     breadcrumb: (data: CategoryLoaderResult) => [
@@ -30,6 +38,12 @@ export const routes = [
                 path: "/",
                 element: <Home />,
                 handle: { breadcrumb: "Forum" }
+            },
+            {
+                path: "/groups/:slug",
+                loader: groupLoader,
+                handle: groupBreadcrumbs,
+                element: <GroupPage />
             },
             {
                 path: "/categories/:slug",
