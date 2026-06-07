@@ -52,6 +52,13 @@ server.use(cors({ origin: 'http://localhost:5173' }))
 const router = jsonServer.router('db.json')
 const middlewares = jsonServer.defaults();
 
+server.use((req, res, next) => {
+  if (req.url.includes('.well-known') || req.url.includes('favicon.ico')) {
+    return res.status(204).end(); // Silently return "No Content" and stop processing
+  }
+  next();
+});
+
 server.use(jsonServer.bodyParser);
 server.use(middlewares)
 
@@ -113,6 +120,44 @@ server.get('/count/:resource', (req, res) => {
     count: filteredData.length
   });
 });
+
+server.get('/messages/latest-overview', (req, res) => {
+  const limit = parseInt(req.query.limit, 10) || DEFAULT.messages;
+  const page = parseInt(req.query.page, 10) || 1;
+
+  // 1. fetch all raw messages from lowdb
+  const allMessages = router.db.get('messages').value() || [];
+
+  // 2. Sort messages globally by date descending (newest replies first)
+  const sortedMessages = [...allMessages].sort((a,b) => {
+    return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
+  })
+
+  // 3. filter to keep only the latest message per unique thread
+  const uniqueThreadMessages = [];
+  const seenThreads = new Set();
+
+  for(const message of sortedMessages){
+    if(!seenThreads.has(message.threadId)){
+      seenThreads.add(message.threadId)
+      uniqueThreadMessages.push(message);
+    }
+  }
+
+  // 4. handle serverside pagination on the unique dataset
+  const totalCount = uniqueThreadMessages.length;
+  const startIndex = (page - 1) * limit;
+  const paginatedResult = uniqueThreadMessages.slice(startIndex, startIndex + limit)
+
+  // 5. respond matching your standard format structure
+  res.json({
+    data: paginatedResult,
+    totalCount: totalCount,
+    currentPage: page,
+    limit: limit,
+    totalPages: Math.ceil(totalCount / limit)
+  })
+})
 
 server.get('/:resource', (req, res) => {
 

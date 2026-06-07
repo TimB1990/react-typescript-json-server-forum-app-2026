@@ -34,7 +34,7 @@ const getAuthor = async (userId: number): Promise<{
     totalUserMessageCount: number,
 }> => {
 
-    if(authorCache[userId]) return authorCache[userId]
+    if (authorCache[userId]) return authorCache[userId]
 
     const authorResponse = await fetch(`http://localhost:5001/users/${userId}`)
     const author: User = await authorResponse.json();
@@ -81,7 +81,7 @@ export const MessageStore = {
         try {
 
             const response = await fetch(`http://localhost:5001/messages?${params.toString()}`)
-            const { data } : {data: Message[]} = await response.json();
+            const { data }: { data: Message[] } = await response.json();
 
             // resolve parent pages logic
             // collect all unique parentIds from this slice of messages
@@ -92,10 +92,10 @@ export const MessageStore = {
             const uniqueParentIds = [...new Set(parentIds)]
 
             // trigger resolve page call in background
-            if(uniqueParentIds.length > 0){
+            if (uniqueParentIds.length > 0) {
                 RepliesStore.resolveMissingPages(uniqueParentIds)
             }
-            
+
             // makes if thread ID not empty then also apply order so data is fetched well.
             const messagePromises = data.map(async (item: Message) => {
 
@@ -126,7 +126,8 @@ export const MessageStore = {
     },
 
     fetchLatestOverview: async (limit: number, page: number = 1) => {
-        const stateKey = 'all';
+
+        const stateKey = 'all'
 
         store.setState((prev) => ({
             ...prev,
@@ -134,40 +135,22 @@ export const MessageStore = {
         }))
 
         const params = new URLSearchParams();
-
         if (limit !== null) params.append("limit", `${limit}`);
-
-        // add the page paramter. In this case always the first page.
-        params.append("page", `${page}`)
+        params.append("page", `${page}`);
 
         try {
-
-            const response = await fetch(`http://localhost:5001/messages?${params.toString()}`)
+            console.log('my params: ', `http://localhost:5001/messages/latest-overview?${params.toString()}`)
+            const response = await fetch(`http://localhost:5001/messages/latest-overview?${params.toString()}`)
             const { data } = await response.json();
 
             const messagePromises = data.map(async (item: Message) => {
                 const threadResponse = await fetch(`http://localhost:5001/threads/${item.threadId}`);
                 const thread: Thread = await threadResponse.json();
 
-                // Fetch the creator - explicitly set page 1 and limit 1
-                const creatorMsgResponse = await fetch(
-                    `http://localhost:5001/messages?threadId=${item.threadId}&order=asc&limit=1&page=1`
-                );
-
-                const { data: creatorData } = await creatorMsgResponse.json(); // Note: destructured as creatorData to avoid name collision
-                const firstMessage = creatorData[0];
-
-                // get the author of that specific first message
-                const author = firstMessage ? await getAuthor(firstMessage.userId) : null
-
+                const author = item.userId ? await getAuthor(item.userId) : null
                 const postedAt = formatDate(item.createdAt)
 
-                return {
-                    ...item,
-                    threadInfo: { title: thread.title },
-                    messageBy: author,
-                    postedAt
-                }
+                return {...item, threadInfo: { title: thread.title}, messageBy: author, postedAt}
             })
 
             const finalData = await Promise.all(messagePromises)
@@ -177,16 +160,18 @@ export const MessageStore = {
                 messagesByThread: {
                     ...prev.messagesByThread,
                     [stateKey]: finalData
-                },
-                loading: { ...prev.loading, [stateKey]: false }
+                    
+                }
             }))
 
-        } catch (err) {
+        }
+        catch (err) {
+            console.log('but failed')
             store.setState((prev) => ({
                 ...prev,
                 error: "Failed to fetch Messages: " + err,
                 loading: { ...prev.loading, [stateKey]: false }
-            }));
+            }))
         }
 
     },
@@ -208,15 +193,15 @@ export const MessageStore = {
             }))
         }
     },
-    getMessageById: async(messageId: number, threadId: number) => {
+    getMessageById: async (messageId: number, threadId: number) => {
 
         const state = store.getState();
         const currentStateMessages = state.messagesByThread[threadId] ?? []
         const existingRecord = currentStateMessages.find(m => m.id === messageId)
 
-        if(existingRecord) return existingRecord;
+        if (existingRecord) return existingRecord;
 
-        if(!state.loading[threadId]){
+        if (!state.loading[threadId]) {
             try {
                 const response = await fetch(`http://localhost:5001/messages/${messageId}`)
                 const result: Message = await response.json();
@@ -224,7 +209,7 @@ export const MessageStore = {
                 const messagePromises = async (item: Message) => {
                     const postedAt = formatDate(item.createdAt)
                     const author = await getAuthor(item.userId)
-                    return {...item, messageBy: author, postedAt }
+                    return { ...item, messageBy: author, postedAt }
                 }
 
                 const finalData = await messagePromises(result)
@@ -233,7 +218,7 @@ export const MessageStore = {
             } catch (err) {
                 console.error("Cannot fetch message: " + err)
             }
-        } 
+        }
 
     }
 

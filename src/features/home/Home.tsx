@@ -20,8 +20,6 @@ import dayjs from 'dayjs'
 
 export const Home = () => {
 
-  console.log('Home rendered')
-
   const { groups, loading: groupsLoading, error } = useGroupStore();
   const { threadsByCategory: threads, loading: threadsLoading, totalCount: totalThreads } = useThreadStore();
   const { messagesByThread: messages, totalCount: totalMessages } = useMessageStore();
@@ -31,7 +29,6 @@ export const Home = () => {
 
   const latestThreads = threads?.["all"] || [];
   const latestMessages = messages?.["all"] || [];
-
   const { setError } = useError()
 
   useEffect(() => {
@@ -112,7 +109,9 @@ export const Home = () => {
               />
 
               <Card
-                header={<h2>Latest Replies</h2>}
+                header={<>
+                  <h2>Latest Replies</h2>
+                </>}
                 content={<div className="messages">
                   {latestMessages.map((message: Message) => (
                     <MessagePreviewItem key={`latest-message-${message.id}`} {...message} />
