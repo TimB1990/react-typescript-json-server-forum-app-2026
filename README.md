@@ -10,8 +10,6 @@ This comment will both run JSON server and the react application using concurren
 npm run dev
 ```
 
-
-
 # TODOS
 - To make structure more dynamic. Instead of fixed entities like group and category refactor to category having a parent_id. This way we can stack subjects.
 - Fix redudant API calls for fetching latest threads and messages

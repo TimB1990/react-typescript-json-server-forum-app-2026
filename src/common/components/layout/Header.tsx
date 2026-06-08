@@ -15,7 +15,10 @@ import { Link } from 'react-router-dom';
 
 export const Header = () => {
   return (
-    <header className="site-header">
+    <header style={{position: 'relative'}} className="site-header">
+      <div style={{backgroundColor: 'transparent', position:'absolute', left: '1rem', top: '1rem', zIndex: 100}}>
+        <code style={{color:'red'}}>v0.1 - Early alpha, for showcase purposes only</code>
+      </div>
       <div className="hero-image-container">
         <img src={heroImage} alt="" />
         <div className="hero-nav-container">
