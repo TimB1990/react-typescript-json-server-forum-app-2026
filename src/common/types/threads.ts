@@ -2,14 +2,18 @@ export type Thread = {
     id: number;
     categoryId?: number;
     title: string;
+    slug?: string;
     lastMessageBy: {
         author: string; 
         postedAt: string;
         avatar: string;
     }
+    firstMessageBy: {
+        author: string; 
+        postedAt: string;
+        avatar: string;
+    }
     createdAt: string;
-    messages?: number;
-    iconStats?: boolean;
 }
 
 export interface ThreadState {

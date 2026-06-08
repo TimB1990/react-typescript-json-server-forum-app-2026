@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import type { CardProps } from '../../../types/cards';
 
 export const Card: React.FC<CardProps> = ({ header, content, footer, options = {} }) => {
 
@@ -8,7 +9,8 @@ export const Card: React.FC<CardProps> = ({ header, content, footer, options = {
             bottom = true
         } = {},
         noPadding = false,
-        expander = false
+        expander = false,
+        allowHorizontal = false,
     } = options || {};
 
     const [isExpanded, setIsExpanded] = useState<boolean>(true)
@@ -19,7 +21,13 @@ export const Card: React.FC<CardProps> = ({ header, content, footer, options = {
 
     const cardClasses = {
         header: ['card-header'],
-        body: ['card-body', top ? 'divided-top' : '', bottom ? 'divided-bottom' : '', noPadding ? 'no-padding' : ''],
+        body: [
+            'card-body', 
+            top ? 'divided-top' : '', 
+            bottom ? 'divided-bottom' : '', 
+            noPadding ? 'no-padding' : '',
+            allowHorizontal ? 'allow-horizontal': ''
+        ],
         footer: ['card-footer']
     }
 

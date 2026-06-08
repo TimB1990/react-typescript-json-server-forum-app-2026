@@ -9,6 +9,14 @@ p {
   line-height: 1.52;
 }
 
+a {
+  text-decoration: none;
+}
+
+a:visited {
+  color: rgb(156, 163, 175);
+}
+
 img,
 video,
 canvas {
@@ -50,12 +58,16 @@ canvas {
     grid-template-columns: repeat(3, 1fr);
   }
 
-  .container:nth-child(1) {
+  .container.first {
     grid-column: span 2;
   }
 
-  .container:nth-child(2) {
+  .container.second {
     grid-column: span 1;
+  }
+
+  .container.full-width {
+    grid-column: 1 / -1;
   }
 }
 
@@ -81,10 +93,12 @@ canvas {
 .card {
   border-radius: 8px;
   background-color: oklch(0.25 0.01 264.37);
+  border: 1px solid #2d3748;
 }
 
 .card-body {
-  padding: 1em;
+  display: flex;
+  flex-direction: column;
 }
 
 .card-body.no-padding {
@@ -155,6 +169,7 @@ canvas {
   min-width: 0;
   display: flex;
   flex-direction: column;
+  height: 100%;
   padding: 1em;
   border-right: 1px solid #2d3748;
   background-color: inherit;
@@ -181,7 +196,6 @@ canvas {
   color: inherit; /* Keep your forum text colors */
   display: block; /* Important: makes the whole row clickable */
   transition: background-color 0.2s ease;
-  border-bottom: 1px solid #2d3748;
 }
 
 .item-link:last-child {
@@ -239,6 +253,7 @@ canvas {
   min-width: max-content;
   border: 1px solid darkgray;
   cursor: pointer;
+  justify-content: center;
 }
 
 .link-btn:visited {
@@ -428,33 +443,41 @@ canvas {
 
 /* carousel */
 .carousel-container {
-  padding: 16px;
+  padding: 0 16px;
+  container-type: inline-size;
+  width: 100%;
+  box-sizing: border-box;
   font-family: "Inter", sans-serif;
+}
+
+.carousel-container:hover .carousel-track {
+  animation-play-state: paused;
 }
 
 .carousel-window {
   width: 100%;
-  overflow-x: scroll;
-  scroll-behavior: smooth;
+  overflow-x: hidden;
+  scroll-snap-type: x mandatory;
 }
 
 .carousel-track {
-  display: flex;
+  display: inline-flex;
   gap: 16px;
   width: max-content;
-  /* animation: slide 30s ease-in-out infinite alternate; */
+  padding: 16px 0;
+  animation: slide-groups 30s infinite ease-in-out;
 }
 
 .carousel-card {
-  width: 250px;
+  width: calc((100cqw - (16px * 2)) / 3);
   height: 275px;
+  flex-shrink: 0;
+  scroll-snap-align: start;
   background-size: cover;
   background-position: center;
   border-radius: 8px;
   position: relative;
   overflow: hidden;
-  flex-shrink: 0;
-  scroll-snap-align: start;
 }
 
 .carousel-card-overlay {
@@ -469,6 +492,11 @@ canvas {
   padding: 16px;
   background: linear-gradient(transparent, rgba(0, 0, 0, 0.85));
   color: white;
+}
+
+.carousel-card-overlay:hover {
+  background-color: rgba(255, 255, 255, 0.25);
+  cursor: pointer;
 }
 
 .carousel-card-tags {
@@ -494,18 +522,42 @@ canvas {
 
 .carousel-card-meta {
   font-size: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
   color: #bbb;
 }
 
-/* Animation Logic */
-@keyframes slide {
+.carousel-article-stats {
+  display: flex;
+  gap: 1em;
+}
+
+/* New Animation Logic */
+@keyframes slide-groups {
+  /* PAGE 1 (Cards 1-3): Hold still for 25% of the time */
   0%,
-  10% {
-    transform: translateX(16px);
+  25% {
+    transform: translateX(0);
   }
-  90%,
+
+  /* QUICK SLIDE: Move to Page 2 between 25% and 30% */
+  /* PAGE 2 (Cards 4-6): Move left by 100% of the container width plus the gap */
+  30%,
+  60% {
+    transform: translateX(calc(-100cqw - 16px));
+  }
+
+  /* QUICK SLIDE: Move to Page 3 between 60% and 65% */
+  /* PAGE 3 (Cards 7-9): Move left by 200% of the container width plus two gaps */
+  65%,
+  95% {
+    transform: translateX(calc(-200cqw - 32px));
+  }
+
+  /* RESET: Slide back to the beginning to loop seamlessly */
   100% {
-    transform: translateX(calc(-100% + 100vw - 16px));
+    transform: translateX(0);
   }
 }
 
@@ -532,96 +584,45 @@ canvas {
   color: oklch(0.645 0.0216 260);
 }
 
-/* image card item */
-/* .thread-item {
-  display: flex;
-  align-items: stretch;
-  padding: 1em;
-  justify-content: space-between;
-  align-items: flex-end;
-}
-.thread-item .info-container {
-  display: flex;
-  align-items: center;
-  gap: 0.74rem;
-}
-.thread-item .content {
-  display: flex;
-  flex-direction: column;
-}
-.thread-item .content p {
-  margin: 0;
-  text-align: left;
-}
-.thread-item .content p > span {
-  color: #737373; 
-}
-.thread-item .count {
-  display: flex;
-  flex-direction: row;
-  align-items: flex-end;
-  align-self: stretch; 
-}
-/* .image-container {
-  border: 2px solid #333;
-  border-radius: 1em;
-  overflow: hidden;
-}
-
-.image-container img {
-  width: 100%;
-  border-radius: 1rem;
-  display: block;
-} */
-
 .image-card-item {
   display: flex;
-  gap: 1em;
-  padding: 1em;
-  align-items: flex-start;
+  align-items: stretch;
 }
 
-.image-card-item.divided{
-  border-bottom: 1px solid #2d3748;
+.image-card-item.divided {
+  border-top: 1px solid #2d3748;
 }
 
-.image-card-item:last-child{
-  border: none;
+.image-card-item.divided:last-child:not(:first-child) {
+  border-bottom: none;
 }
 
 .image-card-item aside {
   display: flex;
   flex-direction: column;
   align-items: center;
+  overflow: visible;
+  flex: 0 0 25%;
+  max-width: 25%;
 }
 
 .image-container {
   overflow: hidden;
+  isolation: isolate;
+  -webkit-mask-image: -webkit-radial-gradient(white, black);
 }
 
 .image-container.thumb {
   width: 36px;
   height: 36px;
-  margin-top: 6px;
-}
-
-/* 4. Handle the optional option.centerContent */
-.image-card-item .content-wrapper.center {
-  justify-content: center;
-}
-
-/* If you want the IMAGE centered vertically with the text when centerContent is true: */
-.image-card-item:has(.content-wrapper.center) {
-  align-items: center;
-}
-.image-card-item:has(.content-wrapper.center) .image-container.thumb {
-  margin-top: 0; /* Reset the top nudge when completely centered */
+  margin-top: 4px;
 }
 
 .image-container img {
+  display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   overflow: hidden;
 }
 
@@ -637,22 +638,87 @@ canvas {
 
 .image-card-item .content-wrapper {
   display: flex;
-  width: 100%;
   gap: 0.45em;
+  width: 100%;
+}
+
+.image-card-item.divided:not(:has(.image-container.thumb)) aside {
+  border-right: 1px solid #2d3748;
+}
+
+.image-card-item:has(.image-container.thumb):has(.content-wrapper.vertical) aside {
+  flex: 0 0 max-content;
+  max-width: max-content;
+}
+
+.image-card-item:has(.image-container.thumb):has(.content-wrapper.horizontal) aside {
+  flex: 0 0 max-content;
+  max-width: max-content;
+}
+
+.image-card-item:has(> .content-wrapper) aside {
+  padding: clamp(1em, 2vw, 1.25em);
+}
+
+.image-card-item:has(.image-container.thumb) aside {
+  padding: clamp(0.4em, 2vw, 0.6em);
+}
+
+.image-card-item:has(.image-container.thumb):has(.content-wrapper.horizontal) aside {
+  padding-top: clamp(1em, 2vw, 1.25em);
+  padding-bottom: clamp(1em, 2vw, 1.25em);
+}
+
+.image-card-item:has(.image-container.thumb) .content-wrapper.horizontal {
+  padding-left: clamp(0.4em, 2vw, 0.6em);
+}
+
+.image-card-item:has(.image-container.thumb) .content-wrapper.vertical {
+  padding-top: clamp(0.4em, 2vw, 0.6em);
+  padding-bottom: clamp(0.4em, 2vw, 0.6em);
+  padding-left: clamp(0.4em, 2vw, 0.6em);
+}
+
+.image-card-item.centered {
+  align-self: center;
 }
 
 .image-card-item .content-wrapper.vertical {
+  display: flex;
   flex-direction: column;
+  padding: clamp(1em, 2vw, 1.25em);
+
+  /* The Logic Update: */
+  flex: 1; /* Take up remaining width */
+  
+  /* We use 250px as the floor. 
+     The 'preferred' value is 100% of the aside's height. */
+  min-height: clamp(100px, 100%, 100%);
 }
 
 .image-card-item .content-wrapper.horizontal {
+  display: flex;
   flex-direction: row;
+  padding: clamp(1em, 2vw, 1.25em);
+
+  /* The Logic Update: */
+  flex: 1; /* Take up remaining width */
+  
+  /* We use 250px as the floor. 
+     The 'preferred' value is 100% of the aside's height. */
+  min-height: clamp(100px, 100%, 100%);
   justify-content: space-between;
 }
 
+.image-card-item .content-wrapper.vertical .content {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+
 .image-card-item .content-wrapper .meta {
   display: flex;
-  gap: 0.3em;
 }
 
 .image-card-item .content-wrapper.horizontal .meta {
@@ -668,4 +734,154 @@ canvas {
 .image-card-item .content-wrapper .meta > * {
   min-width: max-content;
   font-size: 0.9em;
+}
+
+@media (max-width: 1049px) {
+  .card-body.allow-horizontal {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  /* Target both children to give them a flexible starting layout */
+  .card-body.allow-horizontal > * {
+    flex: 1 1 250px; /* grow: 1, shrink: 1, basis: 250px */
+  }
+
+  /* Make sure the last child stretches to fill the row when it wraps */
+  .card-body.allow-horizontal > *:last-child {
+    flex-grow: 1;
+  }
+
+  .statistic {
+    border-left: 1px solid #2d3748;
+    border-right: 1px solid #2d3748;
+    border-top: 1px solid #2d3748;
+    border-bottom: none;
+  }
+
+  .statistic:first-child {
+    border-left: none;
+    border-top: none;
+  }
+
+  .statistic:last-child {
+    border-right: none;
+    border-left: none;
+    border-top: none;
+  }
+}
+
+.message-entry-footer menu {
+  text-decoration: none;
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+}
+
+.message-entry-footer menu li {
+  height: 2.5em;
+  display: flex;
+}
+
+.message-entry-footer menu li button {
+    color: oklch(0.71376 0.160355 64.8368);
+    padding: 0 1em;
+    font-weight: 600;
+    margin: 0;
+    display: flex;
+    gap: 0.5em;
+    align-items: center;
+    border: none;
+    background-color: transparent;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.message-entry-footer menu li button:hover {
+  background-color: color-mix(in srgb, oklch(0.71376 0.160355 64.8368) 10%, transparent);
+}
+
+.message-quote {
+background-color: #23272d;
+/* Replace the full border with a thick left border */
+border-left: 4px solid #3b444f; 
+border-top: 1px solid rgba(255, 255, 255, 0.05);
+border-right: 1px solid rgba(255, 255, 255, 0.05);
+border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+
+border-top-right-radius: 4px;
+border-bottom-right-radius: 4px;
+margin: 16px 0;
+padding: 16px;
+color: #9ba3af;
+font-size: 15px;
+line-height: 1.6;
+}
+
+.message-quote p:first-of-type {
+  display: flex;
+  /* Corrected property and value */
+  justify-content: space-between; 
+  align-items: center; 
+  
+  margin: 0 0 16px 0;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+/* This keeps the quote icon and text stuck together on the left */
+.quote-meta-left {
+  display: flex;
+  align-items: center;
+  gap: 12px; /* Replaces the need for margin-right on the svg */
+}
+
+.message-quote p svg {
+  /* Remove margin-right if using gap above */
+  font-size: 14px;
+  color: #9ba3af;
+  opacity: 0.9;
+  transition: color 0.2s;
+  cursor: pointer;
+}
+
+.message-quote p svg:hover{
+  color: white;
+}
+
+.quote-body {
+  /* This matches the slightly indented, lighter grey look of the content */
+  color: #9ba3af;
+  padding-left: 2px; 
+}
+
+.group-category-item {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  cursor: pointer;
+  
+  /* Text styling resets */
+  text-decoration: none;
+  color: inherit;
+}
+
+.group-category-item:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* This now targets the Link components acting as adjacent siblings */
+.group-category-item:not(:last-child) {
+  border-bottom: 1px solid #2d3748;
+}
+
+.inline-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.inline-link:hover {
+  text-decoration: underline;
 }

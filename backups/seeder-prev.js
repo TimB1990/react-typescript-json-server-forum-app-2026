@@ -29,6 +29,9 @@ const generateData = async () => {
 
   // 1. Users
   for (let i = 1; i <= 25; i++) {
+    // const seed = faker.string.alphanumeric(10);
+    // `https://api.dicebear.com/9.x/shapes/svg?seed=${seed}`
+
     users.push({
       id: i,
       username: faker.internet.username(),
@@ -53,6 +56,7 @@ const generateData = async () => {
   groupItems.forEach(({ title, description }, index) => {
     groups.push({ id: index + 1, title, description });
   });
+
 
   // 3. Categories
   const categoryItems = [{
@@ -109,68 +113,67 @@ const generateData = async () => {
   for (let t = 1; t <= 50; t++) {
     const threadId = t;
     const categoryId = faker.helpers.arrayElement(categories).id;
-    const title = faker.lorem.sentence(4);
 
-    // FIX 1: Generate a wider span of time for threads (up to 30 days ago)
-    const threadCreatedAt = faker.date.recent({ days: 30 }).toISOString();
+    const title = faker.lorem.sentence(4)
 
     threads.push({
       id: threadId,
       categoryId: categoryId,
       slug: slugify(title),
       title,
-      createdAt: threadCreatedAt
+      createdAt: faker.date.recent().toISOString()
     });
 
-    // FIX 2: Force opening post to match the exact same timestamp as the thread
+    // Create the "Opening Post" (The first message of the thread)
     const openingMessage = {
       id: messageIdCounter++,
       threadId: threadId,
       categoryId,
       userId: faker.helpers.arrayElement(users).id,
-      parentId: null,
+      parentId: null, // No parent because it starts the topic
       content: faker.lorem.paragraphs(1),
-      createdAt: threadCreatedAt
+      createdAt: faker.date.recent().toISOString()
     };
     messages.push(openingMessage);
 
-    const threadMessages = [openingMessage];
+    // Create a few replies within this thread
+    const threadMessages = [openingMessage]; // Keep track of messages in THIS thread
     const replyCount = faker.number.int({ min: 10, max: 25 });
 
-    // Keep track of the latest message time in this thread
-    let lastMessageTime = new Date(threadCreatedAt);
-
     for (let r = 0; r < replyCount; r++) {
+
+      // Pick a random message from this thread to reply to
       const parent = faker.helpers.arrayElement(threadMessages);
 
-      // 1. Generate a realistic delay (e.g., between 5 minutes and 4 hours)
-      const minutesToAdd = faker.number.int({ min: 5, max: 240 });
-
-      // 2. Advance the clock from the LAST message's time, not a static new Date()
-      lastMessageTime = new Date(lastMessageTime.getTime() + minutesToAdd * 60000);
-      const replyDate = lastMessageTime.toISOString();
+      // 3. Ensure the reply date is AFTER the parent date
+      const replyDate = faker.date.between({
+        from: parent.createdAt,
+        to: new Date()
+      }).toISOString();
 
       const reply = {
         id: messageIdCounter++,
         threadId: threadId,
         categoryId,
         userId: faker.helpers.arrayElement(users).id,
-        parentId: parent.id,
+        parentId: parent.id, // Assign the parent ID here
         content: faker.lorem.sentence(),
         createdAt: replyDate
       };
 
+      // 4. CRITICAL: Push the reply to BOTH arrays
       messages.push(reply);
       threadMessages.push(reply);
 
+      // 5. Put record in table replies
       const replyRecord = {
         messageId: reply.id,
         parentMessageId: parent.id,
         threadId,
         atPage: null
-      };
+      }
 
-      replies.push(replyRecord);
+      replies.push(replyRecord)
     }
   }
 
@@ -180,16 +183,17 @@ const generateData = async () => {
 let db = false;
 
 async function writeDatabase() {
-  db = await generateData() || false;
+  db = await generateData() || false
 
   if (!db) {
-    console.log("Error: Cannot generate Database");
+    console.log("Error: Cannot generate Database")
     return;
   }
 
   const filePath = path.join(__dirname, 'db.json');
   fs.writeFileSync(filePath, JSON.stringify(db, null, 2));
-  console.log("✅ Recursive db.json generated with clean timelines!");
+  console.log("✅ Recursive db.json generated!");
+
 }
 
 writeDatabase();

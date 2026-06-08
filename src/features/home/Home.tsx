@@ -16,145 +16,143 @@ import { RegisterLoginButtons } from './components/RegisterLoginButtons'
 import { Carousel } from '../../common/components/ui/news-carousel/Carousel'
 import { Statistic } from './components/Statistic'
 import { ImageCardItem } from '../../common/components/ui/cards/ImageCardItem'
-
-// remove later
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faComment, faHeart } from '@fortawesome/free-solid-svg-icons';
+import dayjs from 'dayjs'
 
 export const Home = () => {
 
-    const { groups, loading, error } = useGroupStore();
-    const { threadsByCategory: threads, totalCount: totalThreads } = useThreadStore();
-    const { messagesByThread: messages, totalCount: totalMessages } = useMessageStore();
-    const { totalCount: totalUsers } = useUserStore();
+  const { groups, loading: groupsLoading, error } = useGroupStore();
+  const { threadsByCategory: threads, loading: threadsLoading, totalCount: totalThreads } = useThreadStore();
+  const { messagesByThread: messages, totalCount: totalMessages } = useMessageStore();
+  const { totalCount: totalUsers, users: latestUsers } = useUserStore();
 
-    const latestThreads = threads?.["all"] || [];
-    const latestMessages = messages?.["all"] || [];
+  const isPageLoading = groupsLoading || threadsLoading["all"];
 
-    const { setError } = useError()
+  const latestThreads = threads?.["all"] || [];
+  const latestMessages = messages?.["all"] || [];
+  const { setError } = useError()
 
-    useEffect(() => {
-        GroupStore.fetch()
-        ThreadStore.fetch(null, 3)
-        ThreadStore.countTotal()
-        MessageStore.fetchLatestOverview(3)
-        MessageStore.countTotal()
-        UserStore.countTotal()
-    }, [])
+  useEffect(() => {
+    GroupStore.fetch()
+    ThreadStore.fetch(null, 3)
+    ThreadStore.countTotal()
+    MessageStore.fetchLatestOverview(3)
+    MessageStore.countTotal()
+    UserStore.countTotal()
+    UserStore.fetch(1)
 
     if (error !== null) {
-        setError(error)
+      setError(error)
     }
 
-    return (
-        <main className='layout'>
-            <ErrorBanner />
+  }, [error, setError])
 
-            <div className="container">
+  return (
+    <main className='layout'>
+      <ErrorBanner />
 
-                <Card
-                    header={<h2>Latest News</h2>}
-                    content={<Carousel />}
-                    options={{divided: {top: true, bottom: false}, noPadding: true}}
-                />
+      <div className="container first">
 
-                {loading && groups.length === 0 ? (
-                    <p>Loading...</p>
-                ) : (
-                    groups.map((group: Group) => (
-                        <GroupItem key={`group-${group.id}`} {...group}>
-                            <CategoriesList {...group} />
-                        </GroupItem>
-                    ))
-                )}
-            </div>
+        <Card
+          header={<h2>Latest News</h2>}
+          content={<Carousel />}
+          options={{ divided: { top: true, bottom: false }, noPadding: true }}
+        />
 
-            <div className="container">
-                <Card
-                    header={<h2>Talk with us!</h2>}
-                    content={<>Lorem ipsum dolor sit amet consectetur adipisicing elit. Sit, odio. Aspernatur, saepe eum animi in hic fugit ullam maxime quam earum.</>}
-                    footer={<RegisterLoginButtons />}
-                    options={{ divided: { top: true, bottom: true } }}
-                />
+        {isPageLoading && groups.length === 0 ? (
+          <p>Loading...</p>
+        ) : (
+          groups.map((group: Group) => (
+            <GroupItem key={`group-${group.id}`} {...group}>
+              <CategoriesList {...group} />
+            </GroupItem>
+          ))
+        )}
+      </div>
 
-                <Card
-                    header={<h2>Latest topics</h2>}
-                    content={<div className="threads">
-                        {latestThreads.map((thread: Thread) => (
-                            <ThreadPreviewItem key={`latest-thread-${thread.id}`} {...thread} iconStats={true} />
-                        ))}
-                    </div>}
-                    options={{ noPadding: true, divided: { top: true, bottom: false } }}
-                />
+      <div className="container second">
+        <>
+          {
+            isPageLoading ? (
+              <p>Loading...</p>
+            ) : (<>
+              <Card
+                header={<h2>Talk with us!</h2>}
+                content={<div style={{ padding: 'clamp(1em, 2vw, 1.25em)' }}>Lorem ipsum dolor sit amet consectetur adipisicing elit. Sit, odio. Aspernatur, saepe eum animi in hic fugit ullam maxime quam earum.</div>}
+                footer={<RegisterLoginButtons />}
+                options={{ divided: { top: true, bottom: true } }}
+              />
 
-                <Card
-                    header={<h2>Welcome at our forum!</h2>}
-                    content={<>Lorem ipsum dolor sit amet consectetur adipisicing elit. Corrupti, omnis sit rerum facere magnam illum, officiis odio beatae neque illo voluptatibus? Iste, minima assumenda porro explicabo neque atque! Sequi.</>}
-                    options={{ divided: { top: true, bottom: false } }}
-                />
+              <Card
+              // not working because the pagination is not OK
+                header={<h2>Latest topics</h2>}
+                content={
+                  <div className="threads">
+                    {latestThreads.map((thread: Thread) => (
+                      <ThreadPreviewItem
+                        key={`latest-thread-${thread.id}`}
+                        {...thread}
+                        iconStats={true}
+                        // 'first' ensures we show the thread creator, 
+                        // which is now correctly fetched via order=asc
+                        showAuthorInfo='first'
+                      />
+                    ))}
+                  </div>
+                }
+                options={{ noPadding: true, divided: { top: true, bottom: false } }}
+              />
 
-                <Card
-                    header={<h2>Latest Replies</h2>}
-                    content={<div className="messages">
-                        {latestMessages.map((message: Message) => (
-                            <MessagePreviewItem key={`latest-message-${message.id}`} {...message} />
-                        ))}
-                    </div>}
-                    options={{ noPadding: true, divided: { top: true, bottom: false } }}
-                />
-                <Card
-                    header={<h2>Forum stats</h2>}
-                    content={<div className='statistics-container'>
-                        <Statistic value={totalThreads} subject={"Total amount of subjects"} />
-                        <Statistic value={totalMessages} subject={"Total amount of messages"} />
-                    </div>}
-                    options={{noPadding: true, divided: {top: true, bottom: false}}}
-                />
-                <Card
-                    header={<h2>Member stats</h2>}
-                    content={<div className='statistics-container'>
-                        <Statistic value={totalUsers} subject={"Total amount of members"} />
-                    </div>}
-                    options={{noPadding: true, divided: {top: true, bottom: false}}}
-                />
+              <Card
+                header={<h2>Welcome at our forum!</h2>}
+                content={<div style={{ padding: 'clamp(1em, 2vw, 1.25em)' }}>Lorem ipsum dolor sit amet consectetur adipisicing elit. Corrupti, omnis sit rerum facere magnam illum, officiis odio beatae neque illo voluptatibus? Iste, minima assumenda porro explicabo neque atque! Sequi.</div>}
+                options={{ divided: { top: true, bottom: false } }}
+              />
 
-                <Card
-                    header={<h2>Test card</h2>}
-                    content={<>
-                    <ImageCardItem 
-                        image="https://picsum.photos/id/15/250/250"
-                        main={<p>Lorem ipsum dolor sit, amet consectetur adipisicing elit</p>}
-                        meta={
+              <Card
+                header={<>
+                  <h2>Latest Replies</h2>
+                </>}
+                content={<div className="messages">
+                  {latestMessages.map((message: Message) => (
+                    <MessagePreviewItem key={`latest-message-${message.id}`} {...message} />
+                  ))}
+                </div>}
+                options={{ noPadding: true, divided: { top: true, bottom: false } }}
+              />
+              <Card
+                header={<h2>Forum stats</h2>}
+                content={<>
+                  <Statistic value={totalThreads} subject={"Total amount of subjects"} />
+                  <Statistic value={totalMessages} subject={"Total amount of messages"} />
+                </>}
+                options={{ noPadding: true, divided: { top: true, bottom: false }, allowHorizontal: true }}
+              />
+              <Card
+                header={<h2>Member stats</h2>}
+                content={<>
+                  <Statistic value={totalUsers} subject={"Total amount of members"} />
+                  {/* Guard check: Only render the member info if the data is actually there */}
+                  {latestUsers && latestUsers.length > 0 ? (
+                    <ImageCardItem
+                      image={latestUsers[0].avatar}
+                      main={
                         <>
-                            <p>
-                                <FontAwesomeIcon icon={faHeart}/> 10
-                            </p>
-                            <p>
-                                <FontAwesomeIcon icon={faComment}/> 12
-                            </p>
+                          <p><strong>{latestUsers[0].username}</strong></p>
+                          <p>Newest member - {dayjs(latestUsers[0].createdAt).fromNow()}</p>
                         </>
-                        }
-                        options={{ contentDirection: "vertical"}}
+                      }
+                      options={{ contentDirection: "horizontal", centered: true, thumbImage: true, imageShape: "circle" }}
                     />
-                    <ImageCardItem 
-                        image="https://picsum.photos/id/25/250/250"
-                        main={<p>Quod blanditiis quisquam est autem quibusdam impedit magnam odio culpa adipisci, veniam maxime soluta.</p>}
-                        meta={
-                        <>
-                            <p>
-                                <FontAwesomeIcon icon={faHeart}/> 10
-                            </p>
-                            <p>
-                                <FontAwesomeIcon icon={faComment}/> 12
-                            </p>
-                        </>
-                        }
-                        options={{ contentDirection: "vertical"}}
-                    />
-                    </>}
-                    options={{ noPadding: true, divided: {top: true, bottom: false}}}
-                />
-            </div>
-        </main>
-    )
+                  ) : (
+                    // fallback
+                    <p>Loading newest member...</p>
+                  )}
+                </>}
+                options={{ noPadding: true, divided: { top: true, bottom: false }, allowHorizontal: true }}
+              />
+            </>)}
+        </>
+      </div>
+    </main>
+  )
 }

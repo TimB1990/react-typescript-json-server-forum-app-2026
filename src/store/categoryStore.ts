@@ -13,7 +13,7 @@ export const CategoryStore = {
     getState: store.getState,
     subscribe: store.subscribe,
 
-    fetch: async (groupId: number, limit: number | null = null) => {
+    fetch: async (groupId: number, limit: number | null = null, page: number | null = null) => {
         
         // Set loading state to true for the specific category
         store.setState((prev) => ({
@@ -26,7 +26,8 @@ export const CategoryStore = {
         params.append("groupId", "" + groupId);
 
         // in case the limit is given as an argument to this function apply the limit like [?&]limit=5
-        if (limit !== null) params.append("limit", "" + limit);
+        if (limit !== null) params.append("limit", `${limit}`);
+        if (page !== null) params.append("page", `${page}`)
         
         try {
             const response = await fetch(`http://localhost:5001/categories?${params.toString()}`);

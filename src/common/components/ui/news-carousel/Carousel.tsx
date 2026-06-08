@@ -26,7 +26,7 @@ for (let i = 1; i <= amount; i++) {
     meta: {
       date: `${i} may`,
       views: 100,
-      replies: 15
+      comments: 15
     },
     title: `Article title ${i}`,
     content: "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Similique, rem corrupti quas eum tempore officiis provident deleniti doloribus praesentium, ipsum dignissimos aut voluptatum sint natus. Quaerat nemo quae tenetur minima!"
