@@ -11,7 +11,7 @@ export type GroupLoaderResult = {
 export const groupLoader = async ({ params }: LoaderFunctionArgs): Promise<GroupLoaderResult> => {
     const {slug} = params;
 
-    const groupResponse = await fetch(`http://localhost:5001/groups?slug=${slug}`)
+    const groupResponse = await fetch(`/api/groups?slug=${slug}`)
     if(!groupResponse.ok) { throw new Response("Group Not Found", { status: 404 }); }
     const groups = await groupResponse.json();
     const group = groups.data[0]

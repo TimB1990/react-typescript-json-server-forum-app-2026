@@ -30,11 +30,11 @@ export const CategoryStore = {
         if (page !== null) params.append("page", `${page}`)
         
         try {
-            const response = await fetch(`http://localhost:5001/categories?${params.toString()}`);
+            const response = await fetch(`/api/categories?${params.toString()}`);
             const {data} = await response.json();
 
             const messageCount = async (categoryId: number) :Promise<number> => {
-                const response = await fetch('http://localhost:5001/count/messages?categoryId=' + categoryId)
+                const response = await fetch('/api/count/messages?categoryId=' + categoryId)
                 const result = await response.json();
                 const count = result.count
                 return count;

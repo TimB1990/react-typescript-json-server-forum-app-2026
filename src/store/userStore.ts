@@ -28,7 +28,7 @@ export const UserStore = {
         }
 
         try {
-            const response = await fetch(`http://localhost:5001/users?${params.toString()}`)
+            const response = await fetch(`/api/users?${params.toString()}`)
             const { data } = await response.json();
 
             store.setState((prev) => ({
@@ -51,7 +51,7 @@ export const UserStore = {
         store.setState({ loading: true, error: null })
 
         try {
-            const response = await fetch('http://localhost:5001/login', {
+            const response = await fetch('/api/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(credentials),
@@ -81,7 +81,7 @@ export const UserStore = {
     countTotal: async () => {
 
         try {
-            const response = await fetch('http://localhost:5001/count/users')
+            const response = await fetch('/api/count/users')
             const result = await response.json();
             const count = result.count;
 

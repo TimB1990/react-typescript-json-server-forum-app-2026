@@ -31,7 +31,7 @@ const fetchReplies = async (threadId: number | null = null, limit: number | null
 
     try {
 
-        const response = await fetch(`http://localhost:5001/replies?${params.toString()}`)
+        const response = await fetch(`/api/replies?${params.toString()}`)
         const { data }: { data: Reply[] } = await response.json();
         const finalData = data;
 
@@ -87,7 +87,7 @@ export const RepliesStore = {
 
     //     try {
     //         // API CALL
-    //         const response = await fetch(`http://localhost:5001/replies?messageId=${messageId}&limit=1`)
+    //         const response = await fetch(`/api/replies?messageId=${messageId}&limit=1`)
     //         const { data }: { data: Reply[] } = await response.json();
 
     //         let updatedRecord = { ...data[0], atPage: pageNumber }
@@ -125,7 +125,7 @@ export const RepliesStore = {
     resolveMissingPages: async (ids: number[]) => {
 
         try {
-            const response = await fetch(`http://localhost:5001/replies/resolve-pages`, {
+            const response = await fetch(`/api/replies/resolve-pages`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ ids })

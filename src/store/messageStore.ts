@@ -19,7 +19,7 @@ const formatDate = (dateString: string): string => {
 }
 
 const totalUserMessageCount = async (userId: number): Promise<number> => {
-    const response = await fetch('http://localhost:5001/count/messages?userId=' + userId)
+    const response = await fetch('/api/count/messages?userId=' + userId)
     const result = await response.json();
     const userMessageCount = result.count;
     return userMessageCount;
@@ -36,7 +36,7 @@ const getAuthor = async (userId: number): Promise<{
 
     if (authorCache[userId]) return authorCache[userId]
 
-    const authorResponse = await fetch(`http://localhost:5001/users/${userId}`)
+    const authorResponse = await fetch(`/api/users/${userId}`)
     const author: User = await authorResponse.json();
     const count = await totalUserMessageCount(userId)
 
@@ -80,7 +80,7 @@ export const MessageStore = {
 
         try {
 
-            const response = await fetch(`http://localhost:5001/messages?${params.toString()}`)
+            const response = await fetch(`/api/messages?${params.toString()}`)
             const { data }: { data: Message[] } = await response.json();
 
             // resolve parent pages logic
@@ -139,12 +139,12 @@ export const MessageStore = {
         params.append("page", `${page}`);
 
         try {
-            console.log('my params: ', `http://localhost:5001/messages/latest-overview?${params.toString()}`)
-            const response = await fetch(`http://localhost:5001/messages/latest-overview?${params.toString()}`)
+            console.log('my params: ', `/api/messages/latest-overview?${params.toString()}`)
+            const response = await fetch(`/api/messages/latest-overview?${params.toString()}`)
             const { data } = await response.json();
 
             const messagePromises = data.map(async (item: Message) => {
-                const threadResponse = await fetch(`http://localhost:5001/threads/${item.threadId}`);
+                const threadResponse = await fetch(`/api/threads/${item.threadId}`);
                 const thread: Thread = await threadResponse.json();
 
                 const author = item.userId ? await getAuthor(item.userId) : null
@@ -178,7 +178,7 @@ export const MessageStore = {
     countTotal: async () => {
 
         try {
-            const response = await fetch('http://localhost:5001/count/messages')
+            const response = await fetch('/api/count/messages')
             const result = await response.json();
             const count = result.count;
 
@@ -203,7 +203,7 @@ export const MessageStore = {
 
         if (!state.loading[threadId]) {
             try {
-                const response = await fetch(`http://localhost:5001/messages/${messageId}`)
+                const response = await fetch(`/api/messages/${messageId}`)
                 const result: Message = await response.json();
 
                 const messagePromises = async (item: Message) => {

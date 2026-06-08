@@ -21,14 +21,14 @@ export async function categoryLoader({ params }: LoaderFunctionArgs): Promise<Ca
 
     const { slug } = params
 
-    const configResponse = await fetch(`http://localhost:5001/config`);
+    const configResponse = await fetch(`/api/config`);
     const config: AppConfig = await configResponse.json();
     const limit = config.threads || config.global
 
     const currentPage = params.pageNumber ? parseInt(params.pageNumber, 10) : 1;
     const validatedPage = isNaN(currentPage) ? 1 : currentPage;
 
-    const catResponse = await fetch(`http://localhost:5001/categories?slug=${slug}`)
+    const catResponse = await fetch(`/api/categories?slug=${slug}`)
     if (!catResponse.ok) { throw new Response("Category Not Found", { status: 404 }); }
 
     const categories = await catResponse.json();
@@ -39,14 +39,14 @@ export async function categoryLoader({ params }: LoaderFunctionArgs): Promise<Ca
     }
 
     // 2. fetch the group using the category's groupId
-    const groupResponse = await fetch(`http://localhost:5001/groups/${category.groupId}`)
+    const groupResponse = await fetch(`/api/groups/${category.groupId}`)
     if (!groupResponse.ok) {
         throw new Response("Group Not Found", { status: 404 });
     }
     const group: Group = await groupResponse.json();
 
     // 3 Use the limit in the fetch call
-    const threadResponse = await fetch(`http://localhost:5001/threads?categoryId=${category.id}&page=${validatedPage}&limit=${limit}`)
+    const threadResponse = await fetch(`/api/threads?categoryId=${category.id}&page=${validatedPage}&limit=${limit}`)
     const threadData: ResponseResult<Thread> = await threadResponse.json();
 
     // TRIGGER THE STORE FETCH HERE TOO (Don't await it, let it run in background)

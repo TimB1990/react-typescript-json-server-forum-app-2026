@@ -25,7 +25,7 @@ export const GroupStore = {
         if (limit !== null) params.append("limit", "" + limit);
 
         try {
-            const response = await fetch(`http://localhost:5001/groups${params.size > 0 ? params.toString() : '' }`)
+            const response = await fetch(`/api/groups${params.size > 0 ? params.toString() : '' }`)
             const { data } = await response.json();
 
             store.setState((prev) => ({

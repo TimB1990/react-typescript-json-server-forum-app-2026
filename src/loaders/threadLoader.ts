@@ -21,14 +21,14 @@ export async function threadLoader({params}: LoaderFunctionArgs): Promise<Thread
 
     const { slug } = params;
 
-    const configResponse = await fetch(`http://localhost:5001/config`);
+    const configResponse = await fetch(`/api/config`);
     const config: AppConfig = await configResponse.json();
     const limit = config.messages || config.global
 
     const currentPage = params.pageNumber ? parseInt(params.pageNumber, 10) : 1;
     const validatedPage = isNaN(currentPage) ? 1 : currentPage;
 
-    const threadResponse = await fetch(`http://localhost:5001/threads?slug=${slug}`)
+    const threadResponse = await fetch(`/api/threads?slug=${slug}`)
     if (!threadResponse.ok) { throw new Response("Thread Not Found", { status: 404 });}
 
     const threads = await threadResponse.json();
@@ -38,7 +38,7 @@ export async function threadLoader({params}: LoaderFunctionArgs): Promise<Thread
         throw new Response("Thread Not Found", { status: 404 });
     }
 
-    const categoryResponse = await fetch(`http://localhost:5001/categories/${thread.categoryId}`)
+    const categoryResponse = await fetch(`/api/categories/${thread.categoryId}`)
 
     if(!categoryResponse.ok){
          throw new Response("Category Not Found", { status: 404 });
@@ -46,7 +46,7 @@ export async function threadLoader({params}: LoaderFunctionArgs): Promise<Thread
 
     const category: Category = await categoryResponse.json();
 
-    const messageResponse = await fetch(`http://localhost:5001/messages?threadId=${thread.id}&page=${validatedPage}&limit=${limit}`)
+    const messageResponse = await fetch(`/api/messages?threadId=${thread.id}&page=${validatedPage}&limit=${limit}`)
     const messageData: ResponseResult<Message> = await messageResponse.json();
 
     // TRIGGER THE STORE FETCH HERE TOO (Don't await it, let it run in background)

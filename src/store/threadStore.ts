@@ -18,7 +18,7 @@ const messageAndAuthor = async (threadId: number, authorOf: 'lastMessage' | 'fir
     const order = authorOf === 'firstMessage' ? 'asc' : 'desc';
 
     // Fetch messages for the specific thread
-    const msgResponse = await fetch(`http://localhost:5001/messages?threadId=${threadId}&limit=1&order=${order}`);
+    const msgResponse = await fetch(`/api/messages?threadId=${threadId}&limit=1&order=${order}`);
     const result = await msgResponse.json();
 
     if (!result.data || result.data.length === 0) {
@@ -31,7 +31,7 @@ const messageAndAuthor = async (threadId: number, authorOf: 'lastMessage' | 'fir
     const postedAt = targetMessage.createdAt;
 
     // Fetch the author details
-    const authorResponse = await fetch(`http://localhost:5001/users/${userId}`);
+    const authorResponse = await fetch(`/api/users/${userId}`);
     const { username, avatar } = await authorResponse.json();
 
     return {
@@ -70,11 +70,11 @@ export const ThreadStore = {
 
         try {
 
-            const response = await fetch(`http://localhost:5001/threads?${params.toString()}`);
+            const response = await fetch(`/api/threads?${params.toString()}`);
             const { data } = await response.json();
 
             const messageCount = async (threadId: number): Promise<number> => {
-                const response = await fetch('http://localhost:5001/count/messages?threadId=' + threadId)
+                const response = await fetch('/api/count/messages?threadId=' + threadId)
                 const result = await response.json();
                 const count = result.count
                 return count;
@@ -108,7 +108,7 @@ export const ThreadStore = {
     countTotal: async () => {
 
         try {
-            const response = await fetch('http://localhost:5001/count/threads')
+            const response = await fetch('/api/count/threads')
             const result = await response.json();
             const count = result.count;
 
