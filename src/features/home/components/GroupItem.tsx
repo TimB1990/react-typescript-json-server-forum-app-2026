@@ -1,6 +1,6 @@
-import { type GroupItemProps } from '../types/group'
+import { type GroupItemProps } from '../../../common/types/group'
 import { useState } from 'react'
-import { Card } from './Card';
+import { Card } from '../../../common/components/ui/cards/Card';
 
 export const GroupItem = ({ id, title, description, children }: GroupItemProps) => {
   return (

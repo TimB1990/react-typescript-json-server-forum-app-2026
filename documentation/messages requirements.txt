@@ -1,0 +1,22 @@
+- Card layout voor een bericht
+    - header
+        - Titel van de tread
+    - zijkant:
+        - avatar autheur - bericht
+        - Autheur name - bericht
+        - Rol (lid, moderator, etc.) (nog implementeren)
+    - inhoud:
+        - datum geplaatst
+        - inhoud van het bericht
+        - bewerkt? updated at (nog te implementeren)
+        - onderaan: knop 'reageren op dit bericht'
+
+structuur:
+ - 1ste bericht met daaronder witruimte
+    - witruimte:
+        - Nieuwe onderwerp starten (nieuwe thread)
+        - Op dit onderwerp reageren knop 'reageren op onderwerp - niet als reactie op ander'
+    - witruimte:
+        - Paginator
+
+- de daarop volgende berichten...

@@ -2,7 +2,24 @@ import jsonServer from 'json-server'
 import bcrypt from 'bcryptjs'
 import cors from 'cors'
 
-const RESERVED_FILTERS = ["limit"];
+const RESERVED_FILTERS = [
+  "limit",
+  "page",
+  "order"
+];
+
+const NON_PAGINATED_RESROUCES = [
+  "replies",
+  "tags",
+  "config"
+]
+
+const DEFAULT = {
+  'messages': 10,
+  'threads': 5,
+  'categories': 4,
+  'global': 20
+}
 
 // functions
 function filterDataByQueryParams(data, filters) {
@@ -20,7 +37,7 @@ function filterDataByQueryParams(data, filters) {
       // Use optional chaining in case the item doesn't have the key
       const itemValue = item?.[key];
       const filterValue = filters[key];
-      
+
       // Strict string comparison to bridge Number/String gap
       return String(itemValue) === String(filterValue);
     });
@@ -35,12 +52,23 @@ server.use(cors({ origin: 'http://localhost:5173' }))
 const router = jsonServer.router('db.json')
 const middlewares = jsonServer.defaults();
 
+server.use((req, res, next) => {
+  if (req.url.includes('.well-known') || req.url.includes('favicon.ico')) {
+    return res.status(204).end(); // Silently return "No Content" and stop processing
+  }
+  next();
+});
+
 server.use(jsonServer.bodyParser);
 server.use(middlewares)
 
 server.use(async (req, res, next) => {
   console.log("called: ", req.route)
   next();
+})
+
+server.get('/config', (req, res) => {
+  res.json(DEFAULT)
 })
 
 server.post('/register', async (req, res) => {
@@ -85,12 +113,51 @@ server.get('/count/:resource', (req, res) => {
     return res.status(404).json({ error: "Resource not found" });
   }
 
+  // TODO make more efficient by improving filter needed to either fetch first or latest related child.
   const filteredData = filterDataByQueryParams(data, filters)
 
   res.json({
     count: filteredData.length
   });
 });
+
+server.get('/messages/latest-overview', (req, res) => {
+  const limit = parseInt(req.query.limit, 10) || DEFAULT.messages;
+  const page = parseInt(req.query.page, 10) || 1;
+
+  // 1. fetch all raw messages from lowdb
+  const allMessages = router.db.get('messages').value() || [];
+
+  // 2. Sort messages globally by date descending (newest replies first)
+  const sortedMessages = [...allMessages].sort((a,b) => {
+    return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
+  })
+
+  // 3. filter to keep only the latest message per unique thread
+  const uniqueThreadMessages = [];
+  const seenThreads = new Set();
+
+  for(const message of sortedMessages){
+    if(!seenThreads.has(message.threadId)){
+      seenThreads.add(message.threadId)
+      uniqueThreadMessages.push(message);
+    }
+  }
+
+  // 4. handle serverside pagination on the unique dataset
+  const totalCount = uniqueThreadMessages.length;
+  const startIndex = (page - 1) * limit;
+  const paginatedResult = uniqueThreadMessages.slice(startIndex, startIndex + limit)
+
+  // 5. respond matching your standard format structure
+  res.json({
+    data: paginatedResult,
+    totalCount: totalCount,
+    currentPage: page,
+    limit: limit,
+    totalPages: Math.ceil(totalCount / limit)
+  })
+})
 
 server.get('/:resource', (req, res) => {
 
@@ -109,23 +176,100 @@ server.get('/:resource', (req, res) => {
   // filter the full data by the filters given as query param
   const filtered = filterDataByQueryParams(data, filters);
 
+  // updated sorting logic
+  const sortOrder = filters.order === 'asc' ? 'asc' : 'desc'; // Default to desc
+
   // spread the filtered result then apply sort on createdAt
   const sorted = [...filtered].sort((a, b) => {
     const dateA = new Date(a.createdAt || 0).getTime();
     const dateB = new Date(b.createdAt || 0).getTime();
-    return dateB - dateA;
+    return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
   });
 
-  // Apply limit given as query string cast to int
-  const limit = parseInt(filters.limit, 10) || 100;
+  // -- START EXCEPTION LOGIC
+  const skipPagination = NON_PAGINATED_RESROUCES.includes(resource)
 
-  // Set the final result to be a sliced portion of sorted by limit  
-  const finalResult = sorted.slice(0, limit);
+  let finalResult = sorted;
+  // let limit = sorted.length;
+  let page = 1
+
+  const resourceDefault = DEFAULT[resource] || DEFAULT.global
+  let limit = skipPagination ? sorted.length : (parseInt(filters.limit, 10) || resourceDefault);
+
+  if (!skipPagination) {
+
+    page = parseInt(filters.page, 10) || 1;
+    const startIndex = (page - 1) * limit;
+    finalResult = sorted.slice(startIndex, startIndex + limit);
+  }
+
+  // -- END EXCEPTION LOGIC
 
   // return the result of the filter
   res.json({
-    data: finalResult 
+    data: finalResult,
+    totalCount: filtered.length,
+    currentPage: page,
+    limit: limit,
+    totalPages: skipPagination ? 1 : Math.ceil(filtered.length / limit)
   });
+});
+
+server.post('/replies/resolve-pages', async (req, res) => {
+  const { ids } = req.body;
+  const itemsPerPage = DEFAULT.messages;
+
+  if (!ids || !Array.isArray(ids)) {
+    return res.status(400).send("Invalid IDs provided");
+  }
+
+  try {
+    const db = router.db;
+    const allMessages = db.get('messages').value() || [];
+
+    const results = ids.map(targetId => {
+      const message = allMessages.find(m => m.id === targetId);
+      
+      if (!message) return { messageId: targetId, atPage: null, error: "Not found" };
+
+      // Calculate the page number
+      const threadMessages = allMessages
+        .filter(m => m.threadId === message.threadId)
+        .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+
+      const index = threadMessages.findIndex(m => m.id === targetId);
+      const atPage = Math.floor(index / itemsPerPage) + 1;
+
+      // CORRECT LOWDB UPDATE PATTERN
+      const existing = db.get('replies').find({ messageId: targetId }).value();
+
+      if (existing) {
+        // Update: You must call .find() on the collection and .assign() before .write()
+        db.get('replies')
+          .find({ messageId: targetId })
+          .assign({ atPage })
+          .write();
+      } else {
+        // Create
+        db.get('replies')
+          .push({
+            messageId: targetId,
+            parentMessageId: message.parentId || null,
+            threadId: message.threadId,
+            atPage: atPage
+          })
+          .write();
+      }
+
+      return { messageId: targetId, atPage, threadId: message.threadId };
+    });
+
+    res.json(results);
+  } catch (err) {
+    // This will now log the specific lowdb error to your terminal
+    console.error("Resolve Pages Error:", err);
+    res.status(500).json({ error: err.message });
+  }
 });
 
 server.use(router)
