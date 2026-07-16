@@ -54,13 +54,13 @@ export const Header = () => {
             </ul>
             <ul>
               <li>
-                <Link to="" className='link-btn'>
+                <Link to="/login" className='link-btn'>
                   <FontAwesomeIcon icon={faCircleUser} />
                   Allready a member? Login
                 </Link>
               </li>
               <li>
-                <Link to="" className='link-btn'>
+                <Link to="/register" className='link-btn'>
                   <FontAwesomeIcon icon={faUserPlus} aria-hidden="true" />
                   <span>Sign Up</span>
                 </Link></li>

@@ -1,18 +1,19 @@
 import { faArrowRightToBracket } from '@fortawesome/free-solid-svg-icons/faArrowRightToBracket'
 import { faUserPlus } from '@fortawesome/free-solid-svg-icons/faUserPlus'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { Link } from 'react-router-dom'
 
 export const RegisterLoginButtons = () => {
     return (
         <div className='register-login-buttons'>
-            <button className='btn-default orange'>
+            <Link to="/register" className='register-login-link-btn primary'>
                 <FontAwesomeIcon icon={faUserPlus} aria-hidden="true" />
                 <span>Sign Up</span>
-            </button>
-            <button className='btn-default'>
+            </Link>
+            <Link to="/login" className='register-login-link-btn'>
                 <FontAwesomeIcon icon={faArrowRightToBracket} aria-hidden="true" />
                 <span>Sign in</span>
-            </button>
+            </Link>
         </div>
     )
 }

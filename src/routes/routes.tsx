@@ -81,14 +81,12 @@ export const routes = [
             {
                 path: "/login",
                 element: <>
-                    <Home />
                     <Login />
                 </>
             },
             {
                 path: "/register",
                 element: <>
-                    <Home />
                     <Register />
                 </>
             }

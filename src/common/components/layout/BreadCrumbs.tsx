@@ -51,10 +51,10 @@ export const BreadCrumbs = () => {
           {crumbs.map((crumb, index) => {
             const isLast = index === crumbs.length - 1;
             const isHome = index === 0; // The first item is always your Home link now
-
+            
             return (
               <li key={`${crumb.pathname}-${index}`} style={{ display: "flex", alignItems: "center" }}>
-                {isLast ? (
+                {isLast && !isHome ? (
                   <span aria-current="page" style={{ fontWeight: "bold", color: "#ccc" }}>
                     {isHome ? <FontAwesomeIcon icon={faHome} /> : ""} {crumb.label}
                   </span>
