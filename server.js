@@ -84,6 +84,10 @@ server.post('/register', async (req, res) => {
 
   const errors = {}
 
+  if(!username || user.trim() === ''){
+    errors.username = "Username is required"
+  }
+
   if (!email || email.trim() === '') {
     errors.email = 'Email is required.';
   }
@@ -103,7 +107,7 @@ server.post('/register', async (req, res) => {
 
   // 2. Validate essential checkboxes
   if (!regAgreedTerms) {
-    errors.regAgreedTerms = 'You must agree to the Terms of Use and Privacy Policy.';
+    errors.regAgreedTerms = 'You must agree to terms and conditions';
   }
 
   // 3. Check for existing users (using your json-server / lowdb instance)

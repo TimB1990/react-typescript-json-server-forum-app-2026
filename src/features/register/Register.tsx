@@ -40,12 +40,13 @@ export const Register = () => {
   };
 
   const handleSubmit = async (e: React.SubmitEvent) => {
+
     e.preventDefault();
     setErrors({})
     setSuccessMsg('')
 
     try {
-      const response = await fetch('/register', {
+      const response = await fetch('http://localhost:5001/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
@@ -79,6 +80,8 @@ export const Register = () => {
     }
   }
 
+  console.log(formData)
+
   // TODO implement errors display and handleSumit, handleChange
   return (
     <div className="layout">
@@ -89,35 +92,107 @@ export const Register = () => {
           </>}
           content={
             <>
-              <form action="">
+              <form onSubmit={handleSubmit}>
+                {/* Success Banner */}
+                {successMsg && (
+                  <div className="form-field">
+                    <div className="success-field">
+                      {successMsg}
+                    </div>
+                  </div>
+                )}
+
+                {/* Global Error Banner */}
+                {errors.global && (
+                  <div className="form-field">
+                    <div className="error-field global">
+                      {errors.global}
+                    </div>
+                  </div>
+                )}
+
+                {/* Username field */}
                 <div className="form-field">
-                  <label>Display Name</label>
-                  <input type="email" name="username" />
+                  <div className="field-info">
+                    <label>Display Name</label>
+                    {errors && errors['username'] ? (
+                      <div className="error-field">
+                        {errors['username']}
+                      </div>
+                    ) : ("")}
+                  </div>
+                  <input type="text" name="username" onChange={handleChange} value={formData.username} />
                 </div>
+
+
+                {/* Email field */}
                 <div className="form-field">
-                  <label>Email</label>
-                  <input type="email" name="email" />
+                  <div className="field-info">
+                    <label>Email</label>
+                    {errors && errors['email'] ? (
+                      <div className="error-field">
+                        {errors['email']}
+                      </div>
+                    ) : ("")}
+                  </div>
+                  <input type="email" name="email" onChange={handleChange} value={formData.email} />
                 </div>
+
+
+                {/* Password field */}
                 <div className="form-field">
-                  <label>Password</label>
-                  <input type="password" name="password" />
+                  <div className="field-info">
+                    <label>Password</label>
+                    {errors && errors['password'] ? (
+                      <div className="error-field">
+                        {errors['password']}
+                      </div>
+                    ) : ("")}
+                  </div>
+                  <input type="password" name="password" onChange={handleChange} value={formData.password} />
                 </div>
+
+
+                {/* Confirm pass field */}
                 <div className="form-field">
-                  <label>Confirm password</label>
-                  <input type="password" name="passwordConfirm" />
+                  <div className="field-info">
+                    <label>Confirm password</label>
+                    {errors && errors['passwordConfirm'] ? (
+                      <div className="error-field">
+                        {errors['passwordConfirm']}
+                      </div>
+                    ) : ("")}
+                  </div>
+                  <input type="password" name="passwordConfirm" onChange={handleChange} value={formData.passwordConfirm} />
                 </div>
+
+
+                {/* Receive updates checkbox */}
                 <div className="form-field">
                   <input type="checkbox" name="recaptcha" />
                   <label>I am not a robot (recaptcha)</label>
                 </div>
+
+
+                {/* Receive spam field */}
                 <div className="form-field">
-                  <input type="checkbox" name="regAdminMails" />
+                  <input type="checkbox" name="regAdminMails" checked={formData.regAdminMails} />
                   <label>Receive news and updates</label>
                 </div>
+
+
+                {/* Agree to terms field */}
                 <div className="form-field">
-                  <input type="checkbox" name="regAgreedTerms" />
+                  <input type="checkbox" name="regAgreedTerms" checked={formData.regAgreedTerms} />
                   <label>I agree to the <u>Terms of Use</u> and <u>Privacy Policy</u></label>
+                  {errors && errors['regAgreedTerms'] ? (
+                    <div className="error-field">
+                      {errors['regAgreedTerms']}
+                    </div>
+                  ) : ("")}
                 </div>
+
+                {/* Submit button */}
                 <div className="form-field">
                   <button className="register-login-link-btn primary" type="submit">Create my Account</button>
                 </div>

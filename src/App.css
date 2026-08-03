@@ -953,7 +953,7 @@ form {
   flex-direction: column;
 }
 
-form input[type="email"], form input[type="password"] {
+form input[type="email"], form input[type="text"], form input[type="password"] {
   border: 1px solid darkgray;
   display: flex;
   color: rgb(156, 163, 175);
@@ -968,12 +968,13 @@ form input[type="email"], form input[type="password"] {
   box-sizing: border-box;
 }
 
+.error-field {
+  color: red;
+}
+
 .form-field {
-  display: flex;
-  gap: 1em;
   border-top: 1px solid color(srgb 0.746082 0.763686 0.79186 / 0.1);
   border-bottom: 1px solid color(srgb 0.746082 0.763686 0.79186 / 0.1);
-  padding: 1em;
 }
 
 .form-field label {
@@ -1027,4 +1028,30 @@ form input[type="email"], form input[type="password"] {
   flex-direction: column;
   gap: 0.5rem; /* Space between label and input */
   margin-bottom: 1.25rem;
+}
+
+.success-field {
+  padding: 0.75rem 1rem;
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 1rem;
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+  border-radius: 4px;
+}
+
+.error-field.global {
+  padding: 0.75rem 1rem;
+  display: flex;
+  justify-content: flex-start;
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+}
+
+.field-info {
+  display: flex;
+  justify-content: space-between;
 }
