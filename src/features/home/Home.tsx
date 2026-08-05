@@ -47,112 +47,114 @@ export const Home = () => {
   }, [error, setError])
 
   return (
-    <main className='layout'>
+    <>
       <ErrorBanner />
+      <main className='layout'>
 
-      <div className="container first">
+        <div className="container first">
 
-        <Card
-          header={<h2>Latest News</h2>}
-          content={<Carousel />}
-          options={{ divided: { top: true, bottom: false }, noPadding: true }}
-        />
+          <Card
+            header={<h2>Latest News</h2>}
+            content={<Carousel />}
+            options={{ divided: { top: true, bottom: false }, noPadding: true }}
+          />
 
-        {isPageLoading && groups.length === 0 ? (
-          <p>Loading...</p>
-        ) : (
-          groups.map((group: Group) => (
-            <GroupItem key={`group-${group.id}`} {...group}>
-              <CategoriesList {...group} />
-            </GroupItem>
-          ))
-        )}
-      </div>
+          {isPageLoading && groups.length === 0 ? (
+            <p>Loading...</p>
+          ) : (
+            groups.map((group: Group) => (
+              <GroupItem key={`group-${group.id}`} {...group}>
+                <CategoriesList {...group} />
+              </GroupItem>
+            ))
+          )}
+        </div>
 
-      <div className="container second">
-        <>
-          {
-            isPageLoading ? (
-              <p>Loading...</p>
-            ) : (<>
-              <Card
-                header={<h2>Talk with us!</h2>}
-                content={<div style={{ padding: 'clamp(1em, 2vw, 1.25em)' }}>Lorem ipsum dolor sit amet consectetur adipisicing elit. Sit, odio. Aspernatur, saepe eum animi in hic fugit ullam maxime quam earum.</div>}
-                footer={<RegisterLoginButtons />}
-                options={{ divided: { top: true, bottom: true } }}
-              />
+        <div className="container second">
+          <>
+            {
+              isPageLoading ? (
+                <p>Loading...</p>
+              ) : (<>
+                <Card
+                  header={<h2>Talk with us!</h2>}
+                  content={<div style={{ padding: 'clamp(1em, 2vw, 1.25em)' }}>Lorem ipsum dolor sit amet consectetur adipisicing elit. Sit, odio. Aspernatur, saepe eum animi in hic fugit ullam maxime quam earum.</div>}
+                  footer={<RegisterLoginButtons />}
+                  options={{ divided: { top: true, bottom: true } }}
+                />
 
-              <Card
-              // not working because the pagination is not OK
-                header={<h2>Latest topics</h2>}
-                content={
-                  <div className="threads">
-                    {latestThreads.map((thread: Thread) => (
-                      <ThreadPreviewItem
-                        key={`latest-thread-${thread.id}`}
-                        {...thread}
-                        iconStats={true}
-                        // 'first' ensures we show the thread creator, 
-                        // which is now correctly fetched via order=asc
-                        showAuthorInfo='first'
-                      />
+                <Card
+                  // not working because the pagination is not OK
+                  header={<h2>Latest topics</h2>}
+                  content={
+                    <div className="threads">
+                      {latestThreads.map((thread: Thread) => (
+                        <ThreadPreviewItem
+                          key={`latest-thread-${thread.id}`}
+                          {...thread}
+                          iconStats={true}
+                          // 'first' ensures we show the thread creator, 
+                          // which is now correctly fetched via order=asc
+                          showAuthorInfo='first'
+                        />
+                      ))}
+                    </div>
+                  }
+                  options={{ noPadding: true, divided: { top: true, bottom: false } }}
+                />
+
+                <Card
+                  header={<h2>Welcome at our forum!</h2>}
+                  content={<div style={{ padding: 'clamp(1em, 2vw, 1.25em)' }}>Lorem ipsum dolor sit amet consectetur adipisicing elit. Corrupti, omnis sit rerum facere magnam illum, officiis odio beatae neque illo voluptatibus? Iste, minima assumenda porro explicabo neque atque! Sequi.</div>}
+                  options={{ divided: { top: true, bottom: false } }}
+                />
+
+                <Card
+                  header={<>
+                    <h2>Latest Replies</h2>
+                  </>}
+                  content={<div className="messages">
+                    {latestMessages.map((message: Message) => (
+                      <MessagePreviewItem key={`latest-message-${message.id}`} {...message} />
                     ))}
-                  </div>
-                }
-                options={{ noPadding: true, divided: { top: true, bottom: false } }}
-              />
-
-              <Card
-                header={<h2>Welcome at our forum!</h2>}
-                content={<div style={{ padding: 'clamp(1em, 2vw, 1.25em)' }}>Lorem ipsum dolor sit amet consectetur adipisicing elit. Corrupti, omnis sit rerum facere magnam illum, officiis odio beatae neque illo voluptatibus? Iste, minima assumenda porro explicabo neque atque! Sequi.</div>}
-                options={{ divided: { top: true, bottom: false } }}
-              />
-
-              <Card
-                header={<>
-                  <h2>Latest Replies</h2>
-                </>}
-                content={<div className="messages">
-                  {latestMessages.map((message: Message) => (
-                    <MessagePreviewItem key={`latest-message-${message.id}`} {...message} />
-                  ))}
-                </div>}
-                options={{ noPadding: true, divided: { top: true, bottom: false } }}
-              />
-              <Card
-                header={<h2>Forum stats</h2>}
-                content={<>
-                  <Statistic value={totalThreads} subject={"Total amount of subjects"} />
-                  <Statistic value={totalMessages} subject={"Total amount of messages"} />
-                </>}
-                options={{ noPadding: true, divided: { top: true, bottom: false }, allowHorizontal: true }}
-              />
-              <Card
-                header={<h2>Member stats</h2>}
-                content={<>
-                  <Statistic value={totalUsers} subject={"Total amount of members"} />
-                  {/* Guard check: Only render the member info if the data is actually there */}
-                  {latestUsers && latestUsers.length > 0 ? (
-                    <ImageCardItem
-                      image={latestUsers[0].avatar}
-                      main={
-                        <>
-                          <p><strong>{latestUsers[0].username}</strong></p>
-                          <p>Newest member - {dayjs(latestUsers[0].createdAt).fromNow()}</p>
-                        </>
-                      }
-                      options={{ contentDirection: "horizontal", centered: true, thumbImage: true, imageShape: "circle" }}
-                    />
-                  ) : (
-                    // fallback
-                    <p>Loading newest member...</p>
-                  )}
-                </>}
-                options={{ noPadding: true, divided: { top: true, bottom: false }, allowHorizontal: true }}
-              />
-            </>)}
-        </>
-      </div>
-    </main>
+                  </div>}
+                  options={{ noPadding: true, divided: { top: true, bottom: false } }}
+                />
+                <Card
+                  header={<h2>Forum stats</h2>}
+                  content={<>
+                    <Statistic value={totalThreads} subject={"Total amount of subjects"} />
+                    <Statistic value={totalMessages} subject={"Total amount of messages"} />
+                  </>}
+                  options={{ noPadding: true, divided: { top: true, bottom: false }, allowHorizontal: true }}
+                />
+                <Card
+                  header={<h2>Member stats</h2>}
+                  content={<>
+                    <Statistic value={totalUsers} subject={"Total amount of members"} />
+                    {/* Guard check: Only render the member info if the data is actually there */}
+                    {latestUsers && latestUsers.length > 0 ? (
+                      <ImageCardItem
+                        image={latestUsers[0].avatar}
+                        main={
+                          <>
+                            <p><strong>{latestUsers[0].username}</strong></p>
+                            <p>Newest member - {dayjs(latestUsers[0].createdAt).fromNow()}</p>
+                          </>
+                        }
+                        options={{ contentDirection: "horizontal", centered: true, thumbImage: true, imageShape: "circle" }}
+                      />
+                    ) : (
+                      // fallback
+                      <p>Loading newest member...</p>
+                    )}
+                  </>}
+                  options={{ noPadding: true, divided: { top: true, bottom: false }, allowHorizontal: true }}
+                />
+              </>)}
+          </>
+        </div>
+      </main>
+    </>
   )
 }

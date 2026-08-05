@@ -176,14 +176,14 @@ export const Register = () => {
 
                 {/* Receive spam field */}
                 <div className="form-field">
-                  <input type="checkbox" name="regAdminMails" checked={formData.regAdminMails} />
+                  <input type="checkbox" name="regAdminMails" onChange={handleChange} checked={formData.regAdminMails} />
                   <label>Receive news and updates</label>
                 </div>
 
 
                 {/* Agree to terms field */}
                 <div className="form-field">
-                  <input type="checkbox" name="regAgreedTerms" checked={formData.regAgreedTerms} />
+                  <input type="checkbox" name="regAgreedTerms" onChange={handleChange} checked={formData.regAgreedTerms} />
                   <label>I agree to the <u>Terms of Use</u> and <u>Privacy Policy</u></label>
                   {errors && errors['regAgreedTerms'] ? (
                     <div className="error-field">

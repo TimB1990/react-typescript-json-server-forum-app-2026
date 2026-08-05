@@ -10,9 +10,13 @@ import { threadLoader, type ThreadLoaderResult } from "../loaders/threadLoader";
 import { GroupPage } from "../features/group/GroupPage";
 import { groupLoader, type GroupLoaderResult } from "../loaders/groupLoader";
 
+// Import Profile component and auth loader
+import { Profile } from "../features/profile/Profile";
+import { requireAuthLoader } from "../loaders/authLoader";
+
 const groupBreadcrumbs = {
     breadcrumb: (data: GroupLoaderResult) => [
-        {label: data.group.title, path: `/groups/${data.group.slug}`}
+        { label: data.group.title, path: `/groups/${data.group.slug}` }
     ]
 }
 
@@ -52,14 +56,14 @@ export const routes = [
                 children: [
                     {
                         index: true,
-                        loader: async ({ params } : {params: {slug: string}}) => redirect(`/categories/${params.slug}/page/1`)
+                        loader: async ({ params }: { params: { slug: string } }) =>
+                            redirect(`/categories/${params.slug}/page/1`)
                     },
                     {
                         path: "page/:pageNumber",
-                        element: <CategoryPage key={window.location.pathname} />, // Keep element here
+                        element: <CategoryPage key={window.location.pathname} />,
                         loader: categoryLoader,
                     }
-
                 ]
             },
             {
@@ -69,27 +73,36 @@ export const routes = [
                 children: [
                     {
                         index: true,
-                        loader: async ({params} : {params: {slug: string}}) => redirect(`/threads/${params.slug}/page/1`)
+                        loader: async ({ params }: { params: { slug: string } }) =>
+                            redirect(`/threads/${params.slug}/page/1`)
                     },
                     {
                         path: "page/:pageNumber",
-                        element: <ThreadPage key={window.location.pathname} />, // Keep element here
+                        element: <ThreadPage key={window.location.pathname} />,
                         loader: threadLoader,
                     }
                 ]
             },
+            // --------------------------------------------------------
+            // PROTECTED ROUTES
+            // --------------------------------------------------------
+            {
+                path: "/profile",
+                loader: requireAuthLoader, // <--- Protects the page before rendering
+                element: <Profile />,
+                handle: { breadcrumb: "Profile" }
+            },
+            // --------------------------------------------------------
+            // GUEST / AUTH ROUTES
+            // --------------------------------------------------------
             {
                 path: "/login",
-                element: <>
-                    <Login />
-                </>
+                element: <Login />
             },
             {
                 path: "/register",
-                element: <>
-                    <Register />
-                </>
+                element: <Register />
             }
         ]
     }
-]
+];

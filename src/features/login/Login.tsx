@@ -1,15 +1,56 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Card } from '../../common/components/ui/cards/Card'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { SsoButton } from '../../common/components/ui/buttons/SsoButton'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faMicrosoft, faGoogle, faApple } from '@fortawesome/free-brands-svg-icons'
-
-const login = (email: string, password: string): void => {
-  console.log('do login...')
-}
+import { useAuth } from '../../context/AuthContext'
 
 export const Login = () => {
+
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [rememberMe, setRememberMe] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
+
+  const navigate = useNavigate()
+
+  const { setUser } = useAuth()
+
+  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setError(null)
+    setLoading(true)
+
+    try {
+      const response = await fetch('http://localhost:5001/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ email, password, rememberMe })
+      })
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Login Failed')
+      }
+
+      console.log(data.user, typeof data.user)
+
+      setUser(data.user)
+
+      navigate('/')
+
+    } catch (error: any) {
+      setError(error.message || 'Unexpected error occurred')
+    }
+    finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <div className="layout">
       <div className="container half-width first">
@@ -20,21 +61,45 @@ export const Login = () => {
           </>}
           content={
             <>
-              <form action="">
+              {error && <div className="error-message" style={{ color: 'red', marginBottom: '1rem' }}>{error}</div>}
+              <form onSubmit={handleSubmit}>
                 <div className="form-field">
                   <label>Email</label>
-                  <input type="email" name="email" />
+                  <input
+                    id="email"
+                    type="email"
+                    name="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                  />
                 </div>
                 <div className="form-field">
                   <label>Password</label>
-                  <input type="password" name="password" />
+                  <input
+                    id="password"
+                    type="password"
+                    name="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
                 </div>
                 <div className="form-field">
-                  <input type="checkbox" name="remember-me" />
-                  <label>Remember me</label>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
+                    <input
+                      type="checkbox"
+                      name="remember-me"
+                      checked={rememberMe}
+                      onChange={(e) => setRememberMe(e.target.checked)}
+                    />
+                    Remember me
+                  </label>
                 </div>
                 <div className="form-field">
-                  <button className="register-login-link-btn primary" type="submit">Login</button>
+                  <button className="register-login-link-btn primary" type="submit" disabled={loading}>
+                    {loading ? 'Logging in...' : 'Login'}
+                  </button>
                 </div>
               </form>
             </>

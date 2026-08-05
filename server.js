@@ -1,6 +1,8 @@
 import jsonServer from 'json-server'
 import bcrypt from 'bcryptjs'
 import cors from 'cors'
+import crypto from 'crypto'
+import cookieParser from 'cookie-parser'
 
 const RESERVED_FILTERS = [
   "limit",
@@ -47,7 +49,8 @@ function filterDataByQueryParams(data, filters) {
 // server setup
 const server = jsonServer.create();
 
-server.use(cors({ origin: 'http://localhost:5173' }))
+server.use(cookieParser())
+server.use(cors({ origin: 'http://localhost:5173', credentials: true }))
 
 const router = jsonServer.router('db.json')
 const middlewares = jsonServer.defaults();
@@ -84,7 +87,7 @@ server.post('/register', async (req, res) => {
 
   const errors = {}
 
-  if(!username || user.trim() === ''){
+  if(!username || username.trim() === ''){
     errors.username = "Username is required"
   }
 
@@ -150,7 +153,7 @@ server.post('/register', async (req, res) => {
 });
 
 server.post('/login', async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, rememberMe } = req.body;
   const user = router.db.get('users').find({ email }).value();
 
   if (!user) {
@@ -159,18 +162,101 @@ server.post('/login', async (req, res) => {
 
   const isMatch = await bcrypt.compare(password, user.password);
 
-  if (isMatch) {
-
-    // takes password and assigns it to temporary _ variable
-    // take everything else (rest operator ...) and pack it into
-    // new object called userWithoutPassword
-
-    const { password: _, ...userWithoutPassword } = user;
-    res.json({ message: "Login successful", user: userWithoutPassword });
-  } else {
-    res.status(401).json({ message: "Invalid credentials" });
+  if(!isMatch){
+    return res.status(401).json({message: "Invalid credentials"})
   }
+
+  // Generate selector and validator token pair
+  const selector = crypto.randomBytes(16).toString('hex')
+  const validator = crypto.randomBytes(32).toString('hex')
+  const tokenHash = crypto.createHash('sha256').update(validator).digest('hex');
+
+  // set expiration
+  const durationMs = 30 * 24 * 60 * 60 * 1000;
+  const expiresAt = new Date(Date.now() + durationMs).toISOString();
+
+  // ensure tokens collection exists
+  if(!router.db.has('tokens').value()) {
+    router.db.set('tokens', []).write();
+  }
+
+  // store token details in LOW DB
+  router.db.get('tokens').push({
+    userId: user.id,
+    selector,
+    tokenHash,
+    expiresAt: rememberMe ? expiresAt: null
+  }).write()
+
+  const cookieOptions = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax'
+  }
+
+  if(rememberMe) {
+    cookieOptions.maxAge = durationMs
+  }
+
+  res.cookie('auth_token', `${selector}:${validator}`, cookieOptions)
+
+  const { password: _, ...userWithoutPassword } = user;
+  return res.json({message: "Login successfull", user: userWithoutPassword})
+
 });
+
+// auth-login
+server.get('/me', (req, res) => {
+  const authToken = req.cookies.auth_token
+
+  if(!authToken || !authToken.includes(':')){
+    return res.status(401).json({message: "Unauthenticated"})
+  }
+
+  const [selector, validator] = authToken.split(':')
+  const record = router.db.get('tokens').find({ selector }).value();
+
+  if(!record){
+    return res.status(401).json({message: "Invalid session"})
+  }
+
+  // verify expiration date if it exists
+  if(record.expiresAt && new Date(record.expiresAt) < new Date()){
+    router.db.get('tokens').remove({selector}).write();
+    res.clearCookie('auth_token')
+    return res.status(401).json({message: "Session expired"})
+  }
+
+  // verify validator hash
+  const computedHash = crypto.createHash('sha256').update(validator).digest('hex')
+  if(computedHash !== record.tokenHash){
+    // Possible theft attempt: invalidate all the user tokens
+    router.db.get('tokens').remove({userId: record.userId}).write();
+    res.clearCookie('auth_token')
+    return res.status(401).json({ message: "Token mismatch. Logging out user." });
+  }
+
+  // fetch and return user
+  const user = router.db.get('users').find({id: record.userId}).value();
+  if(!user){
+    return res.status(401).json({message: "User not found"});
+  }
+
+  const {password: _, ...userWithoutPassword} = user;
+  return res.json({user: userWithoutPassword})
+
+})
+
+// Logout endpoint
+server.post('/logout', (req, res) => {
+  const authToken = req.cookies.auth_token;
+  if(authToken && authToken.includes(':')){
+    const [selector] = authToken.split(':')
+    router.db.get('tokens').remove({selector}).write();
+  }
+  res.clearCookie('auth_token')
+  res.json({message: 'Logged out successfully'})
+})
 
 server.get('/count/:resource', (req, res) => {
   const { resource } = req.params;

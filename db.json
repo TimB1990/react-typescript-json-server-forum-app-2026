@@ -174,6 +174,13 @@
       "password": "$2b$10$3hcXwN1V69QcnRiEErXaUeuq/E1QnlKgFw/Tdonx5bckPg1SCd2.a",
       "avatar": "data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20version%3D%221.1%22%20baseProfile%3D%22full%22%20width%3D%22150%22%20height%3D%22150%22%3E%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22%23d1adf0%22%2F%3E%3Ctext%20x%3D%2275%22%20y%3D%2275%22%20font-size%3D%2220%22%20alignment-baseline%3D%22middle%22%20text-anchor%3D%22middle%22%20fill%3D%22white%22%3E150x150%3C%2Ftext%3E%3C%2Fsvg%3E",
       "createdAt": "2026-05-12T21:16:47.246Z"
+    },
+    {
+      "id": "1785771577362",
+      "username": "SomeAdmin",
+      "email": "someadmin@test.com",
+      "password": "$2b$10$1vfLbBo9Tp0yUkkz.NY7UuxuJ6FPVw6HB3u1JfKGC2b4NW4MWP2Dq",
+      "createdAt": "2026-08-03T15:39:37.362Z"
     }
   ],
   "groups": [
@@ -14133,6 +14140,50 @@
       "parentMessageId": null,
       "threadId": 28,
       "atPage": 1
+    }
+  ],
+  "tokens": [
+    {
+      "userId": "1785771577362",
+      "selector": "b480918c60ea4a8afcbd219c37c7d458",
+      "tokenHash": "edacadba21ce5c3277bf5d490c851f224b4d9ed8d11ba956df91869eb77728ed",
+      "expiresAt": null
+    },
+    {
+      "userId": "1785771577362",
+      "selector": "fdddd49dbf4d0edfbd5efa96798589f7",
+      "tokenHash": "7b2c30984cdd2fe2c22ce21f4ee63a696cfd5dce397fb97e101f7cd19e13b27e",
+      "expiresAt": null
+    },
+    {
+      "userId": "1785771577362",
+      "selector": "3664222f3a1e1ed6042dea79002d5119",
+      "tokenHash": "19c66fa4a2756e27aed17ff2c2ad337c56adebd621a6f091392ea545e033cdfb",
+      "expiresAt": null
+    },
+    {
+      "userId": "1785771577362",
+      "selector": "11dca3fd94e6e0f6a4dfe5a4d5ef5c78",
+      "tokenHash": "1c3ce1b243d987d74ae74800b4d68b5319ce1ebe8a3f164d5be453662d2695d7",
+      "expiresAt": null
+    },
+    {
+      "userId": "1785771577362",
+      "selector": "6b7d2ab288529b2644501eabdee6dd87",
+      "tokenHash": "0bffaf205f9054cb0b6a5115f9acaf3b02360f431d4b7d79813f63fcdb322169",
+      "expiresAt": null
+    },
+    {
+      "userId": "1785771577362",
+      "selector": "69fe79202045da151fcdf4978cdc59bd",
+      "tokenHash": "e784467ab5731f021e25dbb1f53b2f0c5c8deb618b4c0568c0d2b1953a5e15d9",
+      "expiresAt": null
+    },
+    {
+      "userId": "1785771577362",
+      "selector": "67b7b7c3ea18309d02d4ea4e59d760b3",
+      "tokenHash": "92c50b05d3ae8544129c22f9a9336b1871bf978cfa172730ba8c13beabc7ba05",
+      "expiresAt": null
     }
   ]
 }
