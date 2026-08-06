@@ -29,9 +29,11 @@ const generateData = async () => {
 
   // 1. Users
   for (let i = 1; i <= 25; i++) {
+    let username = faker.internet.username() 
     users.push({
       id: i,
-      username: faker.internet.username(),
+      username,
+      email: `${username}@forum.test`,
       password: hashedPass,
       avatar: faker.image.dataUri({ width: 150, height: 150 }),
       createdAt: faker.date.past().toISOString()
