@@ -27,7 +27,14 @@ import { ThreadListSkeleton } from '../../common/components/ui/skeleton/ThreadLi
 // misc
 import dayjs from 'dayjs'
 
+// auth
+import { useAuth } from '../../context/AuthContext'
+import type { User } from '../../common/types/users'
+
 export const Home = () => {
+
+  const { user: rawUser, logout, loading } = useAuth();
+  const theUser = rawUser as User | null;
 
   const { groups, loading: groupsLoading, error } = useGroupStore();
   const { threadsByCategory: threads, loading: threadsLoading, totalCount: totalThreads } = useThreadStore();
@@ -85,13 +92,14 @@ export const Home = () => {
         </div>
 
         <div className="container second">
-          <Card
-            header={<h2>Talk with us!</h2>}
-            content={<div style={{ padding: 'clamp(1em, 2vw, 1.25em)' }}>Lorem ipsum dolor sit amet consectetur adipisicing elit. Sit, odio. Aspernatur, saepe eum animi in hic fugit ullam maxime quam earum.</div>}
-            footer={<RegisterLoginButtons />}
-            options={{ divided: { top: true, bottom: true } }}
-          />
-
+          {!theUser && (
+            <Card
+              header={<h2>Talk with us!</h2>}
+              content={<div style={{ padding: 'clamp(1em, 2vw, 1.25em)' }}>Lorem ipsum dolor sit amet consectetur adipisicing elit. Sit, odio. Aspernatur, saepe eum animi in hic fugit ullam maxime quam earum.</div>}
+              footer={<RegisterLoginButtons />}
+              options={{ divided: { top: true, bottom: true } }}
+            />
+          )}
 
           {/* Latest threads skeleton */}
           {isThreadsLoading ? (
