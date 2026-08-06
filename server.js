@@ -429,6 +429,27 @@ server.post('/replies/resolve-pages', async (req, res) => {
   }
 });
 
+server.patch('/users/:id/avatar', async (req, res) => {
+  const { id } = req.params;
+  const {avatar} = req.body;
+
+  if(!avatar){
+    return res.status(400).json({message: 'Avatar Data URL is required'})
+  }
+
+  // find user
+  router.db.get('users').find({id}).assign({avatar}).write();
+
+  // return updates user excluding password
+  const { password, ...updatedUser } = router.db.get('users').find({id}).value();
+
+  return res.status(200).json({
+    message: 'Avatar updated successfully',
+    user: UpdatedUser
+  })
+
+})
+
 server.use(router)
 
 server.listen(5001, () => {

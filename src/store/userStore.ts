@@ -46,38 +46,6 @@ export const UserStore = {
         }
     },
 
-    login: async (credentials: UserCredentials) => {
-
-        store.setState({ loading: true, error: null })
-
-        try {
-            const response = await fetch('http://localhost:5001/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(credentials),
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || "Login failed");
-            }
-
-            const data = await response.json();
-
-            // data.user should be the user object without the password
-            store.setState({ currentUser: data.user, loading: false })
-            return true; // Success
-
-        } catch (error: any) {
-            store.setState({ loading: false, error: error.message })
-            return false; // Failure
-        }
-    },
-
-    logout: () => {
-        store.setState({ currentUser: null })
-    },
-
     countTotal: async () => {
 
         try {
@@ -95,6 +63,46 @@ export const UserStore = {
                 error: "Failed to count Users: " + err
             }))
         }
-    }
+    },
+
+    updateAvatar: async (userId: string | number, base64Image: string) => {
+
+        // spread prev state and afterwards set loading to true and error to null
+        store.setState((prev) => ({...prev, loading: true, error: null}))
+
+        try {
+            const response = await fetch(`http://localhost:5001/users/${userId}/avatar`, {
+                method: 'PATCH',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({avatar: base64Image})
+            })
+
+            if(!response.ok){
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to update avatar')
+            }
+
+            const { user } = await response.json();
+
+            // update local state with updated user details
+            store.setState((prev) => ({
+                ...prev,
+                currentUser: user,
+                users: prev.users.map((u) => (u.id === userId ? user: u)),
+                loading: false
+            }))
+
+            return true;
+
+        } catch(err: any){
+            store.setState((prev) => ({
+                ...prev,
+                error: err.message || 'Avatar update failed',
+                loading: false
+            }))
+
+            return false
+        }
+    } 
 
 }
