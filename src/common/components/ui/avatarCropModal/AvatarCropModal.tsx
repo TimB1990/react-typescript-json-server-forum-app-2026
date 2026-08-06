@@ -43,7 +43,7 @@ export const AvatarCropModal: React.FC<Props> = ({ imageSrc, onCropComplete, onC
             crop={crop}
             zoom={zoom}
             aspect={1} // Square 1:1 ratio
-            cropShape="round" // Circular preview
+            cropShape="rect" // rect preview
             showGrid={false}
             onCropChange={setCrop}
             onZoomChange={setZoom}
@@ -65,10 +65,10 @@ export const AvatarCropModal: React.FC<Props> = ({ imageSrc, onCropComplete, onC
         </div>
 
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
-          <button onClick={onCancel} disabled={processing}>
+          <button className='link-btn' onClick={onCancel} disabled={processing}>
             Cancel
           </button>
-          <button onClick={handleSave} disabled={processing} style={{ fontWeight: 'bold' }}>
+          <button className='link-btn' onClick={handleSave} disabled={processing} style={{ fontWeight: 'bold' }}>
             {processing ? 'Processing...' : 'Save Avatar'}
           </button>
         </div>
@@ -88,7 +88,8 @@ const modalOverlayStyle: React.CSSProperties = {
 };
 
 const modalContentStyle: React.CSSProperties = {
-  background: '#fff',
+  backgroundColor: 'oklch(0.25 0.01 264.37)',
+  border: '1px solid #2d3748',
   padding: '20px',
   borderRadius: '8px',
   width: '90%',

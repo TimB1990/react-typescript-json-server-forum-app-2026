@@ -1,15 +1,21 @@
 // Profile.tsx
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { redirect, useLoaderData, useRevalidator } from 'react-router-dom';
 import type { User } from '../../common/types/users';
 import { UserStore } from '../../store/userStore';
 import { AvatarCropModal } from '../../common/components/ui/avatarCropModal/AvatarCropModal';
+import { Card } from '../../common/components/ui/cards/Card';
+import { ImageCardItem } from '../../common/components/ui/cards/ImageCardItem';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUpload, faCircleArrowUp } from '@fortawesome/free-solid-svg-icons';
 
 export const Profile: React.FC = () => {
   const initialUser = useLoaderData() as User;
   const revalidator = useRevalidator(); // 2. Initialize revalidator
   const [currentUser, setCurrentUser] = useState<User>(initialUser);
   const [selectedImageSrc, setSelectedImageSrc] = useState<string | null>(null);
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -34,44 +40,58 @@ export const Profile: React.FC = () => {
     }
   };
 
+  const handleButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault(); // Prevents form submission if inside a <form>
+    fileInputRef.current?.click();
+  };
+
   return (
-    <div className="profile-container" style={{ maxWidth: '400px', margin: '0 auto' }}>
-      <h1>User Profile</h1>
-
-      <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-        <img
-          src={currentUser.avatar || 'https://via.placeholder.com/150'}
-          alt="User Avatar"
-          style={{ width: '150px', height: '150px', borderRadius: '50%', objectFit: 'cover' }}
-        />
-
-        <div style={{ marginTop: '10px' }}>
-          <label htmlFor="avatar-upload" style={{ cursor: 'pointer', textDecoration: 'underline' }}>
-            Change Avatar
-          </label>
-          <input
-            id="avatar-upload"
-            type="file"
-            accept="image/*"
-            onChange={handleFileSelect}
-            style={{ display: 'none' }}
+    <div className="layout">
+      <div className="container full-width">
+        <div>
+          <Card
+            header={<h2><strong>{currentUser.username || currentUser.email || 'user'}</strong></h2>}
+            content={
+              <ImageCardItem
+                image={currentUser.avatar || 'https://via.placeholder.com/150'}
+                aside={<div style={{ marginTop: '10px' }}>
+                  <button
+                    className="link-btn"
+                    type="button"
+                    onClick={handleButtonClick} // Empty handler so it acts purely as a trigger for the label
+                    disabled={revalidator.state === 'loading'}
+                  >
+                    {revalidator.state === 'loading' ? 'Saving...' : 'Change Avatar'}
+                    <FontAwesomeIcon icon={faCircleArrowUp} />
+                  </button>
+                  <input
+                    id="avatar-upload"
+                    type="file"
+                    ref={fileInputRef}
+                    accept="image/*"
+                    onChange={handleFileSelect}
+                    style={{ display: 'none' }}
+                  />
+                </div>}
+                main={<p><strong>Email:</strong> {currentUser.email}</p>}
+                options={{ imageShape: "square" }}
+              />
+            }
           />
+
+          {/* Render Crop Modal when an image is selected */}
+          {selectedImageSrc && (
+            <AvatarCropModal
+              imageSrc={selectedImageSrc}
+              onCropComplete={handleCropSave}
+              onCancel={() => {
+                if (selectedImageSrc) URL.revokeObjectURL(selectedImageSrc);
+                setSelectedImageSrc(null);
+              }}
+            />
+          )}
         </div>
       </div>
-
-      <p><strong>Email:</strong> {currentUser.email}</p>
-
-      {/* Render Crop Modal when an image is selected */}
-      {selectedImageSrc && (
-        <AvatarCropModal
-          imageSrc={selectedImageSrc}
-          onCropComplete={handleCropSave}
-          onCancel={() => {
-            if (selectedImageSrc) URL.revokeObjectURL(selectedImageSrc);
-            setSelectedImageSrc(null);
-          }}
-        />
-      )}
     </div>
   );
 };

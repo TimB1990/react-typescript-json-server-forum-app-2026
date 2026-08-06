@@ -20,7 +20,6 @@ import { Statistic } from './components/Statistic'
 import { ImageCardItem } from '../../common/components/ui/cards/ImageCardItem'
 
 // Skeletons
-import { Skeleton } from '../../common/components/ui/skeleton/Skeleton'
 import { GroupItemSkeleton } from '../../common/components/ui/skeleton/GroupItemSkeleton'
 import { ThreadListSkeleton } from '../../common/components/ui/skeleton/ThreadListSkeleton'
 
@@ -33,7 +32,7 @@ import type { User } from '../../common/types/users'
 
 export const Home = () => {
 
-  const { user: rawUser, logout, loading } = useAuth();
+  const { user: rawUser } = useAuth();
   const theUser = rawUser as User | null;
 
   const { groups, loading: groupsLoading, error } = useGroupStore();
@@ -61,8 +60,6 @@ export const Home = () => {
     }
 
   }, [error, setError])
-
-  const testLoadingGroups = true;
 
   return (
     <>
