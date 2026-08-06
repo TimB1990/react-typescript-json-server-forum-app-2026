@@ -1,8 +1,10 @@
 export interface User {
     id: number,
     username: string,
+    email? : string,
     avatar: string // url to image
     createdAt: string
+    [key: string]: any
 }
 
 export interface UserState {

@@ -1,6 +1,8 @@
 import jsonServer from 'json-server'
 import bcrypt from 'bcryptjs'
 import cors from 'cors'
+import crypto from 'crypto'
+import cookieParser from 'cookie-parser'
 
 const RESERVED_FILTERS = [
   "limit",
@@ -47,7 +49,8 @@ function filterDataByQueryParams(data, filters) {
 // server setup
 const server = jsonServer.create();
 
-server.use(cors({ origin: 'http://localhost:5173' }))
+server.use(cookieParser())
+server.use(cors({ origin: 'http://localhost:5173', credentials: true }))
 
 const router = jsonServer.router('db.json')
 const middlewares = jsonServer.defaults();
@@ -72,17 +75,86 @@ server.get('/config', (req, res) => {
 })
 
 server.post('/register', async (req, res) => {
-  if (req.body.password) {
+
+  const {
+    username,
+    email,
+    password,
+    passwordConfirm,
+    regAgreedTerms,
+    regAdminMails
+  } = req.body;
+
+  const errors = {}
+
+  if(!username || username.trim() === ''){
+    errors.username = "Username is required"
+  }
+
+  if (!email || email.trim() === '') {
+    errors.email = 'Email is required.';
+  }
+  else if (!/\S+@\S+\.\S+/.test(email)) {
+    errors.email = 'Please enter a valid email address.';
+  }
+
+  if (!password) {
+    errors.password = 'Password is required'
+  } else if (password.length < 6) {
+    errors.password = "Password must be at least 6 characters"
+  }
+
+  if (password !== passwordConfirm) {
+    errors.passwordConfirm = 'Passwords do not match.';
+  }
+
+  // 2. Validate essential checkboxes
+  if (!regAgreedTerms) {
+    errors.regAgreedTerms = 'You must agree to terms and conditions';
+  }
+
+  // 3. Check for existing users (using your json-server / lowdb instance)
+  if (username && !errors.username) {
+    const existingUsername = router.db.get('users').find({ username }).value();
+    if (existingUsername) {
+      errors.username = 'This username is already registred.'
+    }
+  }
+
+  if (email && !errors.email) {
+    const existingUser = router.db.get('users').find({ email }).value();
+    if (existingUser) {
+      errors.email = 'This email is already registered.';
+    }
+  }
+
+  if (Object.keys(errors).length > 0) {
+    return res.status(400).json({ errors })
+  }
+
+  try {
     const salt = await bcrypt.genSalt(10);
-    req.body.password = await bcrypt.hash(req.body.password, salt);
-    router.db.get('users').push(req.body).write()
-    return res.status(201)
+    const hashedPassword = await bcrypt.hash(req.body.password, salt);
+
+    const newUser = {
+      id: Date.now().toString(), // basic ID generator
+      username,
+      email,
+      password: hashedPassword,
+      // regAdminMails: !!regAdminMails, // force boolean
+      createdAt: new Date().toISOString()
+    };
+
+    router.db.get('users').push(newUser).write();
+    return res.status(201).json({ message: 'Registration successful!', userId: newUser.id });
+  } catch (error) {
+    return res.status(500).json({ message: 'Internal server error' });
   }
 });
 
 server.post('/login', async (req, res) => {
-  const { username, password } = req.body;
-  const user = router.db.get('users').find({ username }).value();
+  const { email, password, rememberMe } = req.body;
+  const user = router.db.get('users').find({ email }).value();
 
   if (!user) {
     return res.status(401).json({ message: "User not found" });
@@ -90,18 +162,101 @@ server.post('/login', async (req, res) => {
 
   const isMatch = await bcrypt.compare(password, user.password);
 
-  if (isMatch) {
-
-    // takes password and assigns it to temporary _ variable
-    // take everything else (rest operator ...) and pack it into
-    // new object called userWithoutPassword
-
-    const { password: _, ...userWithoutPassword } = user;
-    res.json({ message: "Login successful", user: userWithoutPassword });
-  } else {
-    res.status(401).json({ message: "Invalid credentials" });
+  if(!isMatch){
+    return res.status(401).json({message: "Invalid credentials"})
   }
+
+  // Generate selector and validator token pair
+  const selector = crypto.randomBytes(16).toString('hex')
+  const validator = crypto.randomBytes(32).toString('hex')
+  const tokenHash = crypto.createHash('sha256').update(validator).digest('hex');
+
+  // set expiration
+  const durationMs = 30 * 24 * 60 * 60 * 1000;
+  const expiresAt = new Date(Date.now() + durationMs).toISOString();
+
+  // ensure tokens collection exists
+  if(!router.db.has('tokens').value()) {
+    router.db.set('tokens', []).write();
+  }
+
+  // store token details in LOW DB
+  router.db.get('tokens').push({
+    userId: user.id,
+    selector,
+    tokenHash,
+    expiresAt: rememberMe ? expiresAt: null
+  }).write()
+
+  const cookieOptions = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax'
+  }
+
+  if(rememberMe) {
+    cookieOptions.maxAge = durationMs
+  }
+
+  res.cookie('auth_token', `${selector}:${validator}`, cookieOptions)
+
+  const { password: _, ...userWithoutPassword } = user;
+  return res.json({message: "Login successfull", user: userWithoutPassword})
+
 });
+
+// auth-login
+server.get('/me', (req, res) => {
+  const authToken = req.cookies.auth_token
+
+  if(!authToken || !authToken.includes(':')){
+    return res.status(401).json({message: "Unauthenticated"})
+  }
+
+  const [selector, validator] = authToken.split(':')
+  const record = router.db.get('tokens').find({ selector }).value();
+
+  if(!record){
+    return res.status(401).json({message: "Invalid session"})
+  }
+
+  // verify expiration date if it exists
+  if(record.expiresAt && new Date(record.expiresAt) < new Date()){
+    router.db.get('tokens').remove({selector}).write();
+    res.clearCookie('auth_token')
+    return res.status(401).json({message: "Session expired"})
+  }
+
+  // verify validator hash
+  const computedHash = crypto.createHash('sha256').update(validator).digest('hex')
+  if(computedHash !== record.tokenHash){
+    // Possible theft attempt: invalidate all the user tokens
+    router.db.get('tokens').remove({userId: record.userId}).write();
+    res.clearCookie('auth_token')
+    return res.status(401).json({ message: "Token mismatch. Logging out user." });
+  }
+
+  // fetch and return user
+  const user = router.db.get('users').find({id: record.userId}).value();
+  if(!user){
+    return res.status(401).json({message: "User not found"});
+  }
+
+  const {password: _, ...userWithoutPassword} = user;
+  return res.json({user: userWithoutPassword})
+
+})
+
+// Logout endpoint
+server.post('/logout', (req, res) => {
+  const authToken = req.cookies.auth_token;
+  if(authToken && authToken.includes(':')){
+    const [selector] = authToken.split(':')
+    router.db.get('tokens').remove({selector}).write();
+  }
+  res.clearCookie('auth_token')
+  res.json({message: 'Logged out successfully'})
+})
 
 server.get('/count/:resource', (req, res) => {
   const { resource } = req.params;
@@ -129,7 +284,7 @@ server.get('/messages/latest-overview', (req, res) => {
   const allMessages = router.db.get('messages').value() || [];
 
   // 2. Sort messages globally by date descending (newest replies first)
-  const sortedMessages = [...allMessages].sort((a,b) => {
+  const sortedMessages = [...allMessages].sort((a, b) => {
     return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
   })
 
@@ -137,8 +292,8 @@ server.get('/messages/latest-overview', (req, res) => {
   const uniqueThreadMessages = [];
   const seenThreads = new Set();
 
-  for(const message of sortedMessages){
-    if(!seenThreads.has(message.threadId)){
+  for (const message of sortedMessages) {
+    if (!seenThreads.has(message.threadId)) {
       seenThreads.add(message.threadId)
       uniqueThreadMessages.push(message);
     }
@@ -229,7 +384,7 @@ server.post('/replies/resolve-pages', async (req, res) => {
 
     const results = ids.map(targetId => {
       const message = allMessages.find(m => m.id === targetId);
-      
+
       if (!message) return { messageId: targetId, atPage: null, error: "Not found" };
 
       // Calculate the page number
