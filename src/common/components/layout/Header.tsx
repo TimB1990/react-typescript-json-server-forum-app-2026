@@ -34,6 +34,14 @@ export const Header = () => {
       <div style={{ backgroundColor: 'transparent', position: 'absolute', left: '1rem', top: '1rem', zIndex: 100 }}>
         <code style={{ color: 'red' }}>v0.1 - Early alpha, for showcase purposes only</code>
       </div>
+
+      {/* Dedicated Welcome Banner */}
+      {theUser && (
+        <div className="welcome-banner" style={{ padding: '0.5rem 1rem', textAlign: 'right', backgroundColor: 'rgba(0,0,0,0.7)' }}>
+          <span>Welcome back, <strong>{theUser.username || theUser.email}</strong>!</span>
+        </div>
+      )}
+
       <div className="hero-image-container">
         <img src={heroImage} alt="" />
         <div className="hero-nav-container">
@@ -80,14 +88,13 @@ export const Header = () => {
                   <li>
                     <Link to="/profile" className="link-btn">
                       <FontAwesomeIcon icon={faCircleUser} />
-                      <span>{theUser.username || theUser.email || 'Profile'}</span>
+                      <span>My Profile</span>
                     </Link>
                   </li>
                   <li>
                     <button
                       onClick={handleLogout}
                       className="link-btn"
-                      style={{ background: 'none', border: 'none', cursor: 'pointer', font: 'inherit', color: 'inherit' }}
                     >
                       <FontAwesomeIcon icon={faRightFromBracket} />
                       <span>Logout</span>

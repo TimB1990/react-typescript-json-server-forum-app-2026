@@ -199,6 +199,14 @@
       "password": "$2b$10$Cp.nBPjBxofDYPWmDZLfXuE8.nG8jF9ZtMD.rUx5x6k0i9X3REeXW",
       "avatar": "data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20version%3D%221.1%22%20baseProfile%3D%22full%22%20width%3D%22150%22%20height%3D%22150%22%3E%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22%23bc7adc%22%2F%3E%3Ctext%20x%3D%2275%22%20y%3D%2275%22%20font-size%3D%2220%22%20alignment-baseline%3D%22middle%22%20text-anchor%3D%22middle%22%20fill%3D%22white%22%3E150x150%3C%2Ftext%3E%3C%2Fsvg%3E",
       "createdAt": "2026-03-03T12:01:50.779Z"
+    },
+    {
+      "id": "1786009787295",
+      "username": "admin",
+      "email": "admin@forum.test",
+      "password": "$2b$10$.l4dYCUsqd2cdLJKJFSS5uehKDS/pmdft0me4FgOsFf6rkfmP7hAG",
+      "avatar": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMSIgYmFzZVByb2ZpbGU9ImZ1bGwiIHdpZHRoPSIxNTAiIGhlaWdodD0iMTUwIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjNWYwYTcyIi8+PHRleHQgeD0iNzUiIHk9Ijc1IiBmb250LXNpemU9IjIwIiBhbGlnbm1lbnQtYmFzZWxpbmU9Im1pZGRsZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0id2hpdGUiPjE1MHgxNTA8L3RleHQ+PC9zdmc+",
+      "createdAt": "2026-08-06T09:49:47.296Z"
     }
   ],
   "groups": [
@@ -12153,25 +12161,25 @@
       "messageId": 470,
       "parentMessageId": 469,
       "threadId": 23,
-      "atPage": null
+      "atPage": 1
     },
     {
       "messageId": 471,
       "parentMessageId": 469,
       "threadId": 23,
-      "atPage": null
+      "atPage": 1
     },
     {
       "messageId": 472,
       "parentMessageId": 471,
       "threadId": 23,
-      "atPage": null
+      "atPage": 1
     },
     {
       "messageId": 473,
       "parentMessageId": 471,
       "threadId": 23,
-      "atPage": null
+      "atPage": 1
     },
     {
       "messageId": 474,
@@ -12189,7 +12197,7 @@
       "messageId": 476,
       "parentMessageId": 470,
       "threadId": 23,
-      "atPage": null
+      "atPage": 1
     },
     {
       "messageId": 477,
@@ -15070,6 +15078,20 @@
       "parentMessageId": 969,
       "threadId": 50,
       "atPage": null
+    },
+    {
+      "messageId": 469,
+      "parentMessageId": null,
+      "threadId": 23,
+      "atPage": 1
+    }
+  ],
+  "tokens": [
+    {
+      "userId": "1786009787295",
+      "selector": "002a7eebb64eefab615c803abae6708d",
+      "tokenHash": "9d3627ae27d22f422f45671ba935b818dbb3b1955183b8e2684157693553e678",
+      "expiresAt": "2026-09-05T09:50:17.285Z"
     }
   ]
 }
