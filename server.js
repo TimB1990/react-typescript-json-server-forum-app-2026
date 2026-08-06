@@ -431,24 +431,31 @@ server.post('/replies/resolve-pages', async (req, res) => {
 
 server.patch('/users/:id/avatar', async (req, res) => {
   const { id } = req.params;
-  const {avatar} = req.body;
+  const { avatar } = req.body;
 
-  if(!avatar){
-    return res.status(400).json({message: 'Avatar Data URL is required'})
+  if (!avatar) {
+    return res.status(400).json({ message: 'Avatar Data URL is required' });
   }
 
-  // find user
-  router.db.get('users').find({id}).assign({avatar}).write();
+  // 1. Update user in LowDB
+  router.db.get('users')
+    .find({ id })
+    .assign({ avatar })
+    .write();
 
-  // return updates user excluding password
-  const { password, ...updatedUser } = router.db.get('users').find({id}).value();
+  const updatedUser = router.db.get('users').find({ id }).value();
+  const { password, ...userWithoutPassword } = updatedUser;
+
+  // 2. If using express-session, sync the active session so GET /me returns fresh data!
+  if (req.session && req.session.user) {
+    req.session.user = userWithoutPassword;
+  }
 
   return res.status(200).json({
     message: 'Avatar updated successfully',
-    user: UpdatedUser
-  })
-
-})
+    user: userWithoutPassword
+  });
+});
 
 server.use(router)
 

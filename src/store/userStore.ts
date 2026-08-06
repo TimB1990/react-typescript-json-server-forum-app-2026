@@ -74,6 +74,7 @@ export const UserStore = {
             const response = await fetch(`http://localhost:5001/users/${userId}/avatar`, {
                 method: 'PATCH',
                 headers: {'Content-Type': 'application/json'},
+                credentials: 'include',
                 body: JSON.stringify({avatar: base64Image})
             })
 
