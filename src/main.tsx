@@ -5,6 +5,7 @@ import dayjs from 'dayjs';
 import calendar from 'dayjs/plugin/calendar';
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { ErrorProvider } from './context/ErrorContext.tsx';
+import { AuthProvider } from './context/AuthContext.tsx'; // 1. Import AuthProvider
 import { routes } from './routes/routes.tsx';
 
 // CRITICAL: This must run once in your application lifecycle 
@@ -15,7 +16,10 @@ dayjs.extend(relativeTime)
 const router = createBrowserRouter(routes)
 
 createRoot(document.getElementById('root')!).render(
-    <ErrorProvider>
-        <RouterProvider router={router} />
-    </ErrorProvider>
+  <ErrorProvider>
+    {/* 2. Wrap RouterProvider with AuthProvider */}
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
+  </ErrorProvider>
 )
