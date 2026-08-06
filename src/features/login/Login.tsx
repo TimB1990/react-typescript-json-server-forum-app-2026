@@ -61,10 +61,17 @@ export const Login = () => {
           </>}
           content={
             <>
-              {error && <div className="error-message" style={{ color: 'red', marginBottom: '1rem' }}>{error}</div>}
               <form onSubmit={handleSubmit}>
+                {error && (
+                  <div className="error-field global">
+                    {error}
+                  </div>
+                )}
+
                 <div className="form-field">
-                  <label>Email</label>
+                  <div className="field-info">
+                    <label htmlFor="email">Email</label>
+                  </div>
                   <input
                     id="email"
                     type="email"
@@ -74,8 +81,11 @@ export const Login = () => {
                     required
                   />
                 </div>
+
                 <div className="form-field">
-                  <label>Password</label>
+                  <div className="field-info">
+                    <label htmlFor="password">Password</label>
+                  </div>
                   <input
                     id="password"
                     type="password"
@@ -85,8 +95,9 @@ export const Login = () => {
                     required
                   />
                 </div>
+
                 <div className="form-field">
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
+                  <label>
                     <input
                       type="checkbox"
                       name="remember-me"
@@ -96,12 +107,14 @@ export const Login = () => {
                     Remember me
                   </label>
                 </div>
+
                 <div className="form-field">
                   <button className="register-login-link-btn primary" type="submit" disabled={loading}>
                     {loading ? 'Logging in...' : 'Login'}
                   </button>
                 </div>
               </form>
+
             </>
           }
           options={{ divided: { top: false, bottom: false } }}
