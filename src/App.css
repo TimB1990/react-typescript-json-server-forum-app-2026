@@ -975,9 +975,14 @@ form input[type="email"], form input[type="text"], form input[type="password"] {
 .form-field {
   border-top: 1px solid color(srgb 0.746082 0.763686 0.79186 / 0.1);
   border-bottom: 1px solid color(srgb 0.746082 0.763686 0.79186 / 0.1);
+  padding: 1em;
 }
 
-.form-field label {
+.field-info {
+  padding-bottom: 0.5em;
+}
+
+.field-info label {
   color: white;
   font-weight: bold;
   min-width: 20%;

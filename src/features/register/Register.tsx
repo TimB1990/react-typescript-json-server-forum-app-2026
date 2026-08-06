@@ -114,7 +114,7 @@ export const Register = () => {
                 {/* Username field */}
                 <div className="form-field">
                   <div className="field-info">
-                    <label>Display Name</label>
+                    <label>Display Name *</label>
                     {errors && errors['username'] ? (
                       <div className="error-field">
                         {errors['username']}
@@ -128,7 +128,7 @@ export const Register = () => {
                 {/* Email field */}
                 <div className="form-field">
                   <div className="field-info">
-                    <label>Email</label>
+                    <label>Email *</label>
                     {errors && errors['email'] ? (
                       <div className="error-field">
                         {errors['email']}
@@ -142,7 +142,7 @@ export const Register = () => {
                 {/* Password field */}
                 <div className="form-field">
                   <div className="field-info">
-                    <label>Password</label>
+                    <label>Password *</label>
                     {errors && errors['password'] ? (
                       <div className="error-field">
                         {errors['password']}
@@ -156,7 +156,7 @@ export const Register = () => {
                 {/* Confirm pass field */}
                 <div className="form-field">
                   <div className="field-info">
-                    <label>Confirm password</label>
+                    <label>Confirm password *</label>
                     {errors && errors['passwordConfirm'] ? (
                       <div className="error-field">
                         {errors['passwordConfirm']}
@@ -184,7 +184,7 @@ export const Register = () => {
                 {/* Agree to terms field */}
                 <div className="form-field">
                   <input type="checkbox" name="regAgreedTerms" onChange={handleChange} checked={formData.regAgreedTerms} />
-                  <label>I agree to the <u>Terms of Use</u> and <u>Privacy Policy</u></label>
+                  <label>I agree to the <u>Terms of Use</u> and <u>Privacy Policy</u> *</label>
                   {errors && errors['regAgreedTerms'] ? (
                     <div className="error-field">
                       {errors['regAgreedTerms']}

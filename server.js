@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs'
 import cors from 'cors'
 import crypto from 'crypto'
 import cookieParser from 'cookie-parser'
+import {faker} from '@faker-js/faker'
 
 const RESERVED_FILTERS = [
   "limit",
@@ -141,6 +142,7 @@ server.post('/register', async (req, res) => {
       username,
       email,
       password: hashedPassword,
+      avatar: faker.image.dataUri({ width: 150, height: 150 }),
       // regAdminMails: !!regAdminMails, // force boolean
       createdAt: new Date().toISOString()
     };
