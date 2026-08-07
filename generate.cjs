@@ -26,10 +26,21 @@ const generateData = async () => {
 
   const salt = await bcrypt.genSalt(10);
   const hashedPass = await bcrypt.hash('secret', salt);
+  const adminHashedPass = await bycrypt.hash('adminsecret', salt)
 
-  // 1. Users
-  for (let i = 1; i <= 25; i++) {
-    let username = faker.internet.username() 
+  // 1. Admin
+  users.push({
+    id: 1,
+    username: 'Admin',
+    email: 'admin@forum.test',
+    password: adminHashedPass,
+    avatar: faker.image.dataUri({ width: 150, height: 150 }),
+    createdAt: faker.date.past().toISOString()
+  })
+
+  // 2. Users
+  for (let i = 2; i <= 100; i++) {
+    let username = faker.internet.username()
     users.push({
       id: i,
       username,
@@ -108,7 +119,7 @@ const generateData = async () => {
   // 4. Threads & Messages
   let messageIdCounter = 1;
 
-  for (let t = 1; t <= 50; t++) {
+  for (let t = 1; t <= 80; t++) {
     const threadId = t;
     const categoryId = faker.helpers.arrayElement(categories).id;
     const title = faker.lorem.sentence(4);
@@ -176,7 +187,65 @@ const generateData = async () => {
     }
   }
 
-  return { users, groups, categories, threads, messages, replies };
+  // 5. User ranks
+  const userRanks = [
+    {
+      name: 'Sprout Member',
+      faIcon: 'faSeedling',
+      faIconOptions: {
+        size: 'lg',
+        color: 'rgb(99, 230, 190)'
+      },
+      messageThreshold: 1,
+    },
+    {
+      name: 'Steel Member',
+      faIcon: 'faDrumSteelPan',
+      faIconOptions: {
+        size: 'lg',
+        color: 'rgba(210, 232, 225, 1.00)'
+      },
+      messageThreshold: 1,
+    },
+    {
+      name: 'Bronze Member',
+      faIcon: 'faMedal',
+      faIconOptions: {
+        size: 'lg',
+        color: 'rgba(131, 112, 48, 1.00)'
+      },
+      messageThreshold: 1,
+    },
+    {
+      name: 'Silver Member',
+      faIcon: 'faMedal',
+      faIconOptions: {
+        size: 'lg',
+        color: 'rgba(213, 210, 202, 0.20)'
+      },
+      messageThreshold: 1,
+    },
+    {
+      name: 'Gold Member',
+      faIcon: 'faMedal',
+      faIconOptions: {
+        size: 'lg',
+        color: 'rgba(230, 172, 19, 0.20)'
+      },
+      messageThreshold: 1,
+    },
+    {
+      name: 'Platinum Member',
+      faIcon: 'faTrophy',
+      faIconOptions: {
+        size: 'lg',
+        color: 'rgba(249, 238, 200, 1.00)'
+      },
+      messageThreshold: 1,
+    },
+  ];
+
+  return { users, groups, categories, threads, messages, replies, userRanks };
 };
 
 let db = false;
