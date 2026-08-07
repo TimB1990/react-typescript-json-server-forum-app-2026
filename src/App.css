@@ -646,12 +646,14 @@ canvas {
   border-right: 1px solid #2d3748;
 }
 
-.image-card-item:has(.image-container.thumb):has(.content-wrapper.vertical) aside {
+.image-card-item:has(.image-container.thumb):has(.content-wrapper.vertical)
+  aside {
   flex: 0 0 max-content;
   max-width: max-content;
 }
 
-.image-card-item:has(.image-container.thumb):has(.content-wrapper.horizontal) aside {
+.image-card-item:has(.image-container.thumb):has(.content-wrapper.horizontal)
+  aside {
   flex: 0 0 max-content;
   max-width: max-content;
 }
@@ -664,7 +666,8 @@ canvas {
   padding: clamp(0.4em, 2vw, 0.6em);
 }
 
-.image-card-item:has(.image-container.thumb):has(.content-wrapper.horizontal) aside {
+.image-card-item:has(.image-container.thumb):has(.content-wrapper.horizontal)
+  aside {
   padding-top: clamp(1em, 2vw, 1.25em);
   padding-bottom: clamp(1em, 2vw, 1.25em);
 }
@@ -690,7 +693,7 @@ canvas {
 
   /* The Logic Update: */
   flex: 1; /* Take up remaining width */
-  
+
   /* We use 250px as the floor. 
      The 'preferred' value is 100% of the aside's height. */
   min-height: clamp(100px, 100%, 100%);
@@ -703,7 +706,7 @@ canvas {
 
   /* The Logic Update: */
   flex: 1; /* Take up remaining width */
-  
+
   /* We use 250px as the floor. 
      The 'preferred' value is 100% of the aside's height. */
   min-height: clamp(100px, 100%, 100%);
@@ -715,7 +718,6 @@ canvas {
   flex-direction: column;
   flex-grow: 1;
 }
-
 
 .image-card-item .content-wrapper .meta {
   display: flex;
@@ -744,16 +746,16 @@ canvas {
 
   .layout {
     /* Change from 3 columns to 6 columns for maximum math flexibility */
-    grid-template-columns: repeat(6, 1fr); 
+    grid-template-columns: repeat(6, 1fr);
   }
 
   .container.first {
-    grid-column: span 4; 
+    grid-column: span 4;
   }
 
   /* 1/3 (approx 33%) width */
   .container.second {
-    grid-column: span 2; 
+    grid-column: span 2;
   }
 
   /* 50/50 Split option */
@@ -808,46 +810,50 @@ canvas {
 }
 
 .message-entry-footer menu li button {
-    color: oklch(0.71376 0.160355 64.8368);
-    padding: 0 1em;
-    font-weight: 600;
-    margin: 0;
-    display: flex;
-    gap: 0.5em;
-    align-items: center;
-    border: none;
-    background-color: transparent;
-    border-radius: 5px;
-    cursor: pointer;
+  color: oklch(0.71376 0.160355 64.8368);
+  padding: 0 1em;
+  font-weight: 600;
+  margin: 0;
+  display: flex;
+  gap: 0.5em;
+  align-items: center;
+  border: none;
+  background-color: transparent;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
 .message-entry-footer menu li button:hover {
-  background-color: color-mix(in srgb, oklch(0.71376 0.160355 64.8368) 10%, transparent);
+  background-color: color-mix(
+    in srgb,
+    oklch(0.71376 0.160355 64.8368) 10%,
+    transparent
+  );
 }
 
 .message-quote {
-background-color: #23272d;
-/* Replace the full border with a thick left border */
-border-left: 4px solid #3b444f; 
-border-top: 1px solid rgba(255, 255, 255, 0.05);
-border-right: 1px solid rgba(255, 255, 255, 0.05);
-border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  background-color: #23272d;
+  /* Replace the full border with a thick left border */
+  border-left: 4px solid #3b444f;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 
-border-top-right-radius: 4px;
-border-bottom-right-radius: 4px;
-margin: 16px 0;
-padding: 16px;
-color: #9ba3af;
-font-size: 15px;
-line-height: 1.6;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+  margin: 16px 0;
+  padding: 16px;
+  color: #9ba3af;
+  font-size: 15px;
+  line-height: 1.6;
 }
 
 .message-quote p:first-of-type {
   display: flex;
   /* Corrected property and value */
-  justify-content: space-between; 
-  align-items: center; 
-  
+  justify-content: space-between;
+  align-items: center;
+
   margin: 0 0 16px 0;
   color: #ffffff;
   font-weight: 600;
@@ -870,14 +876,14 @@ line-height: 1.6;
   cursor: pointer;
 }
 
-.message-quote p svg:hover{
+.message-quote p svg:hover {
   color: white;
 }
 
 .quote-body {
   /* This matches the slightly indented, lighter grey look of the content */
   color: #9ba3af;
-  padding-left: 2px; 
+  padding-left: 2px;
 }
 
 .group-category-item {
@@ -885,7 +891,7 @@ line-height: 1.6;
   gap: 1rem;
   align-items: center;
   cursor: pointer;
-  
+
   /* Text styling resets */
   text-decoration: none;
   color: inherit;
@@ -940,11 +946,11 @@ line-height: 1.6;
 }
 
 .register-login-link-btn:hover {
-  background-color: color-mix(in srgb, rgba(255,255,255,0.05), #fff 20%)
+  background-color: color-mix(in srgb, rgba(255, 255, 255, 0.05), #fff 20%);
 }
 
 .register-login-link-btn.primary:hover {
-  background-color: color-mix(in srgb, hsl(36 100% 45%), #fff 20%)
+  background-color: color-mix(in srgb, hsl(36 100% 45%), #fff 20%);
 }
 
 /* Form fields */
@@ -953,7 +959,9 @@ form {
   flex-direction: column;
 }
 
-form input[type="email"], form input[type="text"], form input[type="password"] {
+form input[type="email"],
+form input[type="text"],
+form input[type="password"] {
   border: 1px solid darkgray;
   display: flex;
   color: rgb(156, 163, 175);
@@ -1009,7 +1017,7 @@ form input[type="email"], form input[type="text"], form input[type="password"] {
   justify-content: center;
   width: 60px;
   height: 100%;
-  
+
   /* Mixes 20% black into the dynamic brand color */
   background-color: color-mix(in srgb, var(--brand-color), black 20%);
 }
@@ -1073,4 +1081,48 @@ form input[type="email"], form input[type="text"], form input[type="password"] {
   background-color: rgba(0, 0, 0, 0.45);
   backdrop-filter: blur(8px) saturate(180%);
   border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.author-info {
+  display: grid;
+  align-items: start;
+  align-self: stretch;
+  gap: 1.2em;
+  margin-top: 1.2em;
+}
+
+.author-info .author-stats ul {
+  list-style-type: none;
+  display: flex;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  justify-content: center;
+}
+
+.author-info .author-stats ul li span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3em;
+  color: inherit;
+  padding: 1em 0.7em;
+  line-height: 1;
+  font-size: 0.9em;
+}
+
+.user-rank-container {
+  display: inline-flex;  
+  align-items: center;  
+  gap: 0.5rem;          
+}
+
+.user-rank-container span {
+  line-height: 1;
+  font-size: 1rem;    
+}
+
+.user-rank-container svg {
+  font-size: 1rem;     
+  display: block;     
 }

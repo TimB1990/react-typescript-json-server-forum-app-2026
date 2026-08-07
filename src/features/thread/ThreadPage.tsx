@@ -6,12 +6,15 @@ import { useError } from '../../context/ErrorContext'
 import { Card } from '../../common/components/ui/cards/Card'
 import { ImageCardItem } from '../../common/components/ui/cards/ImageCardItem'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faQuoteLeft } from '@fortawesome/free-solid-svg-icons'
+import { faAward, faCoins, faQuoteLeft, faSeedling, faSprout } from '@fortawesome/free-solid-svg-icons'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import type { Message } from '../../common/types/message'
 import { Paginator } from '../../common/components/ui/paginator/Paginator'
 import { MessageParent } from '../../common/components/ui/blockquotes/MessageParent'
 import { useLocation } from 'react-router-dom'
+import { faMessage, faHeart } from '@fortawesome/free-solid-svg-icons'
+import { formatCompactNumber } from '../../common/utils/compactNumber'
+import { faMicroblog } from '@fortawesome/free-brands-svg-icons'
 
 export const ThreadPage = () => {
   const { hash } = useLocation();
@@ -56,9 +59,34 @@ export const ThreadPage = () => {
       <ImageCardItem
         image={msg.messageBy.avatar}
         aside={
-          <div style={{ marginTop: '1.2em' }}>
-            <p style={{ textAlign: 'center' }}>{msg.messageBy.author}</p>
-            <p style={{ textAlign: 'center' }}>member</p>
+          <div className='author-info'>
+            <div>
+              <p style={{ textAlign: 'center', fontSize: '1em', fontWeight: 'bold', color: 'white' }}>{msg.messageBy.author}</p>
+              <p style={{ textAlign: 'center', fontSize: '0.9em', color: 'oklch(0.645 0.0216 260)' }}>member</p>
+            </div>
+            <div className='author-stats'>
+              <ul>
+                <li>
+                  <span>
+                    <FontAwesomeIcon icon={faMessage} />
+                    {formatCompactNumber(msg.messageBy.totalUserMessageCount)}
+                  </span>
+                </li>
+                <li>
+                  <span>
+                    <FontAwesomeIcon icon={faHeart} />
+                    {formatCompactNumber(1100)}
+                  </span>
+                </li>
+              </ul>
+            </div>
+            <Card
+              header={<div className='user-rank-container'>
+                <FontAwesomeIcon icon={faMicroblog} />
+                <span>Sprout</span>
+              </div>}
+              options={{ lightBackground: true, divided: { bottom: false } }}
+            />
           </div>
         }
         main={

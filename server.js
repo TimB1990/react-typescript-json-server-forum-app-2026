@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs'
 import cors from 'cors'
 import crypto from 'crypto'
 import cookieParser from 'cookie-parser'
-import {faker} from '@faker-js/faker'
+import { faker } from '@faker-js/faker'
 
 const RESERVED_FILTERS = [
   "limit",
@@ -88,7 +88,7 @@ server.post('/register', async (req, res) => {
 
   const errors = {}
 
-  if(!username || username.trim() === ''){
+  if (!username || username.trim() === '') {
     errors.username = "Username is required"
   }
 
@@ -164,8 +164,8 @@ server.post('/login', async (req, res) => {
 
   const isMatch = await bcrypt.compare(password, user.password);
 
-  if(!isMatch){
-    return res.status(401).json({message: "Invalid credentials"})
+  if (!isMatch) {
+    return res.status(401).json({ message: "Invalid credentials" })
   }
 
   // Generate selector and validator token pair
@@ -178,7 +178,7 @@ server.post('/login', async (req, res) => {
   const expiresAt = new Date(Date.now() + durationMs).toISOString();
 
   // ensure tokens collection exists
-  if(!router.db.has('tokens').value()) {
+  if (!router.db.has('tokens').value()) {
     router.db.set('tokens', []).write();
   }
 
@@ -187,7 +187,7 @@ server.post('/login', async (req, res) => {
     userId: user.id,
     selector,
     tokenHash,
-    expiresAt: rememberMe ? expiresAt: null
+    expiresAt: rememberMe ? expiresAt : null
   }).write()
 
   const cookieOptions = {
@@ -196,14 +196,14 @@ server.post('/login', async (req, res) => {
     sameSite: 'lax'
   }
 
-  if(rememberMe) {
+  if (rememberMe) {
     cookieOptions.maxAge = durationMs
   }
 
   res.cookie('auth_token', `${selector}:${validator}`, cookieOptions)
 
   const { password: _, ...userWithoutPassword } = user;
-  return res.json({message: "Login successfull", user: userWithoutPassword})
+  return res.json({ message: "Login successfull", user: userWithoutPassword })
 
 });
 
@@ -211,53 +211,53 @@ server.post('/login', async (req, res) => {
 server.get('/me', (req, res) => {
   const authToken = req.cookies.auth_token
 
-  if(!authToken || !authToken.includes(':')){
-    return res.status(401).json({message: "Unauthenticated"})
+  if (!authToken || !authToken.includes(':')) {
+    return res.status(401).json({ message: "Unauthenticated" })
   }
 
   const [selector, validator] = authToken.split(':')
   const record = router.db.get('tokens').find({ selector }).value();
 
-  if(!record){
-    return res.status(401).json({message: "Invalid session"})
+  if (!record) {
+    return res.status(401).json({ message: "Invalid session" })
   }
 
   // verify expiration date if it exists
-  if(record.expiresAt && new Date(record.expiresAt) < new Date()){
-    router.db.get('tokens').remove({selector}).write();
+  if (record.expiresAt && new Date(record.expiresAt) < new Date()) {
+    router.db.get('tokens').remove({ selector }).write();
     res.clearCookie('auth_token')
-    return res.status(401).json({message: "Session expired"})
+    return res.status(401).json({ message: "Session expired" })
   }
 
   // verify validator hash
   const computedHash = crypto.createHash('sha256').update(validator).digest('hex')
-  if(computedHash !== record.tokenHash){
+  if (computedHash !== record.tokenHash) {
     // Possible theft attempt: invalidate all the user tokens
-    router.db.get('tokens').remove({userId: record.userId}).write();
+    router.db.get('tokens').remove({ userId: record.userId }).write();
     res.clearCookie('auth_token')
     return res.status(401).json({ message: "Token mismatch. Logging out user." });
   }
 
   // fetch and return user
-  const user = router.db.get('users').find({id: record.userId}).value();
-  if(!user){
-    return res.status(401).json({message: "User not found"});
+  const user = router.db.get('users').find({ id: record.userId }).value();
+  if (!user) {
+    return res.status(401).json({ message: "User not found" });
   }
 
-  const {password: _, ...userWithoutPassword} = user;
-  return res.json({user: userWithoutPassword})
+  const { password: _, ...userWithoutPassword } = user;
+  return res.json({ user: userWithoutPassword })
 
 })
 
 // Logout endpoint
 server.post('/logout', (req, res) => {
   const authToken = req.cookies.auth_token;
-  if(authToken && authToken.includes(':')){
+  if (authToken && authToken.includes(':')) {
     const [selector] = authToken.split(':')
-    router.db.get('tokens').remove({selector}).write();
+    router.db.get('tokens').remove({ selector }).write();
   }
   res.clearCookie('auth_token')
-  res.json({message: 'Logged out successfully'})
+  res.json({ message: 'Logged out successfully' })
 })
 
 server.get('/count/:resource', (req, res) => {
@@ -428,6 +428,17 @@ server.post('/replies/resolve-pages', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
+// server.get('/count/users/:id/messages', async (req, res) => {
+//   const { id } = req.params
+//   const messages = router.db
+//     .get('messages')
+//     .filter(msg => msg.userId === id || msg.userId === Number(id))
+//     .value()
+
+//   return res.json({ count: messages.length })
+
+// })
 
 server.patch('/users/:id/avatar', async (req, res) => {
   const { id } = req.params;

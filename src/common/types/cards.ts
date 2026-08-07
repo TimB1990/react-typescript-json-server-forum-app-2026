@@ -5,7 +5,8 @@ export interface CardOptions {
     }
     expander?: boolean,
     noPadding?: boolean,
-    allowHorizontal?: boolean
+    allowHorizontal?: boolean,
+    lightBackground?: boolean
 }
 
 export interface CardProps {

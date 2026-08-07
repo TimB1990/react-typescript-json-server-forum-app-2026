@@ -1,13 +1,13 @@
 // Profile.tsx
 import React, { useRef, useState } from 'react';
-import { redirect, useLoaderData, useRevalidator } from 'react-router-dom';
+import { useLoaderData, useRevalidator } from 'react-router-dom';
 import type { User } from '../../common/types/users';
 import { UserStore } from '../../store/userStore';
 import { AvatarCropModal } from '../../common/components/ui/avatarCropModal/AvatarCropModal';
 import { Card } from '../../common/components/ui/cards/Card';
 import { ImageCardItem } from '../../common/components/ui/cards/ImageCardItem';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUpload, faCircleArrowUp } from '@fortawesome/free-solid-svg-icons';
+import { faCircleArrowUp } from '@fortawesome/free-solid-svg-icons';
 
 export const Profile: React.FC = () => {
   const initialUser = useLoaderData() as User;

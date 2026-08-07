@@ -25,6 +25,7 @@ import { ThreadListSkeleton } from '../../common/components/ui/skeleton/ThreadLi
 
 // misc
 import dayjs from 'dayjs'
+import { formatCompactNumber } from '../../common/utils/compactNumber'
 
 // auth
 import { useAuth } from '../../context/AuthContext'
@@ -146,8 +147,8 @@ export const Home = () => {
           <Card
             header={<h2>Forum stats</h2>}
             content={<>
-              <Statistic value={totalThreads} subject={"Total amount of subjects"} />
-              <Statistic value={totalMessages} subject={"Total amount of messages"} />
+              <Statistic value={formatCompactNumber(totalThreads)} subject={"Total amount of subjects"} />
+              <Statistic value={formatCompactNumber(totalMessages)} subject={"Total amount of messages"} />
             </>}
             options={{ noPadding: true, divided: { top: true, bottom: false }, allowHorizontal: true }}
           />
@@ -156,7 +157,7 @@ export const Home = () => {
           <Card
             header={<h2>Member stats</h2>}
             content={<>
-              <Statistic value={totalUsers} subject={"Total amount of members"} />
+              <Statistic value={formatCompactNumber(totalUsers)} subject={"Total amount of members"} />
               {/* Guard check: Only render the member info if the data is actually there */}
               {latestUsers && latestUsers.length > 0 ? (
                 <ImageCardItem
