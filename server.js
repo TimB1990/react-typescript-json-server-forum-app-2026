@@ -24,7 +24,7 @@ const DEFAULT = {
   'global': 20
 }
 
-// functions
+// functions and helpers
 function filterDataByQueryParams(data, filters) {
   // 1. Get keys that aren't 'limit', 'order', etc.
   const validFilterKeys = Object.keys(filters).filter(
@@ -278,6 +278,18 @@ server.get('/count/:resource', (req, res) => {
   });
 });
 
+server.post('/messages', async (req, res) => {
+  const { userId, content } = req.body
+  router.db.get('messages').push({id: Date.now().toString(), userId, content }).write();
+
+  const user = db.get('users').find({userId}).value();
+  if(user){
+    user.messageCount = (user.messageCount || 0) + 1;
+  }
+
+  res.status(201).json({ success: true, messageCount: user.messageCount });
+})
+
 server.get('/messages/latest-overview', (req, res) => {
   const limit = parseInt(req.query.limit, 10) || DEFAULT.messages;
   const page = parseInt(req.query.page, 10) || 1;
@@ -428,17 +440,6 @@ server.post('/replies/resolve-pages', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-
-// server.get('/count/users/:id/messages', async (req, res) => {
-//   const { id } = req.params
-//   const messages = router.db
-//     .get('messages')
-//     .filter(msg => msg.userId === id || msg.userId === Number(id))
-//     .value()
-
-//   return res.json({ count: messages.length })
-
-// })
 
 server.patch('/users/:id/avatar', async (req, res) => {
   const { id } = req.params;

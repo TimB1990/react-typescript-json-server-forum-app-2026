@@ -19,10 +19,9 @@ const formatDate = (dateString: string): string => {
 }
 
 const totalUserMessageCount = async (userId: number): Promise<number> => {
-    const response = await fetch('http://localhost:5001/count/messages?userId=' + userId)
-    const result = await response.json();
-    const userMessageCount = result.count;
-    return userMessageCount;
+    const response = await fetch(`http://localhost:5001/users/${userId}`)
+    const result: User = await response.json();
+    return result.messageCount ?? 0;
 }
 
 // Local cache to prevent redundant fetches for the same user on one page

@@ -3,6 +3,12 @@ const fs = require('fs');
 const path = require('path');
 const bcrypt = require('bcryptjs');
 
+const seeds = {
+  users: 50,
+  threads: 100,
+  replies: {min: 2, max: 20}
+}
+
 // slugify function
 const slugify = (text) => {
   return text
@@ -26,25 +32,27 @@ const generateData = async () => {
 
   const salt = await bcrypt.genSalt(10);
   const hashedPass = await bcrypt.hash('secret', salt);
-  const adminHashedPass = await bycrypt.hash('adminsecret', salt)
+  const adminHashedPass = await bcrypt.hash('adminsecret', salt)
 
   // 1. Admin
   users.push({
     id: 1,
     username: 'Admin',
     email: 'admin@forum.test',
+    messageCount: 0,
     password: adminHashedPass,
     avatar: faker.image.dataUri({ width: 150, height: 150 }),
     createdAt: faker.date.past().toISOString()
   })
 
   // 2. Users
-  for (let i = 2; i <= 100; i++) {
+  for (let i = 2; i <= seeds.users; i++) {
     let username = faker.internet.username()
     users.push({
       id: i,
       username,
       email: `${username}@forum.test`,
+      messageCount: 0,
       password: hashedPass,
       avatar: faker.image.dataUri({ width: 150, height: 150 }),
       createdAt: faker.date.past().toISOString()
@@ -119,7 +127,7 @@ const generateData = async () => {
   // 4. Threads & Messages
   let messageIdCounter = 1;
 
-  for (let t = 1; t <= 80; t++) {
+  for (let t = 1; t <= seeds.threads; t++) {
     const threadId = t;
     const categoryId = faker.helpers.arrayElement(categories).id;
     const title = faker.lorem.sentence(4);
@@ -135,12 +143,15 @@ const generateData = async () => {
       createdAt: threadCreatedAt
     });
 
+    // Random user ID
+    let userId = faker.helpers.arrayElement(users).id
+
     // FIX 2: Force opening post to match the exact same timestamp as the thread
     const openingMessage = {
       id: messageIdCounter++,
       threadId: threadId,
       categoryId,
-      userId: faker.helpers.arrayElement(users).id,
+      userId,
       parentId: null,
       content: faker.lorem.paragraphs(1),
       createdAt: threadCreatedAt
@@ -148,7 +159,7 @@ const generateData = async () => {
     messages.push(openingMessage);
 
     const threadMessages = [openingMessage];
-    const replyCount = faker.number.int({ min: 10, max: 25 });
+    const replyCount = faker.number.int({ min: seeds.replies.min, max: seeds.replies.max });
 
     // Keep track of the latest message time in this thread
     let lastMessageTime = new Date(threadCreatedAt);
@@ -205,7 +216,7 @@ const generateData = async () => {
         size: 'lg',
         color: 'rgba(210, 232, 225, 1.00)'
       },
-      messageThreshold: 1,
+      messageThreshold: 10,
     },
     {
       name: 'Bronze Member',
@@ -214,7 +225,7 @@ const generateData = async () => {
         size: 'lg',
         color: 'rgba(131, 112, 48, 1.00)'
       },
-      messageThreshold: 1,
+      messageThreshold: 100,
     },
     {
       name: 'Silver Member',
@@ -223,7 +234,7 @@ const generateData = async () => {
         size: 'lg',
         color: 'rgba(213, 210, 202, 0.20)'
       },
-      messageThreshold: 1,
+      messageThreshold: 200,
     },
     {
       name: 'Gold Member',
@@ -232,7 +243,7 @@ const generateData = async () => {
         size: 'lg',
         color: 'rgba(230, 172, 19, 0.20)'
       },
-      messageThreshold: 1,
+      messageThreshold: 500,
     },
     {
       name: 'Platinum Member',
@@ -241,9 +252,24 @@ const generateData = async () => {
         size: 'lg',
         color: 'rgba(249, 238, 200, 1.00)'
       },
-      messageThreshold: 1,
+      messageThreshold: 1000,
     },
   ];
+
+  // -------------------------------------------------------------
+  // CALCULATE USER MESSAGE COUNTS
+  // -------------------------------------------------------------
+  // 1. Create a map of userId -> message count
+  const messageCounts = messages.reduce((acc, msg) => {
+    acc[msg.userId] = (acc[msg.userId] || 0) + 1;
+    return acc;
+  }, {});
+
+  // 2. Update each user's messageCount field
+  users.forEach((user) => {
+    user.messageCount = messageCounts[user.id] || 0;
+  });
+  // -------------------------------------------------------------
 
   return { users, groups, categories, threads, messages, replies, userRanks };
 };

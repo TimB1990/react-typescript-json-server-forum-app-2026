@@ -7,6 +7,7 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 import { ErrorProvider } from './context/ErrorContext.tsx';
 import { AuthProvider } from './context/AuthContext.tsx'; // 1. Import AuthProvider
 import { routes } from './routes/routes.tsx';
+import { UserRanksProvider } from './context/UserRanksContext.tsx';
 
 // CRITICAL: This must run once in your application lifecycle 
 // before any .calendar() calls are made.
@@ -18,8 +19,10 @@ const router = createBrowserRouter(routes)
 createRoot(document.getElementById('root')!).render(
   <ErrorProvider>
     {/* 2. Wrap RouterProvider with AuthProvider */}
-    <AuthProvider>
-      <RouterProvider router={router} />
-    </AuthProvider>
+    <UserRanksProvider>
+      <AuthProvider>
+        <RouterProvider router={router} />
+      </AuthProvider>
+    </UserRanksProvider>
   </ErrorProvider>
 )

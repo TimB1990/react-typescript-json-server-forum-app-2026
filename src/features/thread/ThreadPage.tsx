@@ -15,6 +15,7 @@ import { useLocation } from 'react-router-dom'
 import { faMessage, faHeart } from '@fortawesome/free-solid-svg-icons'
 import { formatCompactNumber } from '../../common/utils/compactNumber'
 import { faMicroblog } from '@fortawesome/free-brands-svg-icons'
+import { AuthorInfo } from './components/AuthorInfo'
 
 export const ThreadPage = () => {
   const { hash } = useLocation();
@@ -59,35 +60,7 @@ export const ThreadPage = () => {
       <ImageCardItem
         image={msg.messageBy.avatar}
         aside={
-          <div className='author-info'>
-            <div>
-              <p style={{ textAlign: 'center', fontSize: '1em', fontWeight: 'bold', color: 'white' }}>{msg.messageBy.author}</p>
-              <p style={{ textAlign: 'center', fontSize: '0.9em', color: 'oklch(0.645 0.0216 260)' }}>member</p>
-            </div>
-            <div className='author-stats'>
-              <ul>
-                <li>
-                  <span>
-                    <FontAwesomeIcon icon={faMessage} />
-                    {formatCompactNumber(msg.messageBy.totalUserMessageCount)}
-                  </span>
-                </li>
-                <li>
-                  <span>
-                    <FontAwesomeIcon icon={faHeart} />
-                    {formatCompactNumber(1100)}
-                  </span>
-                </li>
-              </ul>
-            </div>
-            <Card
-              header={<div className='user-rank-container'>
-                <FontAwesomeIcon icon={faMicroblog} />
-                <span>Sprout</span>
-              </div>}
-              options={{ lightBackground: true, divided: { bottom: false } }}
-            />
-          </div>
+          <AuthorInfo author={msg.messageBy.author} totalUserMessageCount={msg.messageBy.totalUserMessageCount} />
         }
         main={
           <div className="message-entry-post">
