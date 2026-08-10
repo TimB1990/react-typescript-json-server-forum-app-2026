@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import Cropper from 'react-easy-crop';
 import { getCroppedImg, type PixelCrop } from '../../../utils/cropImage';
+import { Modal } from '../modal/modal';
 
 interface Props {
   imageSrc: string;
@@ -35,9 +36,9 @@ export const AvatarCropModal: React.FC<Props> = ({ imageSrc, onCropComplete, onC
   };
 
   return (
-    <div style={modalOverlayStyle}>
-      <div style={modalContentStyle}>
-        <div style={{ position: 'relative', width: '100%', height: '300px', background: '#333' }}>
+    <Modal
+      content={<>
+              <div style={{ position: 'relative', width: '100%', height: '300px', background: '#333' }}>
           <Cropper
             image={imageSrc}
             crop={crop}
@@ -71,27 +72,7 @@ export const AvatarCropModal: React.FC<Props> = ({ imageSrc, onCropComplete, onC
           <button className='link-btn' onClick={handleSave} disabled={processing} style={{ fontWeight: 'bold' }}>
             {processing ? 'Processing...' : 'Save Avatar'}
           </button>
-        </div>
-      </div>
-    </div>
+        </div></>}
+    />
   );
-};
-
-const modalOverlayStyle: React.CSSProperties = {
-  position: 'fixed',
-  top: 0, left: 0, right: 0, bottom: 0,
-  backgroundColor: 'rgba(0,0,0,0.6)',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  zIndex: 1000,
-};
-
-const modalContentStyle: React.CSSProperties = {
-  backgroundColor: 'oklch(0.25 0.01 264.37)',
-  border: '1px solid #2d3748',
-  padding: '20px',
-  borderRadius: '8px',
-  width: '90%',
-  maxWidth: '400px',
 };

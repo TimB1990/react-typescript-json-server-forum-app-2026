@@ -738,6 +738,9 @@ canvas {
   font-size: 0.9em;
 }
 
+@media (max-width: 765px) {
+}
+
 @media (max-width: 1049px) {
   .card-body.allow-horizontal {
     flex-direction: row;
@@ -1112,17 +1115,111 @@ form input[type="password"] {
 }
 
 .user-rank-container {
-  display: inline-flex;  
-  align-items: center;  
-  gap: 0.5rem;          
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .user-rank-container span {
   line-height: 1;
-  font-size: 1rem;    
+  font-size: 1rem;
 }
 
 .user-rank-container svg {
-  font-size: 1rem;     
-  display: block;     
+  font-size: 1rem;
+  display: block;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: oklch(0.25 0.01 264.37);
+  border: 1px solid #2d3748;
+  padding: 20px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 400px;
+}
+
+.message-editor {
+  padding: clamp(1em, 2vw, 1.25em);
+}
+
+.message-editor textarea {
+  width: 100%;
+}
+
+/* Container */
+.wysiwyg-container {
+  border: 1px solid #485160;
+  border-radius: 6px;
+  overflow: hidden;
+  background-color: #272d37;
+  color: #f7f9fa;
+  transition: border-color 0.15s ease-in-out;
+}
+
+.wysiwyg-container:focus-within{
+  border: 1px solid #e68a00;
+}
+
+/* Toolbar */
+.wysiwyg-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px;
+  background-color: #1a1e24;
+  border-bottom: 1px solid #485160;
+}
+
+.wysiwyg-toolbar button {
+  background-color: #272d37;
+  color: #f7f9fa;
+  border: 1px solid #485160;
+  border-radius: 4px;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.wysiwyg-toolbar button:hover {
+  background-color: #353c4a;
+  border-color: #727f96;
+}
+
+.toolbar-divider {
+  width: 1px;
+  height: 18px;
+  background-color: #485160;
+  margin: 0 4px;
+}
+
+/* Editable area */
+.wysiwyg-editor {
+  min-height: 150px;
+  padding: 12px;
+  outline: none;
+  font-family: inherit;
+  line-height: 1.5;
+  background-color: #272d37;
+  color: #f7f9fa;
+}
+
+/* Placeholder support */
+.wysiwyg-editor:empty:before {
+  content: attr(data-placeholder);
+  color: #727f96;
+  pointer-events: none;
 }

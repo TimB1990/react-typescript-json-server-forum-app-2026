@@ -1,21 +1,20 @@
 import { useEffect } from 'react'
 import { useLoaderData } from 'react-router-dom'
 import type { ThreadLoaderResult } from '../../loaders/threadLoader'
-import { MessageStore, RepliesStore, useMessageStore } from '../../store'
+import { MessageStore, useMessageStore } from '../../store'
 import { useError } from '../../context/ErrorContext'
 import { Card } from '../../common/components/ui/cards/Card'
 import { ImageCardItem } from '../../common/components/ui/cards/ImageCardItem'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faAward, faCoins, faQuoteLeft, faSeedling, faSprout } from '@fortawesome/free-solid-svg-icons'
+import { faQuoteLeft } from '@fortawesome/free-solid-svg-icons'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import type { Message } from '../../common/types/message'
 import { Paginator } from '../../common/components/ui/paginator/Paginator'
 import { MessageParent } from '../../common/components/ui/blockquotes/MessageParent'
 import { useLocation } from 'react-router-dom'
-import { faMessage, faHeart } from '@fortawesome/free-solid-svg-icons'
-import { formatCompactNumber } from '../../common/utils/compactNumber'
-import { faMicroblog } from '@fortawesome/free-brands-svg-icons'
 import { AuthorInfo } from './components/AuthorInfo'
+import { ForumPostForm } from './components/ForumPostForm'
+import { useAuth } from '../../context/AuthContext'
 
 export const ThreadPage = () => {
   const { hash } = useLocation();
@@ -50,6 +49,9 @@ export const ThreadPage = () => {
       }
     }
   }, [hash, messages]); // Trigger when hash changes OR when messages finally load
+
+  const { user } = useAuth();
+  const currentUserId = user?.id as number;
 
   // A small helper component
   const MessageItem = (msg: Message) => {
@@ -125,6 +127,9 @@ export const ThreadPage = () => {
           currentPage={pagination.current}
         />}
       </div>
+
+      {/* text editor */}
+      {currentUserId && (<ForumPostForm userId={currentUserId} />)}
     </div>
   )
 }

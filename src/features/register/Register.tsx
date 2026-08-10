@@ -1,10 +1,10 @@
 import React, { useState, type ChangeEvent } from 'react'
 import { Card } from '../../common/components/ui/cards/Card'
-import { Link } from 'react-router-dom'
 import { SsoButton } from '../../common/components/ui/buttons/SsoButton'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faMicrosoft, faGoogle, faApple } from '@fortawesome/free-brands-svg-icons'
 import type { FormErrors } from '../../common/types/register'
+import { useNavigate } from 'react-router-dom'
 
 export const Register = () => {
 
@@ -19,6 +19,8 @@ export const Register = () => {
 
   const [errors, setErrors] = useState<FormErrors>({});
   const [successMsg, setSuccessMsg] = useState<string>('');
+
+  const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -73,14 +75,14 @@ export const Register = () => {
           regAdminMails: false,
           regAgreedTerms: false,
         });
+
+        navigate('/login')
       }
     }
     catch (err) {
       setErrors({ global: 'Could not connect to the server. Please try again later.' });
     }
   }
-
-  console.log(formData)
 
   // TODO implement errors display and handleSumit, handleChange
   return (

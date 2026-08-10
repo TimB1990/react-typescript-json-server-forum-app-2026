@@ -32,18 +32,18 @@ const generateData = async () => {
 
   const salt = await bcrypt.genSalt(10);
   const hashedPass = await bcrypt.hash('secret', salt);
-  const adminHashedPass = await bcrypt.hash('adminsecret', salt)
+  // const adminHashedPass = await bcrypt.hash('adminsecret', salt)
 
-  // 1. Admin
-  users.push({
-    id: 1,
-    username: 'Admin',
-    email: 'admin@forum.test',
-    messageCount: 0,
-    password: adminHashedPass,
-    avatar: faker.image.dataUri({ width: 150, height: 150 }),
-    createdAt: faker.date.past().toISOString()
-  })
+  // // 1. Admin
+  // users.push({
+  //   id: 1,
+  //   username: 'Admin',
+  //   email: 'admin@forum.test',
+  //   messageCount: 0,
+  //   password: adminHashedPass,
+  //   avatar: faker.image.dataUri({ width: 150, height: 150 }),
+  //   createdAt: faker.date.past().toISOString()
+  // })
 
   // 2. Users
   for (let i = 2; i <= seeds.users; i++) {
