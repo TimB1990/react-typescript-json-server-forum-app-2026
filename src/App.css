@@ -1169,7 +1169,7 @@ form input[type="password"] {
   transition: border-color 0.15s ease-in-out;
 }
 
-.wysiwyg-container:focus-within{
+.wysiwyg-container:focus-within {
   border: 1px solid #e68a00;
 }
 
@@ -1191,7 +1191,9 @@ form input[type="password"] {
   padding: 4px 8px;
   cursor: pointer;
   font-size: 14px;
-  transition: background-color 0.15s ease, border-color 0.15s ease;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
 }
 
 .wysiwyg-toolbar button:hover {
@@ -1222,4 +1224,71 @@ form input[type="password"] {
   content: attr(data-placeholder);
   color: #727f96;
   pointer-events: none;
+}
+
+@keyframes flash-orange {
+  0% {
+    border-color: transparent;
+    box-shadow: 0 0 0px transparent;
+  }
+  50% {
+    border-color: #e68a00; /* Orange */
+    box-shadow: 0 0 12px #e68a00; /* Optional glow effect */
+  }
+  100% {
+    border-color: transparent;
+    box-shadow: 0 0 0px transparent;
+  }
+}
+
+/* Class to trigger animation */
+.flash-border {
+  /* Make sure border styling is visible */
+  border: 2px solid transparent;
+  animation: flash-orange 1.2s ease-in-out;
+}
+.sticky-container {
+  position: sticky;
+  left: 50%;
+  bottom: 1.2rem;
+  display: flex;
+  justify-content: center;
+}
+
+.quote-buttons {
+  display: flex;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.quote-buttons button {
+  display: inline-block;
+  font-size: .9em;
+  padding: .7em;
+  width: 100%;
+  min-width: max-content;
+  gap: 0.7em;
+  cursor: pointer;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.quote-buttons button:hover {
+  background-color: rgba(255, 255, 255, 0.5);
+  box-shadow: none;
+  border-color: transparent;
+}
+
+.quote-button__withIcon {
+  display: flex;
+  gap: 0.7em;
+  align-items: center;
+  border: none;
+}
+
+.quote-button__close {
+  border-top: 1px solid transparent;
+  border-bottom: 1px solid transparent;
+  border-right: 1px solid transparent;
+  border-left: 1px solid white;
 }

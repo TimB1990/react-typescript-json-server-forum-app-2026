@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 
 interface RichTextEditorProps {
     value: string,
@@ -7,10 +7,18 @@ interface RichTextEditorProps {
 }
 
 export const RichTextEditor: React.FC<RichTextEditorProps> = ({
+    value,
     onChange,
     placeholder = 'Write your response here'
 }) => {
     const editorRef = useRef<HTMLDivElement>(null)
+
+    // sync external value stanges (inserted quotes) in to the contentEditable DOM
+    useEffect(() => {
+        if(editorRef.current && editorRef.current.innerHTML !== value){
+            editorRef.current.innerHTML = value;
+        }
+    }, [value])
 
     // helper to get current Selection and Range
     const getSelectedRange = (): Range | null => {

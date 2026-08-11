@@ -3,6 +3,7 @@ import { faQuoteLeft, faShare } from '@fortawesome/free-solid-svg-icons'
 import type { Message } from '../../../types/message';
 import { RepliesStore, MessageStore } from '../../../../store';
 import { useEffect, useState } from 'react';
+import { BlockQuote } from './BlockQuote';
 
 interface Props {
     threadId: number;
@@ -53,24 +54,11 @@ export const MessageParent = ({ threadId, threadSlug, parentId, localParent }: P
     const displayMessage = localParent || resolvedParent;
 
     return (
-        <blockquote className="message-quote" cite={parentUrl}>
-            <p>
-                <span className="quote-meta-left">
-                    <FontAwesomeIcon icon={faQuoteLeft} />
-                    {/* Use localParent (the preview) if we have it */}
-                    On {displayMessage?.postedAt || '...'}, {displayMessage?.messageBy?.author || 'Member'} said:
-                </span>
-                <a href={parentUrl}>
-                    <FontAwesomeIcon icon={faShare} className="quote-share-icon" title="Jump to message" />
-                </a>
-            </p>
-            <div className="quote-body">
-                {displayMessage?.content || (
-                    <span style={{ fontStyle: 'italic', color: '#888' }}>
-                        {atPage ? `Message on page ${atPage}...` : 'Locating parent message...'}
-                    </span>
-                )}
-            </div>
-        </blockquote>
+        <BlockQuote
+            postedAt={displayMessage?.postedAt} 
+            author={displayMessage?.messageBy?.author}
+            content={displayMessage?.content}
+            pageRef={atPage}
+            />
     )
 }
