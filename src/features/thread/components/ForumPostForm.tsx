@@ -6,20 +6,45 @@ import { useAuth } from "../../../context/AuthContext";
 
 interface ForumPostFormProps {
   flash: boolean;
+  threadId: number;
   editorContent: string;
   setEditorContent: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export const ForumPostForm = forwardRef<HTMLDivElement, ForumPostFormProps>(({
   flash,
+  threadId,
   editorContent,
   setEditorContent
 }, ref) => {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
   const { user } = useAuth();
-  
+
   // Safely check if logged in
   const isLoggedIn = Boolean(user && user.id);
+
+  const removeQuotesSelectionFromHTML = (rawHtml: string, quoteIds: number[]): string => {
+
+    const storedQuoteIds = sessionStorage.getItem(`quotes_thread_${threadId}`); // is JSON!
+    let quoteIdsArray: number[] = []
+
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(rawHtml, 'text/html');
+
+    if (storedQuoteIds) {
+      Array.from(storedQuoteIds).forEach(id => [...quoteIdsArray, Number(id)])
+    }
+
+    if (quoteIdsArray && quoteIdsArray.length > 0) {
+      quoteIdsArray.forEach(id => {
+        const quoteElement = doc.querySelector(`blockquote[data-quote-id="${id}"]`);
+        if (quoteElement) {
+          quoteElement.remove();
+        }
+      })
+    }
+    return doc.body.innerHTML;
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,6 +55,11 @@ export const ForumPostForm = forwardRef<HTMLDivElement, ForumPostFormProps>(({
 
     setIsSubmitting(true)
 
+    // retrieve quotes messages from session
+    const storedQuoteIds = sessionStorage.getItem(`quotes_thread_${threadId}`);
+
+
+
     try {
       const response = await fetch('http://localhost:5001/messages', {
         method: 'POST',
@@ -39,6 +69,7 @@ export const ForumPostForm = forwardRef<HTMLDivElement, ForumPostFormProps>(({
         credentials: 'include',
         body: JSON.stringify({
           userId: user?.id,
+          quoteIds: storedQuoteIds,
           content: editorContent, // raw HTML
           createdAt: new Date().toISOString()
         })

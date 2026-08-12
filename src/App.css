@@ -1292,3 +1292,31 @@ form input[type="password"] {
   border-right: 1px solid transparent;
   border-left: 1px solid white;
 }
+
+.pagination {
+  display: flex;
+  align-items: center;
+}
+
+.pagination a {
+  border-radius: 4px;
+  font-size: max(.8em, 11px);
+  display: inline-block;
+  color: oklch(0.95 0.008 260);
+  cursor: pointer;
+  text-transform: uppercase;
+  line-height: 1.25;
+  font-weight: 600;
+  padding: 0.8em 1.2em;
+  text-size-adjust: 100%;
+}
+
+ .pagination a:visited, .pagination a.active {
+  background-color: rgb(54, 64, 78);
+  color: oklch(0.95 0.008 260);
+}
+
+.pagination a:hover {
+  background: color-mix(in srgb, currentColor 8%, transparent);
+}
+

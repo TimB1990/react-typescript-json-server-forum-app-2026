@@ -116,6 +116,7 @@ export const ThreadPage = () => {
       postedAt={msg.postedAt}
       author={msg.messageBy.author}
       content={msg.content}
+      editor={true}
     />) + '<p><br></p>'; // Add an empty paragraph after the blockquote so the cursor can sit below it
   };
 
@@ -275,6 +276,7 @@ export const ThreadPage = () => {
 
       {/* text editor */}
       <ForumPostForm
+        threadId={thread.id}
         ref={editorRef}
         flash={isFlashing}
         editorContent={editorContent}

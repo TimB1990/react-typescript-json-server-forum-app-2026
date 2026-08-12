@@ -51,14 +51,17 @@ export const MessageParent = ({ threadId, threadSlug, parentId, localParent }: P
     const parentUrl = `/threads/${threadSlug}/page/${pageNumber}#message-${parentId}`;
 
     // Use resolvedParent if localParent is missing
-    const displayMessage = localParent || resolvedParent;
+    const displayMessage = localParent as Message || resolvedParent as Message;
 
     return (
         <BlockQuote
+            messageId={displayMessage?.id}
+            url={parentUrl}
             postedAt={displayMessage?.postedAt} 
             author={displayMessage?.messageBy?.author}
             content={displayMessage?.content}
             pageRef={atPage}
+            editor={false}
             />
     )
 }

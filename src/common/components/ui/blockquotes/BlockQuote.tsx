@@ -9,10 +9,10 @@ interface QuoteProps {
     author?: string
     content?: string
     pageRef?: number | null
-
+    editor: boolean
 }
 
-export const BlockQuote: React.FC<QuoteProps> = ({ messageId, postedAt, author, content, pageRef, url = null }) => {
+export const BlockQuote: React.FC<QuoteProps> = ({ editor = false, messageId, postedAt, author, content, pageRef, url = null }) => {
     return (
         <blockquote className="message-quote" data-quote-id={messageId} cite={url || ''}>
             <p>
@@ -21,7 +21,7 @@ export const BlockQuote: React.FC<QuoteProps> = ({ messageId, postedAt, author, 
                     {/* Use localParent (the preview) if we have it */}
                     On {postedAt || '...'}, {author || 'Member'} said:
                 </span>
-                {url && (<a href={url}>
+                {url && !editor && (<a href={url}>
                     <FontAwesomeIcon icon={faShare} className="quote-share-icon" title="Jump to message" />
                 </a>)}
             </p>

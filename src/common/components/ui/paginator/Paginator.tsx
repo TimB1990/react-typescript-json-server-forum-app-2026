@@ -15,27 +15,19 @@ export const Paginator = (props: PaginatorProps) => {
   const nextPage = currentPage < totalPages ? currentPage + 1 : currentPage;
 
   return (
-    <nav aria-label="pagination">
+    <nav className="pagination" aria-label="pagination">
       {pageNumbers.map(num => (
         <Link
           key={num}
           to={`/${entity}/${slug}/page/${num}`}
           className={currentPage === num ? "active" : ""}
-          style={{
-            padding: '4px 8px',
-            margin: '0 2px',
-            backgroundColor: (currentPage === num ? "grey" : "transparent"),
-            color: (currentPage === num ? "white" : "grey"),
-            textDecoration: 'none',
-            borderRadius: '4px'
-          }}
         >
           {num}
         </Link>
       ))}
       &nbsp;
       <Link to={`/${entity}/${slug}/page/${nextPage}`}>
-        NEXT
+        next
       </Link>
     </nav>
   )
