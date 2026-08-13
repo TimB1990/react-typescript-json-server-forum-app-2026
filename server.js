@@ -54,7 +54,7 @@ server.use(cookieParser())
 server.use(cors({ origin: 'http://localhost:5173', credentials: true }))
 
 const router = jsonServer.router('db.json')
-const middlewares = jsonServer.defaults();
+const middlewares = jsonServer.defaults({ logger: false });
 
 server.use((req, res, next) => {
   if (req.url.includes('.well-known') || req.url.includes('favicon.ico')) {
@@ -65,11 +65,6 @@ server.use((req, res, next) => {
 
 server.use(jsonServer.bodyParser);
 server.use(middlewares)
-
-server.use(async (req, res, next) => {
-  console.log("called: ", req.route)
-  next();
-})
 
 server.get('/config', (req, res) => {
   res.json(DEFAULT)
@@ -138,7 +133,7 @@ server.post('/register', async (req, res) => {
     const hashedPassword = await bcrypt.hash(req.body.password, salt);
 
     const newUser = {
-      id: Date.now().toString(), // basic ID generator
+      id: router.db.get('users').value().length + 1, // NORMAL ID (IN PRODUCTION SHOULD WE DO DATE INSTEAD?? as basic ID generator)
       username,
       email,
       password: hashedPassword,
@@ -279,15 +274,52 @@ server.get('/count/:resource', (req, res) => {
 });
 
 server.post('/messages', async (req, res) => {
-  const { userId, content } = req.body
-  router.db.get('messages').push({id: Date.now().toString(), userId, content }).write();
 
-  const user = db.get('users').find({userId}).value();
-  if(user){
+  console.group('🔍 DEBUG')
+  console.log('start', req.body)
+  const { userId, threadId, categoryId, content, createdAt, quoteIds = null } = req.body
+  const messageId = router.db.get('messages').value().length + 1;
+
+  const quoteIdsArray = JSON.parse(quoteIds)
+
+  // put message
+  router.db.get('messages').push({
+    id: messageId,
+    threadId,
+    categoryId,
+    userId,
+    parentId: 
+      quoteIdsArray
+        ? quoteIdsArray.length > 1 
+          ? quoteIdsArray
+          : quoteIdsArray[0]
+        : null,
+    content,
+    createdAt
+  }).write();
+
+  // increase user message count
+  const parsedUserId = Number(userId)
+  const user = router.db.get('users').find({id: parsedUserId}).value();
+  
+  if (user) {
     user.messageCount = (user.messageCount || 0) + 1;
   }
 
-  res.status(201).json({ success: true, messageCount: user.messageCount });
+  if (quoteIdsArray) {
+    // put quoteIds in replies
+    const qidstestarray = [];
+    for (const qid of quoteIdsArray) {
+      router.db.get('replies').push({
+        messageId,
+        parentMessageId: qid,
+        threadId,
+        atPage: null // this is resolved with the /replies/resolve-pages endpoint
+      }).write();
+    }
+  }
+
+  res.status(201).json({ success: true })
 })
 
 server.get('/messages/latest-overview', (req, res) => {

@@ -28,7 +28,7 @@ export const MessageParent = ({ threadId, threadSlug, parentId, localParent }: P
                 setAtPage(reply.atPage)
             }
 
-            if(!localParent){
+            if (!localParent) {
                 const msg = await MessageStore.getMessageById(parentId, threadId)
                 if (msg) setResolvedParent(msg);
             }
@@ -42,7 +42,7 @@ export const MessageParent = ({ threadId, threadSlug, parentId, localParent }: P
 
         return () => {
             unsubscribe(); // Cleanup on unmount
-        } 
+        }
 
     }, [threadId, parentId])
 
@@ -54,14 +54,18 @@ export const MessageParent = ({ threadId, threadSlug, parentId, localParent }: P
     const displayMessage = localParent as Message || resolvedParent as Message;
 
     return (
-        <BlockQuote
-            messageId={displayMessage?.id}
-            url={parentUrl}
-            postedAt={displayMessage?.postedAt} 
-            author={displayMessage?.messageBy?.author}
-            content={displayMessage?.content}
-            pageRef={atPage}
-            editor={false}
-            />
+        <>
+            {displayMessage && (
+                <BlockQuote
+                    messageId={displayMessage.id}
+                    url={parentUrl}
+                    postedAt={displayMessage.postedAt}
+                    author={displayMessage.messageBy?.author}
+                    content={displayMessage.content}
+                    pageRef={atPage}
+                    editor={false}
+                />
+            )}
+        </>
     )
 }

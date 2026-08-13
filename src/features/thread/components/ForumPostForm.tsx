@@ -7,15 +7,21 @@ import { useAuth } from "../../../context/AuthContext";
 interface ForumPostFormProps {
   flash: boolean;
   threadId: number;
+  categoryId: number;
   editorContent: string;
   setEditorContent: React.Dispatch<React.SetStateAction<string>>;
+  onSuccess?: () => void;
+  onError?: (error: string) => void;
 }
 
 export const ForumPostForm = forwardRef<HTMLDivElement, ForumPostFormProps>(({
   flash,
   threadId,
+  categoryId,
   editorContent,
-  setEditorContent
+  setEditorContent,
+  onSuccess,
+  onError
 }, ref) => {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
   const { user } = useAuth();
@@ -23,26 +29,25 @@ export const ForumPostForm = forwardRef<HTMLDivElement, ForumPostFormProps>(({
   // Safely check if logged in
   const isLoggedIn = Boolean(user && user.id);
 
-  const removeQuotesSelectionFromHTML = (rawHtml: string, quoteIds: number[]): string => {
+  const removeQuotesSelectionFromHTML = (rawHtml: string): string => {
 
     const storedQuoteIds = sessionStorage.getItem(`quotes_thread_${threadId}`); // is JSON!
-    let quoteIdsArray: number[] = []
-
     const parser = new DOMParser();
     const doc = parser.parseFromString(rawHtml, 'text/html');
 
     if (storedQuoteIds) {
-      Array.from(storedQuoteIds).forEach(id => [...quoteIdsArray, Number(id)])
+      const quoteIds = JSON.parse(storedQuoteIds) as string[]
+
+      if (quoteIds && quoteIds.length > 0) {
+        quoteIds.forEach(id => {
+          const quoteElement = doc.querySelector(`blockquote[data-quote-id="${id}"]`);
+          if (quoteElement) {
+            quoteElement.remove();
+          }
+        })
+      }
     }
 
-    if (quoteIdsArray && quoteIdsArray.length > 0) {
-      quoteIdsArray.forEach(id => {
-        const quoteElement = doc.querySelector(`blockquote[data-quote-id="${id}"]`);
-        if (quoteElement) {
-          quoteElement.remove();
-        }
-      })
-    }
     return doc.body.innerHTML;
   }
 
@@ -53,12 +58,10 @@ export const ForumPostForm = forwardRef<HTMLDivElement, ForumPostFormProps>(({
       return;
     }
 
-    setIsSubmitting(true)
-
-    // retrieve quotes messages from session
+    const sanitizedHTML = removeQuotesSelectionFromHTML(editorContent);
     const storedQuoteIds = sessionStorage.getItem(`quotes_thread_${threadId}`);
 
-
+    setIsSubmitting(true)
 
     try {
       const response = await fetch('http://localhost:5001/messages', {
@@ -69,19 +72,23 @@ export const ForumPostForm = forwardRef<HTMLDivElement, ForumPostFormProps>(({
         credentials: 'include',
         body: JSON.stringify({
           userId: user?.id,
+          threadId,
+          categoryId,
           quoteIds: storedQuoteIds,
-          content: editorContent, // raw HTML
+          content: sanitizedHTML,
           createdAt: new Date().toISOString()
         })
       })
 
       if (response.ok) {
         setEditorContent('')
+        onSuccess?.()
         alert('Reply posted successfully!');
       }
 
-    } catch (error) {
-      console.error('Error posting reply:', error)
+    } catch (error: any) {
+      onError?.(error)
+      alert(`Error posting reply: ${error}`)
     }
     finally {
       setIsSubmitting(false);

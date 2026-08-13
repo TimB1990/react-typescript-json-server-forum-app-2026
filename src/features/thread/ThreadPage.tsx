@@ -15,6 +15,7 @@ import { ForumPostForm } from './components/ForumPostForm'
 import { faComments, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { BlockQuote } from '../../common/components/ui/blockquotes/BlockQuote'
 import { renderToStaticMarkup } from 'react-dom/server'
+import parse from 'html-react-parser'
 
 export const ThreadPage = () => {
   const { hash } = useLocation();
@@ -34,9 +35,13 @@ export const ThreadPage = () => {
     }
   });
 
-  // persist selected quote ids
+  // persist selected quote ids, triggered on when selectedQuoteIds changes or thread id changes
   useEffect(() => {
-    sessionStorage.setItem(`quotes_thread_${thread.id}`, JSON.stringify(selectedQuoteIds))
+    if (selectedQuoteIds.length > 0) {
+      sessionStorage.setItem(`quotes_thread_${thread.id}`, JSON.stringify(selectedQuoteIds))
+    } else {
+      sessionStorage.removeItem(`quotes_thread_${thread.id}`)
+    }
   }, [selectedQuoteIds, thread.id])
 
   useEffect(() => {
@@ -65,14 +70,10 @@ export const ThreadPage = () => {
     }
   }, [hash, messages]);
 
+  // triggered when editorContent changes
   useEffect(() => {
-    if(!editorContent){
-      if(selectedQuoteIds.length > 0){
-        emptyQuoteSelection()
-      }
 
-      return;
-    }
+    if (!editorContent) return;
 
     // parse editor HTML string to query blockquotes
     const parser = new DOMParser();
@@ -84,8 +85,8 @@ export const ThreadPage = () => {
     const remainingTrackedIds = selectedQuoteIds.filter(id => activeIdsInEditor.includes(id))
 
     if (remainingTrackedIds.length !== selectedQuoteIds.length) {
-    setSelectedQuoteIds(remainingTrackedIds);
-  }
+      setSelectedQuoteIds(remainingTrackedIds);
+    }
   }, [editorContent])
 
   const editorRef = useRef<HTMLDivElement>(null)
@@ -109,23 +110,39 @@ export const ThreadPage = () => {
     window.addEventListener('scrollend', handleScrollEnd, { once: true });
   };
 
-  // Helper to format quote HTML structure
-  const buildQuoteHtml = (msg: Message): string => {
-    return renderToStaticMarkup(<BlockQuote
-      messageId={msg.id}
-      postedAt={msg.postedAt}
-      author={msg.messageBy.author}
-      content={msg.content}
-      editor={true}
-    />) + '<p><br></p>'; // Add an empty paragraph after the blockquote so the cursor can sit below it
+  // Helper function to build HTML string for an array of message IDs
+  const getQuotesHtml = async (messageIds: number[]): Promise<string> => {
+    let combinedQuotes = '';
+    for (const id of messageIds) {
+      let targetMsg = messages.find(m => m.id === id);
+
+      // If the message is on another page, fetch it
+      if (!targetMsg) {
+        targetMsg = await MessageStore.getMessageById(id, thread.id);
+      }
+
+      if (targetMsg) {
+        combinedQuotes += buildQuoteHtml(targetMsg);
+      }
+    }
+    return combinedQuotes;
   };
 
-  // Single quote handler
-  const handleSingleQuote = (messageId: string | number): void => {
-    const targetMsg = messages.find(m => m.id === messageId);
-    if (!targetMsg) return;
-    setEditorContent(prev => prev + buildQuoteHtml(targetMsg));
-    fallbackNotLoggedin();
+  // Helper to format quote HTML structure for the editor
+  const buildQuoteHtml = (msg: Message): string => {
+    // Construct the target jump URL for this message
+    const parentUrl = `/threads/${thread.slug}/page/${pagination.current}#message-${msg.id}`;
+
+    return renderToStaticMarkup(
+      <BlockQuote
+        messageId={msg.id}
+        url={parentUrl} // Pass the URL
+        postedAt={msg.postedAt}
+        author={msg.messageBy?.author}
+        content={msg.content}
+        editor={false} // Allow renderToStaticMarkup to output the <a href="..."> jump link
+      />
+    ) + '<p><br></p>';
   };
 
   // Toggle multi-quote selection
@@ -137,32 +154,20 @@ export const ThreadPage = () => {
     );
   };
 
-  // Multi-quote handler (inserts all queued messages at once)
-  const handleMultiQuoteInsert = async (messageIds: (number)[]): Promise<void> => {
-    let combinedQuotes = '';
-    for (const id of messageIds) {
-      let targetMsg = messages.find(m => m.id === id);
-
-      // If the message is on another page, fetch it from store/API
-      if (!targetMsg) {
-        targetMsg = await MessageStore.getMessageById(id, thread.id)
-      }
-
-      if (targetMsg) {
-        combinedQuotes += buildQuoteHtml(targetMsg);
-      }
-    }
-
-    setEditorContent(prev => prev + combinedQuotes);
-    emptyQuoteSelection();
+  // Single quote handler: Inserts directly without touching selectedQuoteIds
+  const handleSingleQuoteInsert = async (messageId: number): Promise<void> => {
+    const quoteHtml = await getQuotesHtml([messageId]);
+    setEditorContent(prev => prev + quoteHtml);
     fallbackNotLoggedin();
   };
 
-  // helper to empty quotes
-  const emptyQuoteSelection = () => {
-    setSelectedQuoteIds([])
-    sessionStorage.removeItem(`quotes_thread_${thread.id}`)
-  }
+  // Multi-quote handler: Inserts queued messages and clears selection
+  const handleMultiQuoteInsert = async (messageIds: number[]): Promise<void> => {
+    const quoteHtml = await getQuotesHtml(messageIds);
+    setEditorContent(prev => prev + quoteHtml);
+    setSelectedQuoteIds([]); // Clear selection (hides floating toolbar & cleans sessionStorage)
+    fallbackNotLoggedin();
+  };
 
   // A small helper component
   const MessageItem = (msg: Message) => {
@@ -179,15 +184,18 @@ export const ThreadPage = () => {
           main={
             <div className="message-entry-post">
               <p>{msg.postedAt}</p>
-              {msg.parentId !== null ? (
-                <MessageParent
-                  threadId={thread.id}
-                  threadSlug={thread.slug}
-                  parentId={msg.parentId}
-                  localParent={localParentMessageObject}
-                />
-              ) : ''}
-              <p>{msg.content}</p>
+              <p>ID: {msg.id}</p>
+              {msg.parentId &&
+                (Array.isArray(msg.parentId) ? msg.parentId : [msg.parentId]).map((id) => (
+                  <MessageParent
+                    key={id}
+                    threadId={thread.id}
+                    threadSlug={thread.slug}
+                    parentId={id}
+                    localParent={localParentMessageObject}
+                  />
+                ))}
+              {parse(msg.content)}
             </div>
           }
           meta={
@@ -203,7 +211,7 @@ export const ThreadPage = () => {
                   </button>
                 </li>
                 <li>
-                  <button onClick={() => handleSingleQuote(msg.id)}>
+                  <button onClick={() => handleSingleQuoteInsert(msg.id)}>
                     <FontAwesomeIcon icon={faQuoteLeft} />
                     <span>Quote</span>
                   </button>
@@ -259,8 +267,9 @@ export const ThreadPage = () => {
                 </div>
               </button>
               <button className="quote-button__close">
-                <FontAwesomeIcon onClick={() => emptyQuoteSelection()} icon={faXmark} />
+                <FontAwesomeIcon onClick={() => setSelectedQuoteIds([])} icon={faXmark} />
               </button>
+              {/* <button onClick={() => sessionStorage.clear()}>Clear session (DEBUG)</button> */}
             </div>
           </div>
         )}
@@ -277,10 +286,13 @@ export const ThreadPage = () => {
       {/* text editor */}
       <ForumPostForm
         threadId={thread.id}
+        categoryId={thread.categoryId as number}
         ref={editorRef}
         flash={isFlashing}
         editorContent={editorContent}
         setEditorContent={setEditorContent}
+        onSuccess={() => setSelectedQuoteIds([])}
+        onError={(error: string) => { console.error(error) }}
       />
     </div>
   )
