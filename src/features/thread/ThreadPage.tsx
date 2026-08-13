@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
-import { useLoaderData, useLocation } from 'react-router-dom'
+import { useLoaderData, useLocation, useNavigate } from 'react-router-dom'
 import type { ThreadLoaderResult } from '../../loaders/threadLoader'
 import { MessageStore, useMessageStore } from '../../store'
 import { useError } from '../../context/ErrorContext'
@@ -18,12 +18,14 @@ import { renderToStaticMarkup } from 'react-dom/server'
 import parse from 'html-react-parser'
 
 export const ThreadPage = () => {
+  const navigate = useNavigate();
   const { hash } = useLocation();
   const { pagination, thread } = useLoaderData() as ThreadLoaderResult
   const { messagesByThread, loading, error } = useMessageStore();
   const { setError } = useError();
-
   const [editorContent, setEditorContent] = useState<string>('');
+
+  const lastPage = pagination.total || 1;
 
   // initialize selectedQuoteIds from sessionStorage
   const [selectedQuoteIds, setSelectedQuoteIds] = useState<(number)[]>(() => {
@@ -110,6 +112,7 @@ export const ThreadPage = () => {
     window.addEventListener('scrollend', handleScrollEnd, { once: true });
   };
 
+  
   // Helper function to build HTML string for an array of message IDs
   const getQuotesHtml = async (messageIds: number[]): Promise<string> => {
     let combinedQuotes = '';
@@ -291,8 +294,12 @@ export const ThreadPage = () => {
         flash={isFlashing}
         editorContent={editorContent}
         setEditorContent={setEditorContent}
-        onSuccess={() => setSelectedQuoteIds([])}
-        onError={(error: string) => { console.error(error) }}
+        onSuccess={() => {
+          setSelectedQuoteIds([]);
+          setEditorContent('');
+          navigate(`/threads/${thread.slug}/page/${lastPage}`);
+        }}
+        onError={(error: string) => { console.error(error); }}
       />
     </div>
   )

@@ -14,12 +14,10 @@ interface QuoteProps {
 }
 
 export const BlockQuote: React.FC<QuoteProps> = ({ 
-  editor = false, 
   messageId, 
   postedAt, 
   author, 
   content, 
-  pageRef, 
   url = null 
 }) => {
   return (
