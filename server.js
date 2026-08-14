@@ -319,7 +319,7 @@ server.post('/messages', async (req, res) => {
     }
   }
 
-  res.status(201).json({ success: true })
+  res.status(201).json({ id: messageId, success: true })
 })
 
 server.get('/messages/latest-overview', (req, res) => {

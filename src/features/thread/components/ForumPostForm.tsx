@@ -10,7 +10,7 @@ interface ForumPostFormProps {
   categoryId: number;
   editorContent: string;
   setEditorContent: React.Dispatch<React.SetStateAction<string>>;
-  onSuccess?: () => void;
+  onSuccess?: (messageId: number) => void;
   onError?: (error: string) => void;
 }
 
@@ -81,8 +81,11 @@ export const ForumPostForm = forwardRef<HTMLDivElement, ForumPostFormProps>(({
       })
 
       if (response.ok) {
+
+        const data = await response.json();
+        const newMessageId = data.id
         setEditorContent('')
-        onSuccess?.()
+        onSuccess?.(newMessageId)
         alert('Reply posted successfully!');
       }
 

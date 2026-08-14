@@ -16,6 +16,86 @@ import { faComments, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { BlockQuote } from '../../common/components/ui/blockquotes/BlockQuote'
 import { renderToStaticMarkup } from 'react-dom/server'
 import parse from 'html-react-parser'
+import type { Thread } from '../../common/types/threads'
+
+// Define MessageItem OUTSIDE ThreadPage
+interface MessageItemProps {
+  msg: Message;
+  thread: Thread;
+  selectedQuoteIds: number[];
+  messages: Message[];
+  onToggleQuote: (id: number) => void;
+  onSingleQuote: (id: number) => void;
+}
+
+const MessageItem = ({
+  msg,
+  thread,
+  selectedQuoteIds,
+  messages,
+  onToggleQuote,
+  onSingleQuote,
+}: MessageItemProps) => {
+  const localParentMessageObject = messages.find((m) => m.id === msg.parentId);
+  const isSelected = selectedQuoteIds.includes(msg.id);
+
+  // Fallback check to safely parse HTML string
+  const rawContent = msg?.content ?? '';
+
+  return (
+    <div id={`message-${msg.id}`}>
+      <ImageCardItem
+        image={msg.messageBy?.avatar}
+        aside={
+          <AuthorInfo
+            author={msg.messageBy?.author}
+            totalUserMessageCount={msg.messageBy?.totalUserMessageCount}
+          />
+        }
+        main={
+          <div className="message-entry-post">
+            <p>{msg.postedAt}</p>
+            <p>ID: {msg.id}</p>
+            {msg.parentId &&
+              (Array.isArray(msg.parentId) ? msg.parentId : [msg.parentId]).map((id) => (
+                <MessageParent
+                  key={id}
+                  threadId={thread.id}
+                  threadSlug={thread.slug}
+                  parentId={id}
+                  localParent={localParentMessageObject}
+                />
+              ))}
+
+            {/* Parse safely or render empty fallback */}
+            {rawContent ? parse(String(rawContent)) : null}
+          </div>
+        }
+        meta={
+          <div className="message-entry-footer">
+            <menu>
+              <li>
+                <button
+                  title={isSelected ? 'Remove from multi-quote' : 'Add to multi-quote'}
+                  onClick={() => onToggleQuote(msg.id)}
+                  style={{ backgroundColor: isSelected ? 'rgba(255,165,0,0.3)' : undefined }}
+                >
+                  <FontAwesomeIcon icon={!isSelected ? faPlus : faCheck} />
+                </button>
+              </li>
+              <li>
+                <button onClick={() => onSingleQuote(msg.id)}>
+                  <FontAwesomeIcon icon={faQuoteLeft} />
+                  <span>Quote</span>
+                </button>
+              </li>
+            </menu>
+          </div>
+        }
+      />
+    </div>
+  );
+};
 
 export const ThreadPage = () => {
   const navigate = useNavigate();
@@ -112,7 +192,7 @@ export const ThreadPage = () => {
     window.addEventListener('scrollend', handleScrollEnd, { once: true });
   };
 
-  
+
   // Helper function to build HTML string for an array of message IDs
   const getQuotesHtml = async (messageIds: number[]): Promise<string> => {
     let combinedQuotes = '';
@@ -172,61 +252,6 @@ export const ThreadPage = () => {
     fallbackNotLoggedin();
   };
 
-  // A small helper component
-  const MessageItem = (msg: Message) => {
-    const localParentMessageObject = messages.find(m => m.id === msg.parentId);
-    const isSelected = selectedQuoteIds.includes(msg.id);
-
-    return (
-      <div id={`message-${msg.id}`}>
-        <ImageCardItem
-          image={msg.messageBy.avatar}
-          aside={
-            <AuthorInfo author={msg.messageBy.author} totalUserMessageCount={msg.messageBy.totalUserMessageCount} />
-          }
-          main={
-            <div className="message-entry-post">
-              <p>{msg.postedAt}</p>
-              <p>ID: {msg.id}</p>
-              {msg.parentId &&
-                (Array.isArray(msg.parentId) ? msg.parentId : [msg.parentId]).map((id) => (
-                  <MessageParent
-                    key={id}
-                    threadId={thread.id}
-                    threadSlug={thread.slug}
-                    parentId={id}
-                    localParent={localParentMessageObject}
-                  />
-                ))}
-              {parse(msg.content)}
-            </div>
-          }
-          meta={
-            <div className='message-entry-footer'>
-              <menu>
-                <li>
-                  <button
-                    title={isSelected ? "Remove from multi-quote" : "Add to multi-quote"}
-                    onClick={() => handleMultiQuoteToggle(msg.id)}
-                    style={{ backgroundColor: isSelected ? 'rgba(255,165,0,0.3)' : undefined }}
-                  >
-                    <FontAwesomeIcon icon={!isSelected ? faPlus : faCheck} />
-                  </button>
-                </li>
-                <li>
-                  <button onClick={() => handleSingleQuoteInsert(msg.id)}>
-                    <FontAwesomeIcon icon={faQuoteLeft} />
-                    <span>Quote</span>
-                  </button>
-                </li>
-              </menu>
-            </div>
-          }
-        />
-      </div>
-    );
-  };
-
   return (
     <div className="layout">
       <div className="container full-width">
@@ -242,15 +267,33 @@ export const ThreadPage = () => {
           <p>Loading...</p>
         ) : (
           <>
-            <Card
-              header={<h2>{thread.title}</h2>}
-              content={<MessageItem {...messages[0]} />}
-              options={{ divided: { top: false, bottom: false } }}
-            />
+            {messages[0] && (
+              <Card
+                header={<h2>{thread.title}</h2>}
+                content={
+                  <MessageItem
+                    msg={messages[0]}
+                    thread={thread}
+                    selectedQuoteIds={selectedQuoteIds}
+                    messages={messages}
+                    onToggleQuote={handleMultiQuoteToggle}
+                    onSingleQuote={handleSingleQuoteInsert}
+                  />
+                }
+                options={{ divided: { top: false, bottom: false } }}
+              />
+            )}
             {messages.slice(1).map((msg, index) => (
               <Card
                 key={msg.id || index}
-                content={<MessageItem {...msg} />}
+                content={<MessageItem
+                  msg={messages[0]}
+                  thread={thread}
+                  selectedQuoteIds={selectedQuoteIds}
+                  messages={messages}
+                  onToggleQuote={handleMultiQuoteToggle}
+                  onSingleQuote={handleSingleQuoteInsert}
+                />}
                 options={{ divided: { top: false, bottom: false } }}
               />
             ))}
@@ -294,10 +337,9 @@ export const ThreadPage = () => {
         flash={isFlashing}
         editorContent={editorContent}
         setEditorContent={setEditorContent}
-        onSuccess={() => {
+        onSuccess={(createdMessageId: number) => {
           setSelectedQuoteIds([]);
-          setEditorContent('');
-          navigate(`/threads/${thread.slug}/page/${lastPage}`);
+          navigate(`/threads/${thread.slug}/page/${lastPage}#message-${createdMessageId}`);
         }}
         onError={(error: string) => { console.error(error); }}
       />
