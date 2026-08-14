@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
-import { useLoaderData, useLocation, useNavigate } from 'react-router-dom'
+import { useLoaderData, useLocation, useNavigate, useRevalidator } from 'react-router-dom'
 import type { ThreadLoaderResult } from '../../loaders/threadLoader'
 import { MessageStore, useMessageStore } from '../../store'
 import { useError } from '../../context/ErrorContext'
@@ -99,6 +99,8 @@ const MessageItem = ({
 
 export const ThreadPage = () => {
   const navigate = useNavigate();
+  const revalidator = useRevalidator();
+  
   const { hash } = useLocation();
   const { pagination, thread } = useLoaderData() as ThreadLoaderResult
   const { messagesByThread, loading, error } = useMessageStore();
@@ -106,6 +108,7 @@ export const ThreadPage = () => {
   const [editorContent, setEditorContent] = useState<string>('');
 
   const lastPage = pagination.total || 1;
+
 
   // initialize selectedQuoteIds from sessionStorage
   const [selectedQuoteIds, setSelectedQuoteIds] = useState<(number)[]>(() => {
@@ -287,7 +290,7 @@ export const ThreadPage = () => {
               <Card
                 key={msg.id || index}
                 content={<MessageItem
-                  msg={messages[0]}
+                  msg={msg}
                   thread={thread}
                   selectedQuoteIds={selectedQuoteIds}
                   messages={messages}
@@ -339,6 +342,7 @@ export const ThreadPage = () => {
         setEditorContent={setEditorContent}
         onSuccess={(createdMessageId: number) => {
           setSelectedQuoteIds([]);
+          revalidator.revalidate();
           navigate(`/threads/${thread.slug}/page/${lastPage}#message-${createdMessageId}`);
         }}
         onError={(error: string) => { console.error(error); }}
