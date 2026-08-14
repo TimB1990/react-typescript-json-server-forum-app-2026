@@ -100,7 +100,7 @@ const MessageItem = ({
 export const ThreadPage = () => {
   const navigate = useNavigate();
   const revalidator = useRevalidator();
-  
+
   const { hash } = useLocation();
   const { pagination, thread } = useLoaderData() as ThreadLoaderResult
   const { messagesByThread, loading, error } = useMessageStore();
@@ -340,8 +340,10 @@ export const ThreadPage = () => {
         flash={isFlashing}
         editorContent={editorContent}
         setEditorContent={setEditorContent}
-        onSuccess={(createdMessageId: number) => {
+        onSuccess={async (createdMessageId: number) => {
           setSelectedQuoteIds([]);
+          MessageStore.clearAuthorCache();
+          await MessageStore.fetch(thread.id, pagination.limit, lastPage);
           revalidator.revalidate();
           navigate(`/threads/${thread.slug}/page/${lastPage}#message-${createdMessageId}`);
         }}

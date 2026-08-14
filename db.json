@@ -457,7 +457,7 @@
       "password": "$2b$10$sZ1l0HZ3ZdKZAz6sguxRpuZ6Qk0B5wSwavJwl1MfE2A1L.b8gJd9S",
       "avatar": "data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20version%3D%221.1%22%20baseProfile%3D%22full%22%20width%3D%22150%22%20height%3D%22150%22%3E%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22%23fcecaf%22%2F%3E%3Ctext%20x%3D%2275%22%20y%3D%2275%22%20font-size%3D%2220%22%20alignment-baseline%3D%22middle%22%20text-anchor%3D%22middle%22%20fill%3D%22white%22%3E150x150%3C%2Ftext%3E%3C%2Fsvg%3E",
       "createdAt": "2026-08-13T06:26:57.911Z",
-      "messageCount": 12
+      "messageCount": 16
     }
   ],
   "groups": [
@@ -12689,6 +12689,60 @@
       "parentId": null,
       "content": "<blockquote class=\"message-quote\" data-quote-id=\"1271\" cite=\"/threads/cauda-explicabo-tutamen-arguo/page/3#message-1271\"><p><span class=\"quote-meta-left\"><svg data-prefix=\"fas\" data-icon=\"quote-left\" class=\"svg-inline--fa fa-quote-left\" role=\"img\" viewBox=\"0 0 448 512\" aria-hidden=\"true\"><path fill=\"currentColor\" d=\"M0 216C0 149.7 53.7 96 120 96l8 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-8 0c-30.9 0-56 25.1-56 56l0 8 64 0c35.3 0 64 28.7 64 64l0 64c0 35.3-28.7 64-64 64l-64 0c-35.3 0-64-28.7-64-64L0 216zm256 0c0-66.3 53.7-120 120-120l8 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-8 0c-30.9 0-56 25.1-56 56l0 8 64 0c35.3 0 64 28.7 64 64l0 64c0 35.3-28.7 64-64 64l-64 0c-35.3 0-64-28.7-64-64l0-136z\"></path></svg>On August 14, 2026 at 22:43, Tim said:</span><a href=\"/threads/cauda-explicabo-tutamen-arguo/page/3#message-1271\"><svg data-prefix=\"fas\" data-icon=\"share\" class=\"svg-inline--fa fa-share quote-share-icon\" role=\"img\" viewBox=\"0 0 512 512\" aria-hidden=\"true\"><path fill=\"currentColor\" d=\"M307.8 18.4c-12 5-19.8 16.6-19.8 29.6l0 80-112 0c-97.2 0-176 78.8-176 176 0 113.3 81.5 163.9 100.2 174.1 2.5 1.4 5.3 1.9 8.1 1.9 10.9 0 19.7-8.9 19.7-19.7 0-7.5-4.3-14.4-9.8-19.5-9.4-8.8-22.2-26.4-22.2-56.7 0-53 43-96 96-96l96 0 0 80c0 12.9 7.8 24.6 19.8 29.6s25.7 2.2 34.9-6.9l160-160c12.5-12.5 12.5-32.8 0-45.3l-160-160c-9.2-9.2-22.9-11.9-34.9-6.9z\"></path></svg></a></p><div class=\"quote-body\">Testing</div></blockquote><p>Frikandel</p>",
       "createdAt": "2026-08-14T20:43:42.758Z"
+    },
+    {
+      "id": 1273,
+      "threadId": 82,
+      "categoryId": 1,
+      "userId": 51,
+      "parentId": null,
+      "content": "test",
+      "createdAt": "2026-08-14T20:53:02.307Z"
+    },
+    {
+      "id": 1274,
+      "threadId": 82,
+      "categoryId": 1,
+      "userId": 51,
+      "parentId": null,
+      "content": "It should say 13 but all has been broken before",
+      "createdAt": "2026-08-14T21:04:32.530Z"
+    },
+    {
+      "id": 1275,
+      "threadId": 82,
+      "categoryId": 1,
+      "userId": 51,
+      "parentId": null,
+      "content": "It should say 13 but all has been broken before",
+      "createdAt": "2026-08-14T21:05:26.681Z"
+    },
+    {
+      "id": 1276,
+      "threadId": 82,
+      "categoryId": 1,
+      "userId": 51,
+      "parentId": null,
+      "content": "Do I update now??",
+      "createdAt": "2026-08-14T22:32:48.596Z"
+    },
+    {
+      "id": 1277,
+      "threadId": 82,
+      "categoryId": 1,
+      "userId": 51,
+      "parentId": null,
+      "content": "Do I update now???",
+      "createdAt": "2026-08-14T22:49:55.481Z"
+    },
+    {
+      "id": 1278,
+      "threadId": 82,
+      "categoryId": 1,
+      "userId": 51,
+      "parentId": null,
+      "content": "<blockquote class=\"message-quote\" data-quote-id=\"1276\" cite=\"/threads/cauda-explicabo-tutamen-arguo/page/4#message-1276\"><p><span class=\"quote-meta-left\"><svg data-prefix=\"fas\" data-icon=\"quote-left\" class=\"svg-inline--fa fa-quote-left\" role=\"img\" viewBox=\"0 0 448 512\" aria-hidden=\"true\"><path fill=\"currentColor\" d=\"M0 216C0 149.7 53.7 96 120 96l8 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-8 0c-30.9 0-56 25.1-56 56l0 8 64 0c35.3 0 64 28.7 64 64l0 64c0 35.3-28.7 64-64 64l-64 0c-35.3 0-64-28.7-64-64L0 216zm256 0c0-66.3 53.7-120 120-120l8 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-8 0c-30.9 0-56 25.1-56 56l0 8 64 0c35.3 0 64 28.7 64 64l0 64c0 35.3-28.7 64-64 64l-64 0c-35.3 0-64-28.7-64-64l0-136z\"></path></svg>On August 15, 2026 at 00:32, Tim said:</span><a href=\"/threads/cauda-explicabo-tutamen-arguo/page/4#message-1276\"><svg data-prefix=\"fas\" data-icon=\"share\" class=\"svg-inline--fa fa-share quote-share-icon\" role=\"img\" viewBox=\"0 0 512 512\" aria-hidden=\"true\"><path fill=\"currentColor\" d=\"M307.8 18.4c-12 5-19.8 16.6-19.8 29.6l0 80-112 0c-97.2 0-176 78.8-176 176 0 113.3 81.5 163.9 100.2 174.1 2.5 1.4 5.3 1.9 8.1 1.9 10.9 0 19.7-8.9 19.7-19.7 0-7.5-4.3-14.4-9.8-19.5-9.4-8.8-22.2-26.4-22.2-56.7 0-53 43-96 96-96l96 0 0 80c0 12.9 7.8 24.6 19.8 29.6s25.7 2.2 34.9-6.9l160-160c12.5-12.5 12.5-32.8 0-45.3l-160-160c-9.2-9.2-22.9-11.9-34.9-6.9z\"></path></svg></a></p><div class=\"quote-body\">Do I update now??</div></blockquote><blockquote class=\"message-quote\" data-quote-id=\"1277\" cite=\"/threads/cauda-explicabo-tutamen-arguo/page/4#message-1277\"><p><span class=\"quote-meta-left\"><svg data-prefix=\"fas\" data-icon=\"quote-left\" class=\"svg-inline--fa fa-quote-left\" role=\"img\" viewBox=\"0 0 448 512\" aria-hidden=\"true\"><path fill=\"currentColor\" d=\"M0 216C0 149.7 53.7 96 120 96l8 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-8 0c-30.9 0-56 25.1-56 56l0 8 64 0c35.3 0 64 28.7 64 64l0 64c0 35.3-28.7 64-64 64l-64 0c-35.3 0-64-28.7-64-64L0 216zm256 0c0-66.3 53.7-120 120-120l8 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-8 0c-30.9 0-56 25.1-56 56l0 8 64 0c35.3 0 64 28.7 64 64l0 64c0 35.3-28.7 64-64 64l-64 0c-35.3 0-64-28.7-64-64l0-136z\"></path></svg>On August 15, 2026 at 00:49, Tim said:</span><a href=\"/threads/cauda-explicabo-tutamen-arguo/page/4#message-1277\"><svg data-prefix=\"fas\" data-icon=\"share\" class=\"svg-inline--fa fa-share quote-share-icon\" role=\"img\" viewBox=\"0 0 512 512\" aria-hidden=\"true\"><path fill=\"currentColor\" d=\"M307.8 18.4c-12 5-19.8 16.6-19.8 29.6l0 80-112 0c-97.2 0-176 78.8-176 176 0 113.3 81.5 163.9 100.2 174.1 2.5 1.4 5.3 1.9 8.1 1.9 10.9 0 19.7-8.9 19.7-19.7 0-7.5-4.3-14.4-9.8-19.5-9.4-8.8-22.2-26.4-22.2-56.7 0-53 43-96 96-96l96 0 0 80c0 12.9 7.8 24.6 19.8 29.6s25.7 2.2 34.9-6.9l160-160c12.5-12.5 12.5-32.8 0-45.3l-160-160c-9.2-9.2-22.9-11.9-34.9-6.9z\"></path></svg></a></p><div class=\"quote-body\">Do I update now???</div></blockquote><p>Yes yes yes</p>",
+      "createdAt": "2026-08-14T22:50:22.394Z"
     }
   ],
   "replies": [

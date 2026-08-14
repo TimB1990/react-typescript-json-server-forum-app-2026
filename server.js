@@ -288,9 +288,9 @@ server.post('/messages', async (req, res) => {
     threadId,
     categoryId,
     userId,
-    parentId: 
+    parentId:
       quoteIdsArray
-        ? quoteIdsArray.length > 1 
+        ? quoteIdsArray.length > 1
           ? quoteIdsArray
           : quoteIdsArray[0]
         : null,
@@ -299,11 +299,24 @@ server.post('/messages', async (req, res) => {
   }).write();
 
   // increase user message count
-  const parsedUserId = Number(userId)
-  const user = router.db.get('users').find({id: parsedUserId}).value();
-  
+  const parsedUserId = Number(userId);
+
+  // Search using a predicate function to catch string/number mismatches safely
+  const user = router.db.get('users')
+    .find((u) => u.id == userId || u.id == parsedUserId)
+    .value();
+
   if (user) {
-    user.messageCount = (user.messageCount || 0) + 1;
+    const nextCount = (user.messageCount || 0) + 1;
+
+    router.db.get('users')
+      .find({ id: user.id }) // Use exact match on the found user's actual ID
+      .assign({ messageCount: nextCount })
+      .write();
+
+    console.log(`Updated user ${user.id} messageCount to ${nextCount}`);
+  } else {
+    console.warn(`User with ID ${userId} not found in database!`);
   }
 
   if (quoteIdsArray) {

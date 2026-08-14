@@ -37,12 +37,11 @@ const getAuthor = async (userId: number): Promise<{
 
     const authorResponse = await fetch(`http://localhost:5001/users/${userId}`)
     const author: User = await authorResponse.json();
-    const count = await totalUserMessageCount(userId)
 
     const authorData = {
         author: author.username,
         avatar: author.avatar,
-        totalUserMessageCount: count
+        totalUserMessageCount: author.messageCount ?? 0
     }
 
     // Save to cache
@@ -53,6 +52,15 @@ const getAuthor = async (userId: number): Promise<{
 export const MessageStore = {
     getState: store.getState,
     subscribe: store.subscribe,
+
+    clearAuthorCache: (userId?: number) => {
+        if (userId) {
+            delete authorCache[userId]
+        }
+        else {
+            Object.keys(authorCache).forEach((key) => delete authorCache[Number(key)]);
+        }
+    },
 
     fetch: async (threadId: number | null = null, limit: number | null = null, page: number | null = null) => {
 
@@ -149,7 +157,7 @@ export const MessageStore = {
                 const author = item.userId ? await getAuthor(item.userId) : null
                 const postedAt = formatDate(item.createdAt)
 
-                return {...item, threadInfo: { title: thread.title}, messageBy: author, postedAt}
+                return { ...item, threadInfo: { title: thread.title }, messageBy: author, postedAt }
             })
 
             const finalData = await Promise.all(messagePromises)
@@ -159,7 +167,7 @@ export const MessageStore = {
                 messagesByThread: {
                     ...prev.messagesByThread,
                     [stateKey]: finalData
-                    
+
                 }
             }))
 
@@ -220,7 +228,4 @@ export const MessageStore = {
         }
 
     }
-
-
-
 }
