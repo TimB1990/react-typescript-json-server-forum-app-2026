@@ -6,7 +6,7 @@ import { useError } from '../../context/ErrorContext'
 import { Card } from '../../common/components/ui/cards/Card'
 import { ImageCardItem } from '../../common/components/ui/cards/ImageCardItem'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faQuoteLeft, faPlus, faCheck } from '@fortawesome/free-solid-svg-icons'
+import { faQuoteLeft, faPlus, faCheck, faTrash } from '@fortawesome/free-solid-svg-icons'
 import type { Message } from '../../common/types/message'
 import { Paginator } from '../../common/components/ui/paginator/Paginator'
 import { MessageParent } from '../../common/components/ui/blockquotes/MessageParent'
@@ -17,6 +17,7 @@ import { BlockQuote } from '../../common/components/ui/blockquotes/BlockQuote'
 import { renderToStaticMarkup } from 'react-dom/server'
 import parse from 'html-react-parser'
 import type { Thread } from '../../common/types/threads'
+import { useAuth } from '../../context/AuthContext'
 
 // Define MessageItem OUTSIDE ThreadPage
 interface MessageItemProps {
@@ -26,7 +27,23 @@ interface MessageItemProps {
   messages: Message[];
   onToggleQuote: (id: number) => void;
   onSingleQuote: (id: number) => void;
+  onError: (msg: string) => void; // <-- Add this
 }
+
+const handleDelete = async (
+  messageId: number,
+  threadId: number,
+  onError: (msg: string) => void
+
+) => {
+  const success = await MessageStore.delete(messageId, threadId);
+
+  if (!success) {
+    // Retrieve store error or set a default fallback message
+    const storeError = MessageStore.getState().error;
+    onError(storeError || `Failed to delete message ${messageId}`);
+  }
+};
 
 const MessageItem = ({
   msg,
@@ -35,7 +52,10 @@ const MessageItem = ({
   messages,
   onToggleQuote,
   onSingleQuote,
+  onError
 }: MessageItemProps) => {
+
+  const { user } = useAuth();
   const localParentMessageObject = messages.find((m) => m.id === msg.parentId);
   const isSelected = selectedQuoteIds.includes(msg.id);
 
@@ -54,8 +74,14 @@ const MessageItem = ({
         }
         main={
           <div className="message-entry-post">
-            <p>{msg.postedAt}</p>
-            <p>ID: {msg.id}</p>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              {msg.postedAt}
+
+              {/* MAKE SURE THIS BECOMES ADMIN ONLY! */}
+              {user && (
+                <span className="trash"><FontAwesomeIcon onClick={async () => await handleDelete(msg.id, msg.threadId, onError)} icon={faTrash} /></span>
+              )}
+            </div>
             {msg.parentId &&
               (Array.isArray(msg.parentId) ? msg.parentId : [msg.parentId]).map((id) => (
                 <MessageParent
@@ -281,6 +307,7 @@ export const ThreadPage = () => {
                     messages={messages}
                     onToggleQuote={handleMultiQuoteToggle}
                     onSingleQuote={handleSingleQuoteInsert}
+                    onError={setError}
                   />
                 }
                 options={{ divided: { top: false, bottom: false } }}
@@ -296,6 +323,7 @@ export const ThreadPage = () => {
                   messages={messages}
                   onToggleQuote={handleMultiQuoteToggle}
                   onSingleQuote={handleSingleQuoteInsert}
+                  onError={setError}
                 />}
                 options={{ divided: { top: false, bottom: false } }}
               />
@@ -347,7 +375,7 @@ export const ThreadPage = () => {
           revalidator.revalidate();
           navigate(`/threads/${thread.slug}/page/${lastPage}#message-${createdMessageId}`);
         }}
-        onError={(error: string) => { console.error(error); }}
+        onError={(err: string) => setError(err)} // <-- Send form errors directly to banner context
       />
     </div>
   )

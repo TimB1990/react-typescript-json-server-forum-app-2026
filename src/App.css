@@ -1336,3 +1336,12 @@ form input[type="password"] {
   animation: flashGlow 1.2s ease-in-out;
   border-radius: 6px;
 }
+
+.trash {
+  display: inline;
+  cursor: pointer;
+}
+
+.trash:hover{
+  color: red;
+}

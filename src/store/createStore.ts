@@ -1,6 +1,6 @@
 export type Listener = () => void
 
-export function createStore<T>(initialState: T){
+export function createStore<T>(initialState: T) {
     let state = initialState
     const listeners = new Set<Listener>();
 
@@ -11,7 +11,7 @@ export function createStore<T>(initialState: T){
         setState: (nextState: Partial<T> | ((prev: T) => T)) => {
             const newState = typeof nextState === 'function'
                 ? (nextState as Function)(state)
-                : {...state, ...nextState }
+                : { ...state, ...nextState }
 
             state = newState;
             notify()

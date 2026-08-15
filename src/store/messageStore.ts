@@ -18,12 +18,6 @@ const formatDate = (dateString: string): string => {
     return dayjs(dateString).format("MMMM D, YYYY [at] HH:mm")
 }
 
-const totalUserMessageCount = async (userId: number): Promise<number> => {
-    const response = await fetch(`http://localhost:5001/users/${userId}`)
-    const result: User = await response.json();
-    return result.messageCount ?? 0;
-}
-
 // Local cache to prevent redundant fetches for the same user on one page
 const authorCache: Record<number, any> = {}
 
@@ -53,12 +47,79 @@ export const MessageStore = {
     getState: store.getState,
     subscribe: store.subscribe,
 
+    clearError: () => {
+        store.setState((prev) => ({ ...prev, error: null }));
+    },
+
     clearAuthorCache: (userId?: number) => {
         if (userId) {
             delete authorCache[userId]
         }
         else {
             Object.keys(authorCache).forEach((key) => delete authorCache[Number(key)]);
+        }
+    },
+
+    delete: async (messageId: number, threadId?: number): Promise<boolean> => {
+        try {
+            const response = await fetch(`http://localhost:5001/messages/${messageId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include' // Transmits auth_token cookie
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                const errorMessage = data.message || data.error || 'Failed to delete message';
+                store.setState((prev) => ({ ...prev, error: errorMessage }));
+                return false; // <-- CRITICAL FIX: Return early to block the state removal below!
+            }
+
+            const state = store.getState();
+            let targetUserId: number | undefined;
+
+            const currentMessages = threadId
+                ? state.messagesByThread[threadId] || []
+                : Object.values(state.messagesByThread).flat();
+
+            const targetMsg = currentMessages.find((m) => m.id === messageId);
+            if (targetMsg?.userId) {
+                targetUserId = targetMsg.userId;
+            }
+
+            store.setState((prev) => {
+                const updatedMessagesByThread: Record<string | number, Message[]> = {};
+
+                Object.keys(prev.messagesByThread).forEach((key) => {
+                    updatedMessagesByThread[key] = prev.messagesByThread[key].filter(
+                        (msg) => msg.id !== messageId
+                    );
+                });
+
+                return {
+                    ...prev,
+                    messagesByThread: updatedMessagesByThread,
+                    totalCount: Math.max(0, prev.totalCount as number - 1)
+                };
+            });
+
+            if (targetUserId) {
+                MessageStore.clearAuthorCache(targetUserId);
+            } else {
+                MessageStore.clearAuthorCache();
+            }
+
+            return true;
+
+        } catch (err) {
+            store.setState((prev) => ({
+                ...prev,
+                error: `Failed to delete message: ${err instanceof Error ? err.message : err}`
+            }));
+            return false;
         }
     },
 

@@ -335,6 +335,137 @@ server.post('/messages', async (req, res) => {
   res.status(201).json({ id: messageId, success: true })
 })
 
+server.delete('/messages/:id', async (req, res) => {
+  console.log('end point called:')
+
+  // 1. AUTH CHECK FIRST (Prevent unauthorized execution)
+  const authToken = req.cookies.auth_token;
+  if (!authToken || !authToken.includes(':')) {
+    return res.status(401).json({ message: "Unauthenticated" });
+  }
+
+  const [selector] = authToken.split(':');
+  const tokenRecord = router.db.get('tokens').find({ selector }).value();
+
+  if (!tokenRecord) {
+    return res.status(401).json({ message: "Invalid or expired session" });
+  }
+
+  console.log('about to go fetch target message:')
+
+  // 2. FETCH TARGET MESSAGE (Fixed boolean bug)
+  const { id } = req.params;
+  const numericId = Number(id);
+
+  const message = router.db
+    .get('messages')
+    .find((m) => m.id == id || m.id === numericId)
+    .value();
+
+  console.log('message: ', message)
+
+  if (!message) {
+    console.log('no message found')
+    return res.status(404).json({ error: 'Message not found' });
+  }
+
+  // 3. AUTHORIZATION CHECK (Must own the message)
+  if (message.userId != tokenRecord.userId) {
+    return res.status(403).json({ message: "Forbidden: You cannot delete another user's message" });
+  }
+
+  // 4. DECREMENT USER MESSAGE COUNT (Fixed typo)
+  if (message.userId !== undefined && message.userId !== null) {
+    const user = router.db
+      .get('users')
+      .find((u) => u.id === message.userId)
+      .value();
+
+    if (user) {
+      const currentCount = user.messageCount || 0;
+      const nextCount = Math.max(0, currentCount - 1);
+
+      router.db
+        .get('users')
+        .find({ id: user.id })
+        .assign({ messageCount: nextCount }) // Fixed property assignment
+        .write();
+    }
+  }
+
+  // 5. REMOVE REPLIES PIVOTS (Both directions)
+  router.db
+    .get('replies')
+    .remove((r) => r.messageId == message.id || r.parentMessageId == message.id)
+    .write();
+
+  // 6. DELETE THE MESSAGE ITSELF (Fixed .delete() to .remove())
+  router.db
+    .get('messages')
+    .remove((m) => m.id === message.id)
+    .write();
+
+  // 7. CLEAN UP FLOATING parentId REFERENCES
+  const allMessages = router.db.get('messages').value() || [];
+
+  allMessages.forEach((msg) => {
+    if (!msg.parentId) return;
+
+    if (Array.isArray(msg.parentId)) {
+      const updatedParents = msg.parentId.filter((pId) => pId != message.id);
+      const newParentId = updatedParents.length === 0
+        ? 0 // Indicates quote removed by admin
+        : updatedParents.length === 1
+          ? updatedParents[0]
+          : updatedParents;
+
+      router.db.get('messages')
+        .find({ id: msg.id })
+        .assign({ parentId: newParentId })
+        .write();
+    } else if (msg.parentId == message.id) {
+      router.db.get('messages')
+        .find({ id: msg.id })
+        .assign({ parentId: null })
+        .write();
+    }
+  });
+
+  // 8. HANDLE REMAINING THREAD MESSAGES & ORPHANED THREADS
+  if (message.threadId) {
+    const remainingThreadMessages = router.db.get('messages')
+      .filter({ threadId: message.threadId })
+      .value();
+
+    if (remainingThreadMessages.length === 0) {
+      // Thread is empty -> remove the thread record
+      router.db.get('threads').remove({ id: message.threadId }).write();
+    } else {
+      // Recalculate atPage for remaining reply pivots in this thread
+      const itemsPerPage = DEFAULT.messages;
+      const sortedThread = [...remainingThreadMessages].sort(
+        (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+      );
+
+      sortedThread.forEach((msg, idx) => {
+        const newPage = Math.floor(idx / itemsPerPage) + 1;
+        router.db
+          .get('replies')
+          .find({ messageId: msg.id })
+          .assign({ atPage: newPage })
+          .write();
+      });
+    }
+  }
+
+  console.log('got to the end:')
+
+  return res.status(200).json({
+    success: true,
+    message: `Message ${message.id} deleted successfully`
+  });
+});
+
 server.get('/messages/latest-overview', (req, res) => {
   const limit = parseInt(req.query.limit, 10) || DEFAULT.messages;
   const page = parseInt(req.query.page, 10) || 1;
