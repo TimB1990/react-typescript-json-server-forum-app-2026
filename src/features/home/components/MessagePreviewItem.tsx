@@ -1,6 +1,7 @@
 import { ImageCardItem } from '../../../common/components/ui/cards/ImageCardItem';
 import type { Message } from '../../../common/types/message'
 import { Link } from 'react-router-dom';
+import parse from 'html-react-parser'
 
 export const MessagePreviewItem = (props: Message) => {
 
@@ -13,7 +14,7 @@ export const MessagePreviewItem = (props: Message) => {
                 main={
                     <>
                         <p><strong>{threadInfo?.title}</strong></p>
-                        <p className='message-content'>{content}</p>
+                        <p className='message-content'>{parse(content)}</p>
                     </>
                 }
                 meta={
