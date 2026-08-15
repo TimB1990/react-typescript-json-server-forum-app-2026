@@ -7,7 +7,7 @@ export const ErrorBanner: React.FC = () => {
     if (!error) return null;
 
     return (
-        <div style={{ background: '#ffcccc', padding: '10px', display: 'flex', justifyContent: 'space-between' }}>
+        <div className="error-banner">
             <span>Error: {error}</span>
             <button onClick={clearError}>X</button>
         </div>

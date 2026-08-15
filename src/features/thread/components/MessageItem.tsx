@@ -66,7 +66,7 @@ export const MessageItem = ({
           <div className="message-entry-post">
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               {msg.postedAt}
-
+              <br/>
               {/* MAKE SURE THIS BECOMES ADMIN ONLY! */}
               {user && (
                 <span className="trash"><FontAwesomeIcon onClick={async () => await handleDelete(msg.id, msg.threadId, onError)} icon={faTrash} /></span>

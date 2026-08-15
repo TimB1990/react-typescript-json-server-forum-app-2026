@@ -12,6 +12,7 @@ import { faComments, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { BlockQuote } from '../../common/components/ui/blockquotes/BlockQuote'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { MessageItem } from './components/MessageItem'
+import { ErrorBanner } from '../../common/components/layout/ErrorBanner'
 
 export const ThreadPage = () => {
   const navigate = useNavigate();
@@ -20,7 +21,7 @@ export const ThreadPage = () => {
   const { hash } = useLocation();
   const { pagination, thread } = useLoaderData() as ThreadLoaderResult
   const { messagesByThread, loading, error } = useMessageStore();
-  const { setError } = useError();
+  const { setError, clearError } = useError();
   const [editorContent, setEditorContent] = useState<string>('');
 
   const lastPage = pagination.total || 1;
@@ -48,12 +49,14 @@ export const ThreadPage = () => {
   useEffect(() => {
     MessageStore.fetch(thread.id, pagination.limit, pagination.current)
   }, [thread.id, pagination.current])
-
+  
   useEffect(() => {
-    if (error !== null) {
+    if (error) {
       setError(error);
+    } else {
+      clearError();
     }
-  }, [error, setError]);
+  }, [error, setError, clearError]);
 
   const messages = messagesByThread[thread.id] || [];
   const isActuallyLoading = loading[thread.id] || messages.length === 0;
@@ -172,101 +175,104 @@ export const ThreadPage = () => {
   };
 
   return (
-    <div className="layout">
-      <div className="container full-width">
-        {pagination.total > 1 && (
-          <Paginator
-            entity={'threads'}
-            totalPages={pagination.total}
-            currentPage={pagination.current}
-          />
-        )}
+    <>
+      {error && (<ErrorBanner />)}
+      <div className="layout">
+        <div className="container full-width">
+          {pagination.total > 1 && (
+            <Paginator
+              entity={'threads'}
+              totalPages={pagination.total}
+              currentPage={pagination.current}
+            />
+          )}
 
-        {isActuallyLoading && messages.length === 0 ? (
-          <p>Loading...</p>
-        ) : (
-          <>
-            {messages[0] && (
-              <Card
-                header={<h2>{thread.title}</h2>}
-                content={
-                  <MessageItem
-                    msg={messages[0]}
+          {isActuallyLoading && messages.length === 0 ? (
+            <p>Loading...</p>
+          ) : (
+            <>
+              {messages[0] && (
+                <Card
+                  header={<h2>{thread.title}</h2>}
+                  content={
+                    <MessageItem
+                      msg={messages[0]}
+                      thread={thread}
+                      selectedQuoteIds={selectedQuoteIds}
+                      messages={messages}
+                      onToggleQuote={handleMultiQuoteToggle}
+                      onSingleQuote={handleSingleQuoteInsert}
+                      onError={setError}
+                    />
+                  }
+                  options={{ divided: { top: false, bottom: false } }}
+                />
+              )}
+              {messages.slice(1).map((msg, index) => (
+                <Card
+                  key={msg.id || index}
+                  content={<MessageItem
+                    msg={msg}
                     thread={thread}
                     selectedQuoteIds={selectedQuoteIds}
                     messages={messages}
                     onToggleQuote={handleMultiQuoteToggle}
                     onSingleQuote={handleSingleQuoteInsert}
                     onError={setError}
-                  />
-                }
-                options={{ divided: { top: false, bottom: false } }}
-              />
-            )}
-            {messages.slice(1).map((msg, index) => (
-              <Card
-                key={msg.id || index}
-                content={<MessageItem
-                  msg={msg}
-                  thread={thread}
-                  selectedQuoteIds={selectedQuoteIds}
-                  messages={messages}
-                  onToggleQuote={handleMultiQuoteToggle}
-                  onSingleQuote={handleSingleQuoteInsert}
-                  onError={setError}
-                />}
-                options={{ divided: { top: false, bottom: false } }}
-              />
-            ))}
-          </>
-        )}
+                  />}
+                  options={{ divided: { top: false, bottom: false } }}
+                />
+              ))}
+            </>
+          )}
 
-        {/* Floating Multi-Quote Trigger Bar */}
-        {selectedQuoteIds.length > 0 && (
-          <div className="sticky-container" style={{ margin: '1em 0', textAlign: 'right' }}>
-            <div className="quote-buttons">
-              <button
-                onClick={() => handleMultiQuoteInsert(selectedQuoteIds)}
-              >
-                <div className="quote-button__withIcon">
-                  <FontAwesomeIcon icon={faComments} style={{ color: '#b9b9bb' }} />
-                  Quote {selectedQuoteIds.length} {'post' + (selectedQuoteIds.length > 1 ? 's' : '')}
-                </div>
-              </button>
-              <button className="quote-button__close">
-                <FontAwesomeIcon onClick={() => setSelectedQuoteIds([])} icon={faXmark} />
-              </button>
-              {/* <button onClick={() => sessionStorage.clear()}>Clear session (DEBUG)</button> */}
+          {/* Floating Multi-Quote Trigger Bar */}
+          {selectedQuoteIds.length > 0 && (
+            <div className="sticky-container" style={{ margin: '1em 0', textAlign: 'right' }}>
+              <div className="quote-buttons">
+                <button
+                  onClick={() => handleMultiQuoteInsert(selectedQuoteIds)}
+                >
+                  <div className="quote-button__withIcon">
+                    <FontAwesomeIcon icon={faComments} style={{ color: '#b9b9bb' }} />
+                    Quote {selectedQuoteIds.length} {'post' + (selectedQuoteIds.length > 1 ? 's' : '')}
+                  </div>
+                </button>
+                <button className="quote-button__close">
+                  <FontAwesomeIcon onClick={() => setSelectedQuoteIds([])} icon={faXmark} />
+                </button>
+                {/* <button onClick={() => sessionStorage.clear()}>Clear session (DEBUG)</button> */}
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {pagination.total > 1 && (
-          <Paginator
-            entity={'threads'}
-            totalPages={pagination.total}
-            currentPage={pagination.current}
-          />
-        )}
+          {pagination.total > 1 && (
+            <Paginator
+              entity={'threads'}
+              totalPages={pagination.total}
+              currentPage={pagination.current}
+            />
+          )}
+        </div>
+
+        {/* text editor */}
+        <ForumPostForm
+          threadId={thread.id}
+          categoryId={thread.categoryId as number}
+          ref={editorRef}
+          flash={isFlashing}
+          editorContent={editorContent}
+          setEditorContent={setEditorContent}
+          onSuccess={async (createdMessageId: number) => {
+            setSelectedQuoteIds([]);
+            MessageStore.clearAuthorCache();
+            await MessageStore.fetch(thread.id, pagination.limit, lastPage);
+            revalidator.revalidate();
+            navigate(`/threads/${thread.slug}/page/${lastPage}#message-${createdMessageId}`);
+          }}
+          onError={(err: string) => setError(err)} // <-- Send form errors directly to banner context
+        />
       </div>
-
-      {/* text editor */}
-      <ForumPostForm
-        threadId={thread.id}
-        categoryId={thread.categoryId as number}
-        ref={editorRef}
-        flash={isFlashing}
-        editorContent={editorContent}
-        setEditorContent={setEditorContent}
-        onSuccess={async (createdMessageId: number) => {
-          setSelectedQuoteIds([]);
-          MessageStore.clearAuthorCache();
-          await MessageStore.fetch(thread.id, pagination.limit, lastPage);
-          revalidator.revalidate();
-          navigate(`/threads/${thread.slug}/page/${lastPage}#message-${createdMessageId}`);
-        }}
-        onError={(err: string) => setError(err)} // <-- Send form errors directly to banner context
-      />
-    </div>
+    </>
   )
 }

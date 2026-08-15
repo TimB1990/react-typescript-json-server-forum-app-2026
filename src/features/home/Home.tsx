@@ -64,7 +64,7 @@ export const Home = () => {
 
   return (
     <>
-      <ErrorBanner />
+      {error && (<ErrorBanner />)}
       <main className='layout'>
 
         <div className="container first">

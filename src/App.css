@@ -1345,3 +1345,13 @@ form input[type="password"] {
 .trash:hover{
   color: red;
 }
+
+.error-banner {
+  background-color: #ffcccc;
+  padding: 1em;
+  color: black;
+  font-weight: 500;
+  margin: 1em;
+  display: flex;
+  justify-content: space-between;
+}

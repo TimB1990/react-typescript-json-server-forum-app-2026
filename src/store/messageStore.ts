@@ -47,6 +47,7 @@ export const MessageStore = {
     getState: store.getState,
     subscribe: store.subscribe,
 
+
     clearError: () => {
         store.setState((prev) => ({ ...prev, error: null }));
     },
@@ -134,7 +135,8 @@ export const MessageStore = {
                 ...prev.messagesByThread,
                 [stateKey]: []
             },
-            loading: { ...prev.loading, [stateKey]: true }
+            loading: { ...prev.loading, [stateKey]: true },
+            error: null // <-- ADD THIS LINE to clear old errors on new fetch
         }));
 
         const params = new URLSearchParams();
@@ -199,7 +201,8 @@ export const MessageStore = {
 
         store.setState((prev) => ({
             ...prev,
-            loading: { ...prev.loading, [stateKey]: true }
+            loading: { ...prev.loading, [stateKey]: true },
+            error: null // <-- ADD THIS LINE to clear old errors on new fetch
         }))
 
         const params = new URLSearchParams();

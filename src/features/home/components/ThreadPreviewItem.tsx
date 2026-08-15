@@ -45,7 +45,7 @@ export const ThreadPreviewItem = (props: ThreadPreviewItemProps) => {
               </div>
             </div>
             <p className='message-by'>
-              {showAuthorInfo === 'first' ? 'By ' : 'Last message by'}
+              {showAuthorInfo === 'first' ? 'By ' : 'Last message by '}
               {displayMessage.author} - {displayMessage.postedAt}
             </p>
           </>
