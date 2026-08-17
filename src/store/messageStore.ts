@@ -240,7 +240,6 @@ export const MessageStore = {
 
         }
         catch (err) {
-            console.log('but failed')
             store.setState((prev) => ({
                 ...prev,
                 error: "Failed to fetch Messages: " + err,

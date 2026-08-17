@@ -37,8 +37,6 @@ export const Login = () => {
         throw new Error(data.message || 'Login Failed')
       }
 
-      console.log(data.user, typeof data.user)
-
       setUser(data.user)
 
       navigate('/')
