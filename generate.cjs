@@ -3,10 +3,31 @@ const fs = require('fs');
 const path = require('path');
 const bcrypt = require('bcryptjs');
 
+const DB_PATH = path.join(__dirname, 'db.json')
+const BACKUP_DIR = path.join(__dirname, 'backups');
+
+const backupDatabase = () => {
+  if (!fs.existsSync(DB_PATH)) {
+    console.log('No existing db.json found. Skipping backup.');
+    return;
+  }
+
+  if (!fs.existsSync(BACKUP_DIR)) {
+    fs.mkdirSync(BACKUP_DIR, { recursive: true })
+  }
+
+  const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+  const backupPath = path.join(BACKUP_DIR, `db.backup-${timestamp}.json`);
+
+  // 4. Copy existing file to backup folder
+  fs.copyFileSync(DB_PATH, backupPath);
+  console.log(`Backup created at: ${backupPath}`);
+}
+
 const seeds = {
   users: 50,
   threads: 100,
-  replies: {min: 2, max: 20}
+  replies: { min: 2, max: 20 }
 }
 
 // slugify function
@@ -23,6 +44,10 @@ const slugify = (text) => {
 };
 
 const generateData = async () => {
+
+  // Perform backup before overwriting
+  backupDatabase();
+
   const users = [];
   const groups = [];
   const categories = [];

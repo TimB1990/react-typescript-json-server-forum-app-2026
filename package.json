@@ -6,6 +6,7 @@
   "scripts": {
     "server": "nodemon server.js -- --quiet",
     "client": "vite",
+    "db:generate": "node generate.cjs",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
