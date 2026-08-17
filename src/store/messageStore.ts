@@ -210,7 +210,6 @@ export const MessageStore = {
         params.append("page", `${page}`);
 
         try {
-            console.log('my params: ', `http://localhost:5001/messages/latest-overview?${params.toString()}`)
             const response = await fetch(`http://localhost:5001/messages/latest-overview?${params.toString()}`)
             const { data } = await response.json();
 
@@ -221,7 +220,11 @@ export const MessageStore = {
                 const author = item.userId ? await getAuthor(item.userId) : null
                 const postedAt = formatDate(item.createdAt)
 
-                return { ...item, threadInfo: { title: thread.title }, messageBy: author, postedAt }
+                const threadId = item.threadId;
+                const currentThreadMessagesResponse = await fetch(`http://localhost:5001/messages?${threadId}`)
+                const { totalPages } = await currentThreadMessagesResponse.json();
+
+                return { ...item, threadInfo: { title: thread.title, lastThreadPage: totalPages, firstThreadpage: 1 }, messageBy: author, postedAt }
             })
 
             const finalData = await Promise.all(messagePromises)

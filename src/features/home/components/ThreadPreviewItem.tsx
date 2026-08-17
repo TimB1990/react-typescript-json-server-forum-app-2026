@@ -32,38 +32,39 @@ export const ThreadPreviewItem = (props: ThreadPreviewItemProps) => {
   );
 
   return (
-    // onClick={handleClick}
-    <Link to={`/threads/${slug}`} className='item-link'>
-      <ImageCardItem
-        image={displayMessage.avatar}
-        main={
-          <>
-            <div style={{ display: 'flex' }}>
-              <p><strong>{title}</strong></p>
+    <>
+      <Link to={`/threads/${slug}/`} className='item-link'>
+        <ImageCardItem
+          image={displayMessage.avatar}
+          main={
+            <>
               <div style={{ display: 'flex' }}>
-                {tags}
+                <p><strong>{title}</strong></p>
+                <div style={{ display: 'flex' }}>
+                  {tags}
+                </div>
               </div>
-            </div>
-            <p className='message-by'>
-              {showAuthorInfo === 'first' ? 'By ' : 'Last message by '}
-              {displayMessage.author} - {displayMessage.postedAt}
-            </p>
-          </>
-        }
-        meta={<div style={{ display: 'flex', gap: '2.5em' }}>
-          {metaContent}
-          {showAuthorInfo === 'first' && showLatest && <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <p><strong>{lastMessageBy.author}</strong></p>
-            <p>{lastMessageBy.postedAt}</p>
+              <p className='message-by'>
+                {showAuthorInfo === 'first' ? 'By ' : 'Last message by '}
+                {displayMessage.author} - {displayMessage.postedAt}
+              </p>
+            </>
+          }
+          meta={<div style={{ display: 'flex', gap: '2.5em' }}>
+            {metaContent}
+            {showAuthorInfo === 'first' && showLatest && <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <p><strong>{lastMessageBy.author}</strong></p>
+              <p>{lastMessageBy.postedAt}</p>
+            </div>}
           </div>}
-        </div>}
-        options={{
-          contentDirection: "horizontal",
-          thumbImage: true,
-          imageShape: "circle",
-          applyBorder: true
-        }}
-      />
-    </Link>
+          options={{
+            contentDirection: "horizontal",
+            thumbImage: true,
+            imageShape: "circle",
+            applyBorder: true
+          }}
+        />
+      </Link>
+    </>
   )
 }

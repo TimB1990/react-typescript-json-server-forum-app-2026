@@ -3,6 +3,7 @@ import { RichTextEditor } from "../../../common/components/ui/richTextEditor/Ric
 import { Card } from "../../../common/components/ui/cards/Card"
 import { Link } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
+import { sanitizeQuotesFromHTML } from "../../../common/utils/removeQuotesFromHTML";
 
 interface ForumPostFormProps {
   flash: boolean;
@@ -29,28 +30,6 @@ export const ForumPostForm = forwardRef<HTMLDivElement, ForumPostFormProps>(({
   // Safely check if logged in
   const isLoggedIn = Boolean(user && user.id);
 
-  const removeQuotesSelectionFromHTML = (rawHtml: string): string => {
-
-    const storedQuoteIds = sessionStorage.getItem(`quotes_thread_${threadId}`); // is JSON!
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(rawHtml, 'text/html');
-
-    if (storedQuoteIds) {
-      const quoteIds = JSON.parse(storedQuoteIds) as string[]
-
-      if (quoteIds && quoteIds.length > 0) {
-        quoteIds.forEach(id => {
-          const quoteElement = doc.querySelector(`blockquote[data-quote-id="${id}"]`);
-          if (quoteElement) {
-            quoteElement.remove();
-          }
-        })
-      }
-    }
-
-    return doc.body.innerHTML;
-  }
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editorContent.trim() || editorContent === '<br>') {
@@ -58,7 +37,7 @@ export const ForumPostForm = forwardRef<HTMLDivElement, ForumPostFormProps>(({
       return;
     }
 
-    const sanitizedHTML = removeQuotesSelectionFromHTML(editorContent);
+    const sanitizedHTML = sanitizeQuotesFromHTML(editorContent, threadId)
     const storedQuoteIds = sessionStorage.getItem(`quotes_thread_${threadId}`);
 
     setIsSubmitting(true)

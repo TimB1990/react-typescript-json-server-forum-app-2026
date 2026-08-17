@@ -36,15 +36,15 @@ export const Home = () => {
   const { user: rawUser } = useAuth();
   const theUser = rawUser as User | null;
 
-  const { groups, loading: groupsLoading, error } = useGroupStore();
+  const { groups = [], loading: groupsLoading, error } = useGroupStore();
   const { threadsByCategory: threads, loading: threadsLoading, totalCount: totalThreads } = useThreadStore();
   const { messagesByThread: messages, totalCount: totalMessages } = useMessageStore();
   const { totalCount: totalUsers, users: latestUsers } = useUserStore();
 
   // Evaluate loading flags seperatly for skeletons
   const isThreadsLoading = threadsLoading['all'] ?? true
-  const latestThreads = threads?.["all"] || [];
-  const latestMessages = messages?.["all"] || [];
+  const latestThreads = threads?.["all"] ?? [];
+  const latestMessages = messages?.["all"] ?? [];
   const { setError } = useError()
 
   useEffect(() => {
@@ -81,7 +81,7 @@ export const Home = () => {
               <GroupItemSkeleton />
             </>
           ) : (
-            groups.map((group: Group) => (
+            groups?.map((group: Group) => (
               <GroupItem key={`group-${group.id}`} {...group}>
                 <CategoriesList {...group} />
               </GroupItem>

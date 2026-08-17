@@ -6,6 +6,7 @@ export type Message = {
     userId: number,
     threadInfo?: {
         title: string,
+        lastThreadPage: number
     }
     messageBy: {
         author: string,
