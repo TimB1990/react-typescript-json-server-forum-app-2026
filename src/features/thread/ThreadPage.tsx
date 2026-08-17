@@ -37,33 +37,53 @@ export const ThreadPage = () => {
     }
   });
 
-  const targetFirst = 'thread-top'
+  const messages = messagesByThread[thread.id] || [];
+  const isActuallyLoading = loading[thread.id] || messages.length === 0;
+
   useEffect(() => {
+    if (isActuallyLoading || messages.length === 0) return;
+
     const timer = setTimeout(() => {
-      const element = document.getElementById(targetFirst);
-      if (!element) return;
+      // CASE A: User clicked a link with a hash (#message-123 or #bottom)
+      if (hash) {
+        const targetId = hash.replace('#', '');
 
-      const elementRect = element.getBoundingClientRect();
-      const absoluteElementTop = elementRect.top + window.pageYOffset;
-      const elementHeight = elementRect.height;
-      const viewportHeight = window.innerHeight;
+        if (targetId === 'bottom') {
+          window.scrollTo({
+            top: document.documentElement.scrollHeight,
+            behavior: 'smooth',
+          });
+          return;
+        }
 
-      // Adjust this offset value (in pixels) to shift the view up or down
-      // Positive pushes view further down, negative pushes view higher up
-      const customOffset = -40;
+        const element = document.getElementById(targetId);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        return;
+      }
 
-      // Formula to center the element + apply manual offset
-      const targetScrollY =
-        absoluteElementTop - (viewportHeight / 2) + (elementHeight / 2) + customOffset;
+      // CASE B: User opened a thread title (No hash) -> Center the first post
+      const element = document.getElementById('thread-top');
+      if (element) {
+        const elementRect = element.getBoundingClientRect();
+        const absoluteElementTop = elementRect.top + window.pageYOffset;
+        const elementHeight = elementRect.height;
+        const viewportHeight = window.innerHeight;
+        const customOffset = -40; // Pixel tweak for ideal top/header gap
 
-      window.scrollTo({
-        top: targetScrollY,
-        behavior: 'smooth',
-      });
+        const targetScrollY =
+          absoluteElementTop - (viewportHeight / 2) + (elementHeight / 2) + customOffset;
+
+        window.scrollTo({
+          top: targetScrollY,
+          behavior: 'smooth',
+        });
+      }
     }, 100);
 
     return () => clearTimeout(timer);
-  }, [targetFirst]);
+  }, [hash, isActuallyLoading, messages.length, pagination.current]);
 
   // persist selected quote ids, triggered on when selectedQuoteIds changes or thread id changes
   useEffect(() => {
@@ -85,9 +105,6 @@ export const ThreadPage = () => {
       clearError();
     }
   }, [error, setError, clearError]);
-
-  const messages = messagesByThread[thread.id] || [];
-  const isActuallyLoading = loading[thread.id] || messages.length === 0;
 
   useEffect(() => {
     if (hash && messages.length > 0) {
@@ -240,19 +257,20 @@ export const ThreadPage = () => {
 
               )}
               {messages.slice(1).map((msg, index) => (
-                <Card
-                  key={msg.id || index}
-                  content={<MessageItem
-                    msg={msg}
-                    thread={thread}
-                    selectedQuoteIds={selectedQuoteIds}
-                    messages={messages}
-                    onToggleQuote={handleMultiQuoteToggle}
-                    onSingleQuote={handleSingleQuoteInsert}
-                    onError={setError}
-                  />}
-                  options={{ divided: { top: false, bottom: false } }}
-                />
+                <div key={msg.id || index} id={`message-${msg.id}`}>
+                  <Card
+                    content={<MessageItem
+                      msg={msg}
+                      thread={thread}
+                      selectedQuoteIds={selectedQuoteIds}
+                      messages={messages}
+                      onToggleQuote={handleMultiQuoteToggle}
+                      onSingleQuote={handleSingleQuoteInsert}
+                      onError={setError}
+                    />}
+                    options={{ divided: { top: false, bottom: false } }}
+                  />
+                </div>
               ))}
             </>
           )}

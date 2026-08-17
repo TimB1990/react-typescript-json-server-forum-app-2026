@@ -15,7 +15,7 @@ type ThreadPreviewItemProps = Thread & {
 
 export const ThreadPreviewItem = (props: ThreadPreviewItemProps) => {
 
-  const { id, slug, title, lastMessageBy, firstMessageBy, messages, iconStats, showAuthorInfo, tags, showLatest } = props;
+  const { slug, title, lastMessageBy, firstMessageBy, messages, iconStats, showAuthorInfo, tags, showLatest } = props;
 
   const comments = messages !== undefined ? messages - 1 : 0;
 

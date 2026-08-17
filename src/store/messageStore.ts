@@ -221,7 +221,7 @@ export const MessageStore = {
                 const postedAt = formatDate(item.createdAt)
 
                 const threadId = item.threadId;
-                const currentThreadMessagesResponse = await fetch(`http://localhost:5001/messages?${threadId}`)
+                const currentThreadMessagesResponse = await fetch(`http://localhost:5001/messages?threadId=${threadId}`)
                 const { totalPages } = await currentThreadMessagesResponse.json();
 
                 return { ...item, threadInfo: { title: thread.title, slug: thread.slug, lastThreadPage: totalPages}, messageBy: author, postedAt }
