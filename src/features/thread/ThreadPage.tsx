@@ -37,6 +37,34 @@ export const ThreadPage = () => {
     }
   });
 
+  const targetFirst = 'thread-top'
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const element = document.getElementById(targetFirst);
+      if (!element) return;
+
+      const elementRect = element.getBoundingClientRect();
+      const absoluteElementTop = elementRect.top + window.pageYOffset;
+      const elementHeight = elementRect.height;
+      const viewportHeight = window.innerHeight;
+
+      // Adjust this offset value (in pixels) to shift the view up or down
+      // Positive pushes view further down, negative pushes view higher up
+      const customOffset = -40;
+
+      // Formula to center the element + apply manual offset
+      const targetScrollY =
+        absoluteElementTop - (viewportHeight / 2) + (elementHeight / 2) + customOffset;
+
+      window.scrollTo({
+        top: targetScrollY,
+        behavior: 'smooth',
+      });
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, [targetFirst]);
+
   // persist selected quote ids, triggered on when selectedQuoteIds changes or thread id changes
   useEffect(() => {
     if (selectedQuoteIds.length > 0) {
@@ -49,7 +77,7 @@ export const ThreadPage = () => {
   useEffect(() => {
     MessageStore.fetch(thread.id, pagination.limit, pagination.current)
   }, [thread.id, pagination.current])
-  
+
   useEffect(() => {
     if (error) {
       setError(error);
@@ -192,21 +220,24 @@ export const ThreadPage = () => {
           ) : (
             <>
               {messages[0] && (
-                <Card
-                  header={<h2>{thread.title}</h2>}
-                  content={
-                    <MessageItem
-                      msg={messages[0]}
-                      thread={thread}
-                      selectedQuoteIds={selectedQuoteIds}
-                      messages={messages}
-                      onToggleQuote={handleMultiQuoteToggle}
-                      onSingleQuote={handleSingleQuoteInsert}
-                      onError={setError}
-                    />
-                  }
-                  options={{ divided: { top: false, bottom: false } }}
-                />
+                <div id="thread-top">
+                  <Card
+                    header={<h2>{thread.title}</h2>}
+                    content={
+                      <MessageItem
+                        msg={messages[0]}
+                        thread={thread}
+                        selectedQuoteIds={selectedQuoteIds}
+                        messages={messages}
+                        onToggleQuote={handleMultiQuoteToggle}
+                        onSingleQuote={handleSingleQuoteInsert}
+                        onError={setError}
+                      />
+                    }
+                    options={{ divided: { top: false, bottom: false } }}
+                  />
+                </div>
+
               )}
               {messages.slice(1).map((msg, index) => (
                 <Card

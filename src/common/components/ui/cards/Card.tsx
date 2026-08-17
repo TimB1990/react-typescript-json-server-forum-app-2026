@@ -37,7 +37,7 @@ export const Card: React.FC<CardProps> = ({ header, content, footer, options = {
     const footerClasses = cardClasses.footer.filter(Boolean).join(' ')
 
     return (
-        <div 
+        <div
             className="card" 
             style={lightBackground 
                 ? {backgroundColor: 'oklch(0.299 0.0152 260)'}

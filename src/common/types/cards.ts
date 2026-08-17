@@ -10,6 +10,7 @@ export interface CardOptions {
 }
 
 export interface CardProps {
+    el?: string,
     header?: React.ReactNode
     content?: React.ReactNode
     footer?: React.ReactNode

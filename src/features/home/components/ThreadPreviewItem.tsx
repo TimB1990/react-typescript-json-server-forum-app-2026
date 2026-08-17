@@ -33,7 +33,7 @@ export const ThreadPreviewItem = (props: ThreadPreviewItemProps) => {
 
   return (
     <>
-      <Link to={`/threads/${slug}/`} className='item-link'>
+      <Link to={`/threads/${slug}`} className='item-link'>
         <ImageCardItem
           image={displayMessage.avatar}
           main={
