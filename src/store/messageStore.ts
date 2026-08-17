@@ -224,7 +224,7 @@ export const MessageStore = {
                 const currentThreadMessagesResponse = await fetch(`http://localhost:5001/messages?${threadId}`)
                 const { totalPages } = await currentThreadMessagesResponse.json();
 
-                return { ...item, threadInfo: { title: thread.title, lastThreadPage: totalPages, firstThreadpage: 1 }, messageBy: author, postedAt }
+                return { ...item, threadInfo: { title: thread.title, slug: thread.slug, lastThreadPage: totalPages}, messageBy: author, postedAt }
             })
 
             const finalData = await Promise.all(messagePromises)

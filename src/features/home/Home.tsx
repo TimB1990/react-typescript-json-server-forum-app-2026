@@ -113,8 +113,6 @@ export const Home = () => {
                       key={`latest-thread-${thread.id}`}
                       {...thread}
                       iconStats={true}
-                      // 'first' ensures we show the thread creator, 
-                      // which is now correctly fetched via order=asc
                       showAuthorInfo='first'
                     />
                   ))}

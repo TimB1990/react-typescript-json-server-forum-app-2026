@@ -4,8 +4,9 @@ export type Message = {
     parentId: number | null,
     categoryId: number,
     userId: number,
-    threadInfo?: {
+    threadInfo: {
         title: string,
+        slug: string,
         lastThreadPage: number
     }
     messageBy: {

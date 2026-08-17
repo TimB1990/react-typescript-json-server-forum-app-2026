@@ -6,15 +6,15 @@ import { sanitizeQuotesFromHTML } from '../../../common/utils/removeQuotesFromHT
 
 export const MessagePreviewItem = (props: Message) => {
 
-    const { messageBy, threadInfo, content, postedAt } = props;
+    const { id, messageBy, threadInfo, content, postedAt } = props;
 
     return (
-        <Link to='' className='item-link'>
+        <Link to={`/threads/${threadInfo.slug}/page/${threadInfo.lastThreadPage}#message-${id}`} className='item-link'>
             <ImageCardItem
                 image={messageBy.avatar}
                 main={
                     <>
-                        <p><strong>{threadInfo?.title}</strong></p>
+                        <p><strong>{threadInfo.title}</strong></p>
                         <div className='message-content'>{parse(sanitizeQuotesFromHTML(content))}</div>
                     </>
                 }
